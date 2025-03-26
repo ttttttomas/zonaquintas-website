@@ -3,7 +3,7 @@ import React from 'react'
 
 export default function Filters() {
   return (
-    <section className='flex bg-amber-200 my-10 w-max gap-32 mx-auto'>
+    <section className='flex my-7 w-max gap-32 mx-auto'>
         <div>
           
           Habitaciones

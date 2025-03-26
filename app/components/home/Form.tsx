@@ -2,7 +2,7 @@ import Lupa from '../icons/Lupa'
 
 export default function Form() {
   return (
-    <form className='flex justify-center items-center gap-10'>
+    <form className='flex justify-center items-center gap-10 mb-10'>
         <section className='flex gap-20 border-black/30 border w-max px-10 py-5 bg-white rounded-4xl'>
         <div className='flex flex-col items-start'>
             <p className='font-medium'>Lugar</p>

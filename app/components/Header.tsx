@@ -5,9 +5,9 @@ import Logo from './icons/Logo'
 
 export default function Header() {
   return (
-    <header className='flex fixed top-0 w-full justify-between items-center px-10 my-5'>
+    <header className='flex z-10 backdrop-blur-md fixed top-0 w-full justify-between items-center px-10 mt-2 mb-5'>
         <div className='flex items-center gap-3'>
-            <Logo width="70px"/>
+            <Logo height="auto" width="70px"/>
             <p className='font-semibold text-lg'>ZonaQuintas</p>
         </div>
         <p className='font-semibold text-lg'>Alquiler de casas quintas</p>
