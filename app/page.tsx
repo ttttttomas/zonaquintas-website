@@ -9,11 +9,9 @@ export default function Home() {
   return (
   <main className='px-10'>
     <Form />
-     <Separator />
+     <Separator color='bg-gray-200' />
     <Filters />
-    <section className='grid grid-cols-6 place-items-center'>
-    <QuintaCard />
-    <QuintaCard />
+    <section className='flex flex-wrap lg:gap-x-16 gap-x-10 justify-center'>
     <QuintaCard />
     <QuintaCard />
     <QuintaCard />
