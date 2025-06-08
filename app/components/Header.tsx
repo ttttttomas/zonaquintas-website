@@ -25,12 +25,12 @@ export default function Header() {
             </div>
             <User />
             {isOpen && 
-            <ul className='text-white flex flex-col gap-2 top-16 right-4 text-sm absolute bg-green-600 rounded-xl px-6 py-3'>
-              <Link href="/login">Iniciar sesión</Link>
-              <Link href="/register">Registrate</Link>
+            <ul className='text-white font-medium flex flex-col gap-2 top-16 right-4 text-md absolute bg-green-600 rounded-xl px-6 py-3'>
+              <Link onClick={() => setIsOpen(false)} href="/login">Iniciar sesión</Link>
+              <Link onClick={() => setIsOpen(false)} href="/register">Registrate</Link>
               <Separator color='bg-gray-200' />
-              <Link href="/">Publicá tu quinta</Link>
-              <Link href="/">Soporte</Link>
+              <Link onClick={() => setIsOpen(false)} href="/">Publicá tu quinta</Link>
+              <Link onClick={() => setIsOpen(false)} href="/suport">Soporte</Link>
             </ul>}
         </div>
     </header>

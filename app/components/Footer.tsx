@@ -6,8 +6,8 @@ export default function Footer() {
   return (
     <footer className="flex flex-col pt-8">
       <section className="flex flex-col px-5 md:px-10 md:flex-row gap-5 justify-between border-t pt-5 border-gray-300 md:mb-20">
-        <div className="flex flex-col justify-center items-center w-full md:w-96 gap-5">
-          <Logo width={100} height="auto" />
+        <div className="flex flex-col justify-center items-start md:items-center w-full md:w-96 gap-5">
+          <Logo width={120} height="auto" />
           <small>
             ZonaQuintas es una plataforma digital para alquilar casas de fin de
             semana en Argentina. Conectamos propietarios y viajeros de forma
@@ -23,10 +23,10 @@ export default function Footer() {
             <Link className="font-medium" href="">
               Como ser anfitrion
             </Link>
-            <Link className="font-extralight" href="">
+            <Link className="font-light text-black/60" href="">
               Publicá tu Quinta
             </Link>
-            <Link className="font-extralight" href="">
+            <Link className="font-light text-black/60" href="">
               Foro de la comunidad
             </Link>
           </ul>
@@ -34,15 +34,15 @@ export default function Footer() {
             <Link className="font-medium" href="">
               ZonaQuintas
             </Link>
-            <Link className="font-extralight" href="">
+            <Link className="font-light text-black/60" href="">
               Manejo de la web
             </Link>
-            <Link className="font-extralight" href="">
-              Empleo
+            <Link className="font-light text-black/60" href="/favorites">
+              Favoritos
             </Link>
           </ul>
         </div>
-        <Link href="/" className="flex gap-1 md:mb-0 mb-5 items-start justify-center">
+        <Link href="/" className="flex gap-1 md:mb-0 mb-5 items-start pt-5 justify-center">
           <Soporte />
           <p className="mt-1">Soporte</p>
         </Link>
