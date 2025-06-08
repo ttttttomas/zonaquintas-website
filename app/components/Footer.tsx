@@ -6,14 +6,16 @@ export default function Footer() {
   return (
     <footer className="flex flex-col pt-8">
       <section className="flex flex-col px-5 md:px-10 md:flex-row gap-5 justify-between border-t pt-5 border-gray-300 md:mb-20">
-        <div className="flex flex-col justify-center items-start md:items-center w-full md:w-96 gap-5">
-          <Logo width={120} height="auto" />
+        <div className="flex flex-col w-full md:w-96 gap-5">
+          <div className="mx-auto md:mx-0">
+            <Logo width={120} height="auto" />
+          </div>
           <small>
             ZonaQuintas es una plataforma digital para alquilar casas de fin de
             semana en Argentina. Conectamos propietarios y viajeros de forma
             simple, rápida y segura.
           </small>
-          <div className="flex md:flex-col underline justify-between w-full flex-row">
+          <div className="flex md:flex-col underline items-start justify-between w-full flex-row">
             <Link href="/">Términos y condiciones</Link>
             <Link href="/">Privacidad</Link>
           </div>

@@ -1,22 +1,25 @@
+/* eslint-disable @next/next/no-img-element */
 'use client'
 
-import Logo from "../icons/Logo"
-import Heart from "../icons/Heart"
-import HeartGreen from "../icons/HeartGreen"
+import Heart from "../icons/Heart";
+import HeartGreen from "../icons/HeartGreen";
 import { useState } from "react";
+import Link from "next/link";
 
 
 export default function QuintaCard() {
   const [isFavorite, setIsFavorite] = useState(false);
   const handleClick = () => {
     setIsFavorite(!isFavorite);
+    console.log("Is Favorite!");
+    
   };
   return (
-    <div className="w-64 relative shadow-lg shadow-black/40 my-5 text-black flex flex-col items-center gap-1 rounded-xl">
+    <Link href="/" className="w-64 relative border border-black/60 shadow-md shadow-black/25 my-5 text-black flex flex-col items-center rounded-xl">
         <div onClick={handleClick}>
           {isFavorite ? <HeartGreen /> : <Heart />}
         </div>
-        <Logo height="auto" width="100%"/>
+        <img className="object-cover h-52 w-full rounded-t-xl" src="/quinta.jpg" alt="foto de la quinta" />
         <div className="bg-white w-full flex flex-col rounded-b-xl">
         <p className="text-lg text-center">Ezeiza, Buenos Aires</p>
         <small className="text-black/50 text-center">Galvez 657, Los Rosales</small>
@@ -26,6 +29,6 @@ export default function QuintaCard() {
         </ul>
         <p className="font-bold my-2 text-center">$760.000.-</p>
         </div>
-    </div>
+    </Link>
   )
 }
