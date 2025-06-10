@@ -1,24 +1,26 @@
-"use client";
+'use client'
 
-import { useSearchParams } from "next/navigation";
+// import { useSearchParams } from "next/navigation";
 import Form from "../components/home/Form";
 import Filters from "../components/home/Filters";
 import { Separator } from "../components/ui/Separator";
 import QuintaSearchCard from "../components/QuintaSearchCard";
+import { Suspense } from "react";
 
 export default function QuintasPage() {
-  const searchParams = useSearchParams();
+  // const searchParams = useSearchParams();
 
-  const lugar = searchParams.get("place") || "";
-  const ingreso = searchParams.get("startDate") || "";
-  const egreso = searchParams.get("endDate") || "";
-  const personas = searchParams.get("people") || "";
+  // const lugar = searchParams.get("place") || "";
+  // const ingreso = searchParams.get("startDate") || "";
+  // const egreso = searchParams.get("endDate") || "";
+  // const personas = searchParams.get("people") || "";
 
-  console.log({lugar, ingreso, egreso, personas});
+  // console.log({lugar, ingreso, egreso, personas});
   
 
   return (
-    <div className="p-4">
+    <Suspense fallback={<div>Loading...</div>}>
+    <main className="p-4">
       <Form />
       <Separator color="bg-gray-200" />
       <Filters />
@@ -43,6 +45,7 @@ export default function QuintasPage() {
         </div>
         <div className="w-6/10 flex-1 bg-black text-white text-center">Mapa</div>
       </section>
-    </div>
+    </main>
+    </Suspense>
   );
 }
