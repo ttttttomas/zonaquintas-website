@@ -1,9 +1,10 @@
 'use client';
 import { useRouter } from "next/navigation";
 import Lupa from "../icons/Lupa";
-import { Suspense } from "react";
+import { Suspense, useState } from "react";
 
 export default function Form() {
+  const [viewInput, setViewInput] = useState(false);
   const router = useRouter();
   // const searchParams = useSearchParams();
 
@@ -32,16 +33,22 @@ export default function Form() {
         onSubmit={handleSubmit}
         className="flex md:flex-row flex-col justify-center items-center gap-5 md:gap-8 mb-5 md:mb-10">
         <section className="flex md:flex-row flex-col border-black/30 border cursor-pointer w-max bg-white rounded-4xl">
-          <div className="hover:bg-black/10 rounded-4xl flex flex-col focus:bg-black md:pl-10 py-5 items-center md:items-start">
-            <p className="font-medium">Lugar</p>
-            <input
-              type="text"
-              // defaultValue={searchParams.get("query") || ""}
-              name="place"
-              className="text-black/40 md:text-start text-center focus:outline-0"
-              placeholder="Elegi aca tu destino"
-            />
+          {viewInput ? (
+            <div className={`hover:bg-black/10 w-[260px] rounded-4xl flex flex-col focus:bg-black ${viewInput && 'md:pl-10'} py-5 items-center transition-all animate-out md:items-start`}>
+            <p className={viewInput ? "font-medium" : "font-medium text-xl my-auto mx-auto"}>Lugar</p>
+            {viewInput &&
+                        <input
+                        type="text"
+                        // defaultValue={searchParams.get("query") || ""}
+                        name="place"
+                        className="text-black/40 transition-all md:text-start text-center focus:outline-0"
+                        placeholder="Elegi aca tu destino"
+                      />}
           </div>
+          ) : (<div onClick={() => setViewInput(!viewInput)} className={`hover:bg-black/10 w-[260px] rounded-4xl flex flex-col focus:bg-black ${viewInput && 'md:pl-10'} py-5 items-center transition-all md:items-start`}>
+          <p className="font-medium text-xl my-auto mx-auto">Lugar</p>
+
+        </div>)}
 
           <div className="flex flex-col py-5 md:pl-2 hover:bg-black/10 rounded-4xl items-center md:items-start">
             <p className="font-medium">Fecha de ingreso</p>
