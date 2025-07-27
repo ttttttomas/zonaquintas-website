@@ -27,12 +27,9 @@ export default function QuintasPage() {
       <section className="w-full gap-20 flex">
         <div className="w-4/10">
           <div className="flex justify-end">
-            <h1 className="font-semibold">Ordenar por:</h1>
-            <select name="" id="">
-              <option value="">Elegi una opción</option>
-              <option value="">Huéspued</option>
-              <option value="">Propietario</option>
-              <option value="">Precio</option>
+            <h1 className="pr-2">Ordenar por</h1>
+            <select className="font-semibold" name="order">
+              <option value="relevancia">Relevancia</option>
             </select>
           </div>
           <ul className="flex flex-col mt-10 gap-5">
@@ -43,7 +40,9 @@ export default function QuintasPage() {
             <QuintaSearchCard />
           </ul>
         </div>
-        <div className="w-6/10 flex-1 bg-black text-white text-center">Mapa</div>
+        <div className="w-6/10 flex-1 text-white text-center">
+        <img src="map.png" alt="mapa de zona" className="w-full mx-auto max-w-7xl mt-5 h-full object-cover rounded-xl" />
+        </div>
       </section>
     </main>
     </Suspense>

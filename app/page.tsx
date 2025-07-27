@@ -2,8 +2,8 @@ import Form from './components/home/Form'
 import Filters from './components/home/Filters'
 import { Separator } from './components/ui/Separator';
 import QuintaCard from './components/home/QuintaCard';
-import {createServerComponentClient} from '@supabase/auth-helpers-nextjs'
-import { cookies } from 'next/headers';
+// import {createServerComponentClient} from '@supabase/auth-helpers-nextjs'
+// import { cookies } from 'next/headers';
 
 
 export default async function Home() {

@@ -44,7 +44,7 @@ export default function Footer() {
             </Link>
           </ul>
         </div>
-        <Link href="/" className="flex gap-1 md:mb-0 mb-5 items-start pt-5 justify-center">
+        <Link href="/support" className="flex gap-1 md:mb-0 mb-5 items-start pt-5 justify-center">
           <Soporte />
           <p className="mt-1">Soporte</p>
         </Link>

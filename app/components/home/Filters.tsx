@@ -6,7 +6,6 @@ export default function Filters() {
       <div>Habitaciones</div>
       <div>Ambientes</div>
       <div>Baños</div>
-      <div>Precio</div>
       <div>Todos los filtros</div>
     </section>
   );

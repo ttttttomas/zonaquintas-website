@@ -14,27 +14,27 @@ export default function QuintaSearchCard() {
         
       };
   return (
-    <section className="flex rounded-2xl shadow-md bg-white overflow-hidden w-full">
+    <Link href="/quintas/1" className="flex rounded-2xl p-3 shadow-md bg-white overflow-hidden w-full">
       {/* Imágenes */}
       <div className="flex">
         <div className="relative">
           <img
             src="/quinta.jpg"
             alt="principal"
-            className="w-40 h-full p-2 object-cover rounded-l-2xl"
+            className="w-60 h-full p-2 object-cover rounded-l-2xl"
           />
-          <div onClick={handleClick} className="absolute top-1 left-12 rounded-full p-1">
+          <div onClick={handleClick} className="absolute cursor-pointer top-3 left-3 rounded-full p-1">
            {isFavorite ? <HeartGreen /> : <Heart />}
           </div>
         </div>
 
-        <div className="flex flex-col gap-1 px-2 py-2">
+        <div className="flex flex-col justify-between pl-1 py-2">
           {[1, 2, 3].map((_, i) => (
             <img
               key={i}
               src={`/quinta.jpg`}
               alt={`mini-${i}`}
-              className="w-14 h-14 object-cover rounded"
+              className="size-16 object-cover"
             />
           ))}
         </div>
@@ -75,6 +75,6 @@ export default function QuintaSearchCard() {
           </Link>
         </div>
       </div>
-    </section>
+    </Link>
   )
 }

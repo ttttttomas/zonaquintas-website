@@ -30,7 +30,7 @@ export default function Header() {
               <Link onClick={() => setIsOpen(false)} href="/register">Registrate</Link>
               <Separator color='bg-gray-200' />
               <Link onClick={() => setIsOpen(false)} href="/">Publicá tu quinta</Link>
-              <Link onClick={() => setIsOpen(false)} href="/suport">Soporte</Link>
+              <Link onClick={() => setIsOpen(false)} href="/support">Soporte</Link>
             </ul>}
         </div>
     </header>

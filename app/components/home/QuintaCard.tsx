@@ -16,7 +16,7 @@ export default function QuintaCard() {
   return (
     <Link href="/quintas/1" className="w-64 relative border border-black/60 shadow-md shadow-black/25 my-5 text-black flex flex-col items-center rounded-xl">
         <div onClick={handleClick}>
-          {isFavorite ? <HeartGreen /> : <Heart className={"absolute top-2 right-2 hover:scale-110 transition-all cursor-pointer"} />}
+          {isFavorite ? <HeartGreen className={"absolute top-2 right-2 hover:scale-110 transition-all cursor-pointer"} /> : <Heart className={"absolute top-2 right-2 hover:scale-110 transition-all cursor-pointer"} />}
         </div>
         <img className="object-cover h-52 w-full rounded-t-xl" src="/quinta.jpg" alt="foto de la quinta" />
         <div className="bg-white w-full flex flex-col rounded-b-xl">

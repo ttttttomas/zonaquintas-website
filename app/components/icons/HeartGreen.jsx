@@ -1,8 +1,8 @@
-export default function HeartGreen() {
+export default function HeartGreen({className}) {
   return (
     <svg
       width="34"
-      className="absolute top-2 right-2 hover:scale-110 transition-all cursor-pointer"
+      className={className}
       height="37"
       viewBox="0 0 37 37"
       fill="none"
