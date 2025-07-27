@@ -4,6 +4,7 @@ import Heart from "@/app/components/icons/Heart";
 import { CalendarDays, Check, Star, StarHalf, MessageCircle, MapPin, DollarSign, Key, Sparkles, CalendarCheck, Globe, ShieldCheck } from "lucide-react";
 import { Separator } from "@/app/components/ui/Separator";
 import CategorySection from "@/app/components/CategorySection";
+import Calendar from "@/app/components/Calendar";
 
 export default function QuintaIdPage() {
 const categorias = [
@@ -201,18 +202,7 @@ const reseñas = [
             <p className="text-sm text-gray-500 mb-2">
               Estadía mínima 2 noches
             </p>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="bg-gray-100 p-4 rounded-lg text-center text-sm">
-                <CalendarDays className="mx-auto mb-2 w-5 h-5" />
-                <p>Marzo 2025</p>
-                <p className="text-xs text-gray-500">Maquetado estático</p>
-              </div>
-              <div className="bg-gray-100 p-4 rounded-lg text-center text-sm">
-                <CalendarDays className="mx-auto mb-2 w-5 h-5" />
-                <p>Abril 2025</p>
-                <p className="text-xs text-gray-500">Maquetado estático</p>
-              </div>
-            </div>
+            <Calendar />
           </div>
         </div>
         {/* Reservar derecha */}

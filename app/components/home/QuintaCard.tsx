@@ -14,7 +14,7 @@ export default function QuintaCard() {
     setIsFavorite(!isFavorite);    
   };
   return (
-    <Link href="/quintas/1" className="w-64 relative border border-black/60 shadow-md shadow-black/25 my-5 text-black flex flex-col items-center rounded-xl">
+    <Link href="/quintas/1" className="w-64 relative border hover:scale-110 transition-all border-black/60 shadow-md shadow-black/25 my-5 text-black flex flex-col items-center rounded-xl">
         <div onClick={handleClick}>
           {isFavorite ? <HeartGreen className={"absolute top-2 right-2 hover:scale-110 transition-all cursor-pointer"} /> : <Heart className={"absolute top-2 right-2 hover:scale-110 transition-all cursor-pointer"} />}
         </div>

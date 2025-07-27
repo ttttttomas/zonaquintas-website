@@ -1,4 +1,20 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+/* styles/datepicker-custom.css */
 
+.react-datepicker__day {
+  border-radius: 0.4rem;
+  font-weight: 500;
+  color: #1a1a1a;
+}
+
+.react-datepicker__day--disabled {
+  color: #ccc !important;
+  cursor: default;
+}
+
+
+.react-datepicker__day--keyboard-selected {
+  background: none;
+}

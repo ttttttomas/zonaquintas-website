@@ -47,11 +47,18 @@ export default function MyAccountPage() {
           Modificar datos
         </button>
       </form>
-      <Link
-        href="/reservations"
-        className="bg-green-600 text-white rounded-full cursor-pointer size-42 text-center pt-16 font-bold text-2xl">
-        Mis reservas
-      </Link>
+      <div className="flex flex-col items-center justify-between gap-60">
+        <Link
+          href="/reservations"
+          className="bg-green-600 text-white rounded-full cursor-pointer size-42 text-center pt-16 font-bold text-2xl">
+          Mis reservas
+        </Link>
+        <Link
+          href="/publications"
+          className="bg-green-600 text-white rounded-2xl py-5 px-10 cursor-pointer text-nowrap text-center font-bold text-2xl">
+          Mis publicaciones
+        </Link>
+      </div>
     </main>
   );
 }
