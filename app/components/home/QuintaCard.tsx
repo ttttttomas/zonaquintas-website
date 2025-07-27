@@ -1,4 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
+
 'use client'
 
 import Heart from "../icons/Heart";
@@ -10,14 +11,12 @@ import Link from "next/link";
 export default function QuintaCard() {
   const [isFavorite, setIsFavorite] = useState(false);
   const handleClick = () => {
-    setIsFavorite(!isFavorite);
-    console.log("Is Favorite!");
-    
+    setIsFavorite(!isFavorite);    
   };
   return (
-    <Link href="/" className="w-64 relative border border-black/60 shadow-md shadow-black/25 my-5 text-black flex flex-col items-center rounded-xl">
+    <Link href="/quintas/1" className="w-64 relative border border-black/60 shadow-md shadow-black/25 my-5 text-black flex flex-col items-center rounded-xl">
         <div onClick={handleClick}>
-          {isFavorite ? <HeartGreen /> : <Heart />}
+          {isFavorite ? <HeartGreen /> : <Heart className={"absolute top-2 right-2 hover:scale-110 transition-all cursor-pointer"} />}
         </div>
         <img className="object-cover h-52 w-full rounded-t-xl" src="/quinta.jpg" alt="foto de la quinta" />
         <div className="bg-white w-full flex flex-col rounded-b-xl">

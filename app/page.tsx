@@ -7,9 +7,9 @@ import { cookies } from 'next/headers';
 
 
 export default async function Home() {
-  const supabase = createServerComponentClient({cookies});
-  const {data: quintas} = await supabase.from('quintas').select('*');
-  console.log(quintas);
+  // const supabase = createServerComponentClient({cookies});
+  // const {data: quintas} = await supabase.from('quintas').select('*');
+  // console.log(quintas);
   return (
   <main className='px-10'>
     <Form />
@@ -27,9 +27,9 @@ export default async function Home() {
     <QuintaCard />
     <QuintaCard />
     </section>
-    <pre className='fixed bottom-10 right-10'>
+    {/* <pre className='fixed bottom-10 right-10'>
       {JSON.stringify(quintas, null, 2)}
-    </pre>
+    </pre> */}
   </main>
   );
 }

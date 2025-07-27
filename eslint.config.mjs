@@ -8,6 +8,8 @@ const __dirname = dirname(__filename);
 const compat = new FlatCompat({
   baseDirectory: __dirname,
 });
+/* eslint-disable @next/next/no-img-element */
+
 
 const eslintConfig = [
   ...compat.extends("next/core-web-vitals", "next/typescript"),
