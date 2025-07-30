@@ -8,7 +8,7 @@ export default function Footer() {
       <section className="flex flex-col px-5 md:px-10 md:flex-row gap-5 justify-between border-t pt-5 border-gray-300 md:mb-20">
         <div className="flex flex-col w-full md:w-96 gap-5">
           <div className="mx-auto md:mx-0">
-            <Logo width={120} height="auto" />
+            <Logo className="w-[120px]" />
           </div>
           <small>
             ZonaQuintas es una plataforma digital para alquilar casas de fin de
@@ -53,7 +53,7 @@ export default function Footer() {
         <p>©2025 - Todos los derechos reservados</p>
         <div className="flex justify-between items-center gap-5">
           <p>Desarrollado por </p>
-          <Logo width="50" height={"auto"} />
+          <Logo className="w-[50px]" />
         </div>
       </section>
     </footer>
