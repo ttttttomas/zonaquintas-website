@@ -5,7 +5,7 @@ import Link from "next/link";
 export default function MyAccountPage() {
   return (
     <main className="flex flex-col md:flex-row w-full md:px-20 justify-between gap-10 md:gap-20 items-center md:items-start">
-      <Logo width={150} height={"auto"} />
+    <Logo className="w-[150px]" />
       <form
         className="flex flex-col bg-white w-full max-w-5xl px-5 md:px-20 gap-2 shadow-lg py-10 shadow-black/20 flex-1 text-black"
         action="">
