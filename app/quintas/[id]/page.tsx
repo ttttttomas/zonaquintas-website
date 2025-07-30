@@ -55,7 +55,7 @@ const reseñas = [
 ];
   return (
     <main>
-      <section className="mx-30 pr-30" id="hero">
+       <section className="ml-30 mr-50 pr-30" id="hero">
         <div className="flex justify-between">
           <h1 className="font-semibold text-2xl">
             Casa quinta en Ezeiza, Buenos Aires
@@ -71,34 +71,34 @@ const reseñas = [
             </li>
           </ul>
         </div>
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-3 gap-5">
           <div className="col-span-2">
             <img
               src={"/quinta.jpg"}
               alt="Casa quinta principal"
-              className="w-full h-full object-cover rounded-l-lg"
+              className="w-full h-[500px] object-cover rounded-l-xl"
             />
           </div>
-          <div className="grid grid-cols-2 grid-rows-2 gap-2">
+          <div className="grid grid-cols-2 grid-rows-2 gap-5">
             <img
               src={"/quinta.jpg"}
               alt={`Vista 1`}
-              className="w-full h-full object-cover"
+              className="w-96 h-full object-cover"
             />
             <img
               src={"/quinta.jpg"}
               alt={`Vista 2`}
-              className="w-full h-full object-cover rounded-r-lg"
+              className="w-96 h-full object-cover rounded-tr-xl"
             />
             <img
               src={"/quinta.jpg"}
               alt={`Vista 3`}
-              className="w-full h-full object-cover"
+              className="w-96 h-full object-cover"
             />
             <img
               src={"/quinta.jpg"}
               alt={`Vista 4`}
-              className="w-full h-full object-cover rounded-r-lg"
+              className="w-96 h-full object-cover rounded-br-xl"
             />
           </div>
           <div className="flex flex-col gap-2">
@@ -206,7 +206,7 @@ const reseñas = [
           </div>
         </div>
         {/* Reservar derecha */}
-        <div className="rounded-xl bg-white shadow-md shadow-black/50 py-6 px-12 flex top-22 flex-col sticky h-fit">
+        <div className="rounded-xl bg-white shadow-md shadow-black/50 py-6 px-12 flex top-22 flex-col md:sticky h-fit">
           <p className="text-2xl text-center font-semibold mb-5">
             USD 1.000 <span className="text-sm font-normal">por noche</span>
           </p>

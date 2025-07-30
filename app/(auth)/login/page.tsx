@@ -1,7 +1,5 @@
-import React from 'react'
-
 export default function LoginPage() {
   return (
-    <div>Login Page (Clerk)</div>
+    <div className="h-[50vh]">Login Page (Clerk)</div>
   )
 }

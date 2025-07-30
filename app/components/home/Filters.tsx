@@ -2,7 +2,7 @@ import React from "react";
 
 export default function Filters() {
   return (
-    <section className="flex md:flex-row flex-col my-7 w-max md:gap-32 gap-5 mx-auto">
+    <section className="grid grid-cols-2 md:flex flex-row my-7 w-max md:gap-32 md:text-md text-sm gap-5 mx-auto">
       <div>Habitaciones</div>
       <div>Ambientes</div>
       <div>Baños</div>

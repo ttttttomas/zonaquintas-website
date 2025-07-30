@@ -10,8 +10,10 @@ import Link from "next/link";
 
 export default function QuintaCard() {
   const [isFavorite, setIsFavorite] = useState(false);
-  const handleClick = () => {
-    setIsFavorite(!isFavorite);    
+  const handleClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    e.stopPropagation();
+    e.preventDefault();
+    setIsFavorite(!isFavorite);
   };
   return (
     <Link href="/quintas/1" className="w-64 relative border hover:scale-110 transition-all border-black/60 shadow-md shadow-black/25 my-5 text-black flex flex-col items-center rounded-xl">
