@@ -5,8 +5,11 @@ import Logo from "./icons/Logo";
 import Link from "next/link";
 import { useState } from "react";
 import { Separator } from "./ui/Separator";
+import { usePathname } from "next/navigation";
+import FormQuintas from "./FormQuintas";
 
 export default function Header() {
+  const path = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const [isOpen2, setIsOpen2] = useState(false);
   const handleClick = () => {
@@ -45,7 +48,12 @@ export default function Header() {
         </div>
       </section>
       <p className="font-semibold text-wrap text-sm md:text-lg">
-        Encontrá, reservá y disfrutá.
+        {path === "/" && "Encontrá, reservá y disfrutá."}
+        {path === "/favorites" && "Mis favoritos"}
+        {path === "/support" && "Soporte"}
+        {path === "/quintas" && <FormQuintas />}
+        {path === "/terms" && "Términos y condiciones"}
+        {path === "/politics" && "Políticas de privacidad"}
       </p>
       <div className="bg-primaryDark md:flex hidden items-center gap-5 px-3 py-1 rounded-4xl justify-between">
         <Menu onClick={handleClick}  />

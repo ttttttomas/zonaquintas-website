@@ -16,8 +16,8 @@ export default function Footer() {
             simple, rápida y segura.
           </small>
           <div className="flex md:flex-col underline items-start justify-between w-full flex-row">
-            <Link href="/">Términos y condiciones</Link>
-            <Link href="/">Privacidad</Link>
+            <Link href="/terms">Términos y condiciones</Link>
+            <Link href="/politics">Políticas de privacidad</Link>
           </div>
         </div>
         <div className="flex justify-center gap-10 items-center">
