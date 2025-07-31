@@ -8,13 +8,13 @@ import { Separator } from "./ui/Separator";
 
 export default function QuintaSearchCard() {
       const [isFavorite, setIsFavorite] = useState(false);
-      const handleClick = () => {
-        setIsFavorite(!isFavorite);
-        console.log("Is Favorite!");
-        
-      };
+  const handleClick = (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    setIsFavorite(!isFavorite);
+  };
   return (
-    <Link href="/quintas/1" className="flex rounded-2xl p-3 shadow-md bg-white overflow-hidden w-full">
+    <div className="flex rounded-2xl p-3 shadow-md bg-white overflow-hidden w-full">
       {/* Imágenes */}
       <div className="flex">
         <div className="relative">
@@ -23,7 +23,7 @@ export default function QuintaSearchCard() {
             alt="principal"
             className="w-60 h-full p-2 object-cover rounded-l-2xl"
           />
-          <div onClick={handleClick} className="absolute cursor-pointer top-3 left-3 rounded-full p-1">
+          <div onClick={handleClick} className="absolute cursor-pointer hover:scale-110 transition-all top-3 left-3 rounded-full p-1">
            {isFavorite ? <HeartGreen /> : <Heart />}
           </div>
         </div>
@@ -70,11 +70,11 @@ export default function QuintaSearchCard() {
             <p className="text-green-600 text-3xl font-semibold">U$S 1.000</p>
             <p className="text-xs text-gray-500">U$S 110 costo por servicio</p>
           </div>
-          <Link href="/" className="bg-green-600 text-white text-sm px-8 py-1.5 rounded-md hover:bg-green-700">
+          <Link href="/quintas/1" className="bg-primaryDark text-white text-sm px-8 py-1.5 rounded-md hover:bg-green-700">
             Ver más
           </Link>
         </div>
       </div>
-    </Link>
+    </div>
   )
 }

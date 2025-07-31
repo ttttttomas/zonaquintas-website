@@ -42,7 +42,7 @@ export default function MyAccountPage() {
           type="text"
         />
         <button
-          className="bg-green-600 xl:mx-52 mt-5 py-2 text-white md:w-auto w-full font-semibold rounded-md cursor-pointer"
+          className="bg-primaryDark xl:mx-52 mt-5 py-2 text-white md:w-auto w-full font-semibold rounded-md cursor-pointer"
           type="submit">
           Modificar datos
         </button>
@@ -50,12 +50,12 @@ export default function MyAccountPage() {
       <div className="flex flex-col items-center justify-between gap-60">
         <Link
           href="/reservations"
-          className="bg-green-600 text-white rounded-full cursor-pointer size-42 text-center pt-16 font-bold text-2xl">
+          className="bg-primaryDark text-white rounded-full cursor-pointer size-42 text-center pt-16 font-bold text-2xl">
           Mis reservas
         </Link>
         <Link
           href="/publications"
-          className="bg-green-600 text-white rounded-2xl py-5 px-10 cursor-pointer text-nowrap text-center font-bold text-2xl">
+          className="bg-primaryDark text-white rounded-2xl py-5 px-10 cursor-pointer text-nowrap text-center font-bold text-2xl">
           Mis publicaciones
         </Link>
       </div>

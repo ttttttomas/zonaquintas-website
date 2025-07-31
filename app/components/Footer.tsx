@@ -4,8 +4,8 @@ import Soporte from "./icons/Soporte";
 
 export default function Footer() {
   return (
-    <footer className="flex flex-col pt-8">
-      <section className="flex flex-col px-5 md:px-10 md:flex-row gap-5 justify-between border-t pt-5 border-gray-300 md:mb-20">
+    <footer className="flex flex-col bg-white">
+      <section className="flex flex-col px-5 md:px-10 md:flex-row gap-5 justify-between mt-8 pt-5 border-gray-300 md:mb-20">
         <div className="flex flex-col w-full md:w-96 gap-5">
           <div className="mx-auto md:mx-0">
             <Logo className="w-[120px]" />

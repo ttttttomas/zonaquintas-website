@@ -5,6 +5,7 @@ import { CalendarDays, Check, Star, StarHalf, MessageCircle, MapPin, DollarSign,
 import { Separator } from "@/app/components/ui/Separator";
 import CategorySection from "@/app/components/CategorySection";
 import Calendar from "@/app/components/Calendar";
+import Link from "next/link";
 
 export default function QuintaIdPage() {
 const categorias = [
@@ -116,21 +117,22 @@ const reseñas = [
         <div className="w-1/2 space-y-6">
           {/* Calificaciones y anfitrión */}
           <div className="flex flex-col items-start pr-30 gap-10">
-            <div className="flex items-center px-10 py-2 rounded-3xl bg-green-600">
+            <div className="flex items-center px-10 py-2 rounded-3xl bg-primaryDark">
               <div className="flex flex-col items-center space-x-2 px-7">
                 <span className="text-white">4,5</span>
                 <div className="flex gap-1 items-center">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <Star className="w-3 text-white" key={i} />
+                  {Array.from({ length: 4 }).map((_, i) => (
+                    <Star className="w-3 text-white fill-yellow-500 stroke-yellow-500" key={i} />
                   ))}
+                  <StarHalf className="w-3 text-white fill-yellow-500 stroke-yellow-500" />
                 </div>
               </div>
               <p className="text-gray-500">|</p>
-              <div className="text-white cursor-pointer flex flex-col items-center px-7">
+              <div className="text-white flex flex-col items-center px-7">
                 <p>72 opiniones</p>
-                <small className="underline cursor-pointer">
+                <Link href="#opinions" className="underline text-xs cursor-pointer">
                   Ver opiniones
-                </small>
+                </Link>
               </div>
             </div>
             <div className="flex items-center space-x-2">
@@ -256,7 +258,7 @@ const reseñas = [
             </div>
           </div>
 
-          <button className="w-full bg-green-600 text-white py-2 rounded-md hover:bg-green-700 transition">
+          <button className="w-full bg-primaryDark text-white py-2 rounded-md hover:bg-green-700 transition">
             Reservar
           </button>
         </div>
@@ -266,12 +268,12 @@ const reseñas = [
       </div>
         <section className="mx-30 px-4 py-8 space-y-8" id="opinions">
       {/* Puntuación general */}
-      <div className="text-center space-y-2">
+      <div id="opinions" className="text-center space-y-2">
         <div className="flex justify-center items-center text-yellow-500">
           {[...Array(4)].map((_, i) => (
-            <Star key={i} className="w-5 h-5" />
+            <Star key={i} className="w-10 fill-yellow-500 stroke-yellow-500" />
           ))}
-          <StarHalf className="w-5 h-5" />
+          <StarHalf className="w-10 fill-yellow-500 stroke-yellow-500" />
         </div>
         <p className="text-3xl font-bold">4,5</p>
       </div>
@@ -372,7 +374,7 @@ const reseñas = [
             <p>Responde en el mismo día de la consulta</p>
           </div>
 
-          <button className="bg-green-600 max-w-xs cursor-pointer hover:bg-green-700 text-white font-medium px-6 py-2 rounded-xl transition">
+          <button className="bg-primaryDark max-w-xs cursor-pointer hover:bg-green-700 text-white font-medium px-6 py-2 rounded-xl transition">
             Ponerse en contacto
           </button>
         </div>

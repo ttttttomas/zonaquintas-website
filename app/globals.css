@@ -3,6 +3,32 @@
 
 /* styles/datepicker-custom.css */
 
+@theme {
+    --color-primary: #33ff33;
+    --color-primaryDark: #28a728;
+    --color-tertiary: #84b6f4;
+}
+
+.publicar{
+  background-image: url("/bg-publicar.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 10%;
+}
+.publicar2{
+  /* background-image: url("/logo.png"); */
+  background-size: cover;
+  /* background-position: center; */
+  /* background-repeat: no-repeat; */
+  opacity: 10%;
+  /* height: 200px; */
+}
+
+:root {
+  scroll-behavior: smooth;
+}
+
 .react-datepicker__day {
   border-radius: 0.4rem;
   font-weight: 500;

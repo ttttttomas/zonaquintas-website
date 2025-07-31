@@ -36,7 +36,7 @@ export default function PublicationsPage() {
       </div>
       <Link
         href="/my-account"
-        className="bg-green-600 text-white rounded-full cursor-pointer size-42 text-center pt-16 font-bold text-2xl">
+        className="bg-primaryDark text-white rounded-full cursor-pointer size-42 text-center pt-16 font-bold text-2xl">
         Mis datos
       </Link>
       </section>

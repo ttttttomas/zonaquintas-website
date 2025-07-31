@@ -22,11 +22,11 @@ export default function Header() {
           <Logo className="w-[50px] md:w-[70px]" />
           <p className="font-semibold text-sm md:text-lg">ZonaQuintas</p>
         </Link>
-        <div className="bg-green-600 flex md:hidden items-center gap-5 px-3 py-1 rounded-4xl justify-between">
+        <div className="bg-primaryDark flex md:hidden items-center gap-5 px-3 py-1 rounded-4xl justify-between">
           <Menu onClick={handleClick2} />
           <User />
           {isOpen2 && (
-            <ul className="text-white font-medium flex flex-col gap-2 right-0 top-16 md:right-4 text-md absolute bg-green-600 rounded-xl px-6 py-3">
+            <ul className="text-white font-medium flex flex-col gap-2 right-0 top-16 md:right-4 text-md absolute bg-primaryDark rounded-xl px-6 py-3">
               <Link onClick={() => setIsOpen2(false)} href="/login">
                 Iniciar sesión
               </Link>
@@ -47,11 +47,11 @@ export default function Header() {
       <p className="font-semibold text-wrap text-sm md:text-lg">
         Encontrá, reservá y disfrutá.
       </p>
-      <div className="bg-green-600 md:flex hidden items-center gap-5 px-3 py-1 rounded-4xl justify-between">
+      <div className="bg-primaryDark md:flex hidden items-center gap-5 px-3 py-1 rounded-4xl justify-between">
         <Menu onClick={handleClick}  />
         <User />
         {isOpen && (
-          <ul className="text-white font-medium flex flex-col gap-2 top-36 right-32 md:top-16 md:right-4 text-md absolute bg-green-600 rounded-xl px-6 py-3">
+          <ul className="text-white font-medium flex flex-col gap-2 top-36 right-32 md:top-16 md:right-4 text-md absolute bg-primaryDark rounded-xl px-6 py-3">
             <Link onClick={() => setIsOpen(false)} href="/login">
               Iniciar sesión
             </Link>
@@ -59,7 +59,7 @@ export default function Header() {
               Registrate
             </Link>
             <Separator color="bg-gray-200" />
-            <Link onClick={() => setIsOpen(false)} href="/">
+            <Link onClick={() => setIsOpen(false)} href="/publicar-quinta">
               Publicá tu quinta
             </Link>
             <Link onClick={() => setIsOpen(false)} href="/support">

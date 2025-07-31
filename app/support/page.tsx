@@ -129,7 +129,7 @@ export default function FAQContact() {
         </div>
         <button
           type="submit"
-          className="bg-green-600 mx-auto text-white py-2 px-10 cursor-pointer font-bold rounded-xl hover:bg-green-700">
+          className="bg-primaryDark mx-auto text-white py-2 px-10 cursor-pointer font-bold rounded-xl hover:bg-green-700">
           Enviar
         </button>
       </form>
