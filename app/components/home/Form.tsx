@@ -35,7 +35,7 @@ export default function Form() {
       <form
         onSubmit={handleSubmit}
         className="flex md:flex-row flex-col justify-center items-center gap-5 md:gap-8 mb-5 md:mb-10">
-        <section className="flex md:flex-row flex-col border-black/30 border cursor-pointer w-max bg-white rounded-4xl">
+        <section className={`flex md:flex-row flex-col ${viewInput1 || viewInput2 || viewInput3 || viewInput4 ? "py-0" : "py-2.5"} border-black/30 border cursor-pointer w-max bg-white rounded-4xl`}>
           {viewInput1 ? (
             <div className={`hover:bg-black/10 w-[260px] rounded-4xl flex flex-col focus:bg-black ${viewInput1 && 'md:pl-10'} py-5 items-center transition-all animate-out md:items-start`}>
             <p className={viewInput1 ? "font-medium" : "font-medium text-xl my-auto mx-auto"}>Lugar</p>
