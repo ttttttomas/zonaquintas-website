@@ -36,7 +36,7 @@ export default function PublicarQuintaPage() {
             <li>Fijá el precio según el tiempo de Alojamiento (Recomendado)</li>
         </ul>
       </section>
-      <Link href="/publicar-quinta/paso-1" className="bg-primaryDark w-1/2 text-center mx-auto text-white py-2 rounded-xl text-xl font-bold my-5">Comenzar</Link>
+      <Link href="/publicar-quinta/paso-1" className="bg-primaryDark z-20 w-1/2 text-center mx-auto text-white py-2 rounded-xl text-xl font-bold my-5">Comenzar</Link>
     </main>
   );
 }

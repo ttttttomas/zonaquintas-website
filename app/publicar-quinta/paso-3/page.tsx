@@ -85,7 +85,7 @@ export default function Paso3Page() {
           </Link>
         </form>
       </section>
-      <img src="/paso3.png" alt="paso 1" />
+      <img src="/paso3.png" className="h-90" alt="paso 3" />
     </main>
   );
 }

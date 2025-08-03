@@ -1,10 +1,12 @@
 import Link from "next/link";
 import Logo from "./icons/Logo";
 import Soporte from "./icons/Soporte";
+import SecondSeparator from "./SecondSeparator";
 
 export default function Footer() {
   return (
-    <footer className="flex flex-col bg-white">
+    <footer className="flex flex-col">
+      <SecondSeparator />
       <section className="flex flex-col px-5 md:px-10 md:flex-row gap-5 justify-between mt-8 pt-5 border-gray-300 md:mb-20">
         <div className="flex flex-col w-full md:w-96 gap-5">
           <div className="mx-auto md:mx-0">
@@ -28,9 +30,9 @@ export default function Footer() {
             <Link className="font-light text-black/60" href="">
               Publicá tu Quinta
             </Link>
-            <Link className="font-light text-black/60" href="">
+            {/* <Link className="font-light text-black/60" href="">
               Foro de la comunidad
-            </Link>
+            </Link> */}
           </ul>
           <ul className="flex flex-col">
             <Link className="font-medium" href="">

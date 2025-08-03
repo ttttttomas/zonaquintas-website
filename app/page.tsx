@@ -1,7 +1,8 @@
 import Form from './components/home/Form'
 import Filters from './components/home/Filters'
-import { Separator } from './components/ui/Separator';
+// import { Separator } from './components/ui/Separator';
 import QuintaCard from './components/home/QuintaCard';
+import SecondSeparator from './components/SecondSeparator';
 // import {createServerComponentClient} from '@supabase/auth-helpers-nextjs'
 // import { cookies } from 'next/headers';
 
@@ -13,8 +14,9 @@ export default async function Home() {
   return (
   <main className='px-10'>
     <Form />
-     <Separator color='bg-gray-200' />
+     <SecondSeparator />
     <Filters />
+    <h1 className='text-2xl font-medium mt-14 text-center'>Algunos destacados</h1>
     <section className='flex flex-wrap lg:gap-x-16 gap-x-10 justify-center'>
     <QuintaCard />
     <QuintaCard />
