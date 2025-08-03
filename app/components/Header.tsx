@@ -7,6 +7,7 @@ import { useState } from "react";
 import { Separator } from "./ui/Separator";
 import { usePathname } from "next/navigation";
 import FormQuintas from "./FormQuintas";
+import { SignedIn, SignedOut, SignInButton, SignUpButton, UserButton } from "@clerk/nextjs";
 
 export default function Header() {
   const path = usePathname();
@@ -20,6 +21,17 @@ export default function Header() {
   };
   return (
     <header className="flex md:flex-row flex-col md:gap-0 gap-2 z-10 backdrop-blur-sm fixed top-0 w-full justify-between items-center py-2 px-5 md:px-10 mb-5">
+      <SignedOut>
+              <SignInButton />
+              <SignUpButton>
+                <button className="bg-[#6c47ff] text-white rounded-full font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 cursor-pointer">
+                  Sign Up
+                </button>
+              </SignUpButton>
+            </SignedOut>
+            <SignedIn>
+              <UserButton />
+            </SignedIn>
       <section className="flex justify-between items-center gap-5 md:w-auto w-full">
         <Link href="/" className="flex items-center gap-3">
           <Logo className="w-[50px] md:w-[70px]" />

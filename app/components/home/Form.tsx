@@ -78,6 +78,7 @@ export default function Form() {
               Fecha de ingreso
             </p>
             <DatePicker
+            autoComplete="off"
               placeholderText="Elegi aca fecha de ida"
               selected={startDate}
               onChange={(date) => {
@@ -99,6 +100,7 @@ export default function Form() {
               Fecha de egreso
             </p>
             <DatePicker
+            autoComplete="off"
               placeholderText="Elegi aca fecha de vuelta"
               selected={endDate}
               onChange={(date) => {
