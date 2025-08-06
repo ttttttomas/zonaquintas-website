@@ -7,31 +7,30 @@ import { useState } from "react";
 import { Separator } from "./ui/Separator";
 import { usePathname } from "next/navigation";
 import FormQuintas from "./FormQuintas";
-import { SignedIn, SignedOut, SignInButton, SignUpButton, UserButton } from "@clerk/nextjs";
+import { useUser } from "@clerk/nextjs";
+
+import {
+  SignedIn,
+  SignedOut,
+  SignInButton,
+  SignUpButton,
+  UserButton,
+} from "@clerk/nextjs";
 
 export default function Header() {
+  const {  user } = useUser()
+  console.log(user)
   const path = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const [isOpen2, setIsOpen2] = useState(false);
   const handleClick = () => {
     setIsOpen(!isOpen);
   };
-    const handleClick2 = () => {
+  const handleClick2 = () => {
     setIsOpen2(!isOpen2);
   };
   return (
     <header className="flex md:flex-row flex-col md:gap-0 gap-2 z-10 backdrop-blur-sm fixed top-0 w-full justify-between items-center py-2 px-5 md:px-10 mb-5">
-      <SignedOut>
-              <SignInButton />
-              <SignUpButton>
-                <button className="bg-[#6c47ff] text-white rounded-full font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 cursor-pointer">
-                  Sign Up
-                </button>
-              </SignUpButton>
-            </SignedOut>
-            <SignedIn>
-              <UserButton />
-            </SignedIn>
       <section className="flex justify-between items-center gap-5 md:w-auto w-full">
         <Link href="/" className="flex items-center gap-3">
           <Logo className="w-[50px] md:w-[70px]" />
@@ -42,12 +41,18 @@ export default function Header() {
           <User />
           {isOpen2 && (
             <ul className="text-white font-medium flex flex-col gap-2 right-0 top-16 md:right-4 text-md absolute bg-primaryDark rounded-xl px-6 py-3">
-              <Link onClick={() => setIsOpen2(false)} href="/login">
-                Iniciar sesión
-              </Link>
-              <Link onClick={() => setIsOpen2(false)} href="/register">
-                Registrate
-              </Link>
+              <SignInButton>
+                <Link onClick={() => setIsOpen2(false)} href="/login">
+                  Iniciar sesión
+                </Link>
+              </SignInButton>
+
+              <SignUpButton>
+                <Link onClick={() => setIsOpen2(false)} href="/register">
+                  Registrate
+                </Link>
+              </SignUpButton>
+
               <Separator color="bg-gray-200" />
               <Link onClick={() => setIsOpen2(false)} href="/">
                 Publicá tu quinta
@@ -68,13 +73,25 @@ export default function Header() {
         {path === "/politics" && "Políticas de privacidad"}
       </p>
       <div className="bg-primaryDark md:flex hidden items-center gap-5 px-3 py-1 rounded-4xl justify-between">
-        <Menu onClick={handleClick}  />
-        <User />
+        <Menu onClick={handleClick} />
+        <SignedIn>
+          <Link className="flex items-center justify-center" href="/my-account">
+          <UserButton />
+          </Link>
+        </SignedIn>
+        <SignedOut>
+          <User />
+        </SignedOut>
         {isOpen && (
           <ul className="text-white font-medium flex flex-col gap-2 top-36 right-32 md:top-16 md:right-4 text-md absolute bg-primaryDark rounded-xl px-6 py-3">
             <Link onClick={() => setIsOpen(false)} href="/login">
               Iniciar sesión
             </Link>
+            {user && 
+            <Link onClick={() => setIsOpen(false)} href="/my-account">
+              Mis datos
+            </Link>
+            }
             <Link onClick={() => setIsOpen(false)} href="/register">
               Registrate
             </Link>

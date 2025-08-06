@@ -7,6 +7,7 @@ import SecondSeparator from './components/SecondSeparator';
 // import { cookies } from 'next/headers';
 
 
+
 export default async function Home() {
   // const supabase = createServerComponentClient({cookies});
   // const {data: quintas} = await supabase.from('quintas').select('*');

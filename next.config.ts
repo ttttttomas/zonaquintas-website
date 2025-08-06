@@ -5,12 +5,14 @@ const nextConfig: NextConfig = {
          experimental: {
     authInterrupts: true,
   },
+  
 };
 
 //module.exports = nextConfig;
 module.exports = {
   experimental: {
     missingSuspenseWithCSRBailout: false,
+    
 
   },
 }

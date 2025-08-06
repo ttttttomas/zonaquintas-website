@@ -4,6 +4,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import Footer from "./components/Footer";
 import { ClerkProvider } from "@clerk/nextjs";
+import { esES } from '@clerk/localizations'
 
 const inter = Inter({
   variable: "--font-geist-sans",
@@ -26,7 +27,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider>
+    <ClerkProvider localization={esES}>
     <html lang="es">
       <body className={`bg-[#f7f3f0] mt-32 ${inter.className}`}>
         <Header />

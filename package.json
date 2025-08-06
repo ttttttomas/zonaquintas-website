@@ -9,6 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@clerk/elements": "^0.23.48",
+    "@clerk/localizations": "^3.20.6",
     "@clerk/nextjs": "^6.28.1",
     "@radix-ui/react-separator": "^1.1.2",
     "@supabase/auth-helpers-nextjs": "^0.10.0",
