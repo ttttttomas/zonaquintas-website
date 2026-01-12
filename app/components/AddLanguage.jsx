@@ -31,7 +31,7 @@ export default function AddLanguage() {
     "Coreano",
   ];
   return (
-    <section className="relative flex flex-col gap-2 w-2/3 mx-auto">
+    <section className="relative flex flex-col gap-2 w-full mx-auto">
       <input
         type="text"
         placeholder="Idiomas"

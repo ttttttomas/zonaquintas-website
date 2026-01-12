@@ -13,8 +13,8 @@ export default function Paso3Page() {
   //     setEndDate(end);
   //   };
   return (
-    <main className="flex items-center justify-between mx-20">
-      <section className="flex flex-col items-start justify-center w-1/3">
+    <main className="flex md:flex-row flex-col mb-10 md:mb-0 gap-10 md:gap-0 md:h-[50vh] items-center justify-between mx-10 md:mx-20">
+      <section className="flex flex-col items-start justify-center w-full md:w-1/3">
         <h1 className="font-semibold text-xl mb-5">
           Brindanos la ultima información para tu publicación
         </h1>
@@ -85,7 +85,7 @@ export default function Paso3Page() {
           </Link>
         </form>
       </section>
-      <img src="/paso3.png" className="h-90" alt="paso 3" />
+      <img src="/paso3.png" className="h-90 object-cover" alt="paso 3" />
     </main>
   );
 }

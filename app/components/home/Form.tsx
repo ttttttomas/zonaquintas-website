@@ -4,40 +4,40 @@ import DatePicker from "react-datepicker";
 import Lupa from "../icons/Lupa";
 import { Suspense, useState } from "react";
 import "react-datepicker/dist/react-datepicker.css";
+import { useFilters } from "@/app/context/ContextFilters";
 
 export default function Form() {
+  const { filters, setFilters } = useFilters();
+    console.log(filters);
+  
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
 
   const [viewInput1, setViewInput1] = useState(false);
   const [viewInput4, setViewInput4] = useState(false);
   const router = useRouter();
-  // const searchParams = useSearchParams();
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // const form = e.currentTarget;
+    const form = e.currentTarget;
 
-    // const place = form.place.value;
-    // const startDate = form.startDate.value;
-    // const endDate = form.endDate.value;
-    // const people = form.people.value;
-
-    // const query = new URLSearchParams({
-    //   place,
-    //   startDate,
-    //   endDate,
-    //   people,
-    // }).toString();
-
-    router.push(`/quintas?query=test`);
+    const place = form.place.value;
+    const guests = form.guests.value;
+    console.log(place, startDate, endDate, guests);
+    setFilters((prev: any) => ({
+      ...prev,
+      place: place,
+      guests: guests,
+    }));
+    
+    router.push(`/quintas`);
   };
 
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <form
         onSubmit={handleSubmit}
-        className="flex md:flex-row flex-col justify-center items-center gap-5 md:gap-8 mb-5 md:mb-10">
+        className="flex xl:pl-20 md:flex-row flex-col justify-center items-center gap-5 md:gap-8 mb-5 md:mb-10">
         <section
           className={`flex divide-x divide-gray-300 md:flex-row flex-col border-black/50 border cursor-pointer w-max bg-white rounded-4xl`}>
           {viewInput1 ? (
@@ -51,15 +51,14 @@ export default function Form() {
                     ? "font-medium"
                     : "font-medium text-xl my-auto mx-auto"
                 }>
-                Lugar
               </p>
               {viewInput1 && (
                 <input
                   type="text"
                   // defaultValue={searchParams.get("query") || ""}
                   name="place"
-                  className="text-black/40 transition-all font-bold md:text-start text-center focus:outline-0"
-                  placeholder="Elegi aca tu destino"
+                  className="text-black/40 transition-all my-auto  focus:text-black font-bold md:text-start text-center focus:outline-0"
+                  placeholder="Elija su zona ideal..."
                 />
               )}
             </div>
@@ -72,11 +71,7 @@ export default function Form() {
               <p className="font-medium text-xl my-auto mx-auto">Lugar</p>
             </div>
           )}
-          <div
-            className={`hover:bg-black/10 w-[260px] flex flex-col focus:bg-black py-5 items-center transition-all animate-out`}>
-            <p className={"font-medium text-xl my-auto mx-auto"}>
-              Fecha de ingreso
-            </p>
+
             <DatePicker
             autoComplete="off"
               placeholderText="Elegi aca fecha de ida"
@@ -84,21 +79,16 @@ export default function Form() {
               onChange={(date) => {
                 setStartDate(date);
                 console.log(
-                 startDate
+                  date?.getDate(),
+                  date?.getMonth(),
+                  date?.getFullYear()
                 );
               }}
               startDate={startDate}
               withPortal
-              // defaultValue={searchParams.get("query") || ""}
               name="startDate"
-              className="text-black/40 cursor-pointer transition-all font-bold text-center focus:outline-0"
+              className="text-black/40 h-23 cursor-pointer transition-all font-bold text-center focus:outline-0"
             />
-          </div>
-          <div
-            className={`hover:bg-black/10 w-[260px] flex flex-col focus:bg-black py-5 items-center transition-all animate-out`}>
-            <p className={"font-medium text-xl my-auto mx-auto"}>
-              Fecha de egreso
-            </p>
             <DatePicker
             autoComplete="off"
               placeholderText="Elegi aca fecha de vuelta"
@@ -115,9 +105,8 @@ export default function Form() {
               withPortal
               // defaultValue={searchParams.get("query") || ""}
               name="endDate"
-              className="text-black/40 cursor-pointer transition-all font-bold text-center focus:outline-0"
+              className="text-black/40 h-23 cursor-pointer transition-all font-bold text-center focus:outline-0"
             />
-          </div>
           {viewInput4 ? (
             <div
               className={`hover:bg-black/10 w-[260px] rounded-r-4xl flex flex-col focus:bg-black ${
@@ -129,14 +118,12 @@ export default function Form() {
                     ? "font-medium"
                     : "font-medium text-xl my-auto mx-auto"
                 }>
-                Huespedes
               </p>
               {viewInput4 && (
                 <input
                   type="text"
-                  // defaultValue={searchParams.get("query") || ""}
-                  name="people"
-                  className="text-black/40 transition-all font-bold md:text-start text-center focus:outline-0"
+                  name="guests"
+                  className="text-black/40 transition-all my-auto  font-bold md:text-start text-center focus:outline-0"
                   placeholder="Cantidad de huéspedes"
                 />
               )}

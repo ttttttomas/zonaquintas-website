@@ -54,6 +54,7 @@ export default function AddLanguage() {
     <section className="bg-white flex flex-col p-2 rounded-lg gap-2 w-full mx-auto">
       <div className="relative">
         <input
+        className="w-full"
           type="text"
           placeholder="Seleecciona las características de tu quinta*"
         />
@@ -85,7 +86,7 @@ export default function AddLanguage() {
       {showPopup && (
         <section className="absolute top-0 bottom-0 left-0 right-0 bg-gray-900 text-white rounded-2xl my-auto w-1/2 h-2/3 mx-auto p-6 shadow-xl z-10">
           <h3 className="text-lg font-semibold mb-4 text-center">
-            Seleccioná los idiomas que hablas
+            Seleccioná los caracteristicas de tu quinta
           </h3>
           <div className="grid grid-cols-3 place-content-center place-items-start">
             <div>

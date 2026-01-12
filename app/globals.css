@@ -9,6 +9,16 @@
     --color-tertiary: #84b6f4;
 }
 
+
+/* Ocultar scrollbars */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none; /* IE y Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
 .publicar{
   background-image: url("/bg-publicar.png");
   background-size: cover;

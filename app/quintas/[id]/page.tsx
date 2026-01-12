@@ -18,10 +18,43 @@ import {
 import { Separator } from "@/app/components/ui/Separator";
 import CategorySection from "@/app/components/CategorySection";
 import Calendar from "@/app/components/Calendar";
+import { ProductsServices } from "@/app/services/ProductsServices";
 import Link from "next/link";
 import SecondSeparator from "@/app/components/SecondSeparator";
+interface QuintaIdPageProps {
+  params: {
+    id: string;
+  };
+}
 
-export default function QuintaIdPage() {
+export default async function QuintaIdPage({ params }: QuintaIdPageProps) {
+  const { id } = await params;
+  const res = await ProductsServices.getQuintaById(id);
+  const quinta = res;  
+  const formatedPrice = quinta.price.toLocaleString("es-AR", {
+    style: "currency",
+    currency: quinta.currency_price,
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  });
+  const costOfService = () => {
+    const res = quinta.price * 0.06;
+    const formated = res.toLocaleString("es-AR", {
+      style: "currency",
+      currency: quinta.currency_price,
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    });
+    return formated;
+  };
+  const total = (cost) => {
+    const res = quinta.price + cost;
+    return res;
+  };
+  const costOfServiceFromTotal = () => {
+    const res = quinta.price * 0.06;
+    return res;
+  };
   const categorias = [
     { nombre: "Limpieza", valor: 5.0, icono: <Sparkles className="" /> },
     { nombre: "Veracidad", valor: 5.0, icono: <CalendarCheck className="" /> },
@@ -86,9 +119,7 @@ export default function QuintaIdPage() {
     <main className="flex flex-col">
       <section className="ml-30 mb-10 mr-50 pr-30" id="hero">
         <div className="flex justify-between">
-          <h1 className="font-semibold text-2xl">
-            Casa quinta en Ezeiza, Buenos Aires
-          </h1>
+          <h1 className="font-semibold text-2xl">{quinta.title}</h1>
           <ul className="flex gap-5 items-center">
             <li className="flex items-center gap-3 font-medium">
               <p>Compartir</p>
@@ -103,37 +134,25 @@ export default function QuintaIdPage() {
         <div className="grid grid-cols-3 gap-5">
           <div className="col-span-2">
             <img
-              src={"/quinta.jpg"}
+              src={quinta.main_image}
               alt="Casa quinta principal"
               className="w-full h-[500px] object-cover rounded-l-xl"
             />
           </div>
           <div className="grid grid-cols-2 grid-rows-2 gap-5">
-            <img
-              src={"/quinta.jpg"}
-              alt={`Vista 1`}
-              className="w-96 h-full object-cover"
-            />
-            <img
-              src={"/quinta.jpg"}
-              alt={`Vista 2`}
-              className="w-96 h-full object-cover rounded-tr-xl"
-            />
-            <img
-              src={"/quinta.jpg"}
-              alt={`Vista 3`}
-              className="w-96 h-full object-cover"
-            />
-            <img
-              src={"/quinta.jpg"}
-              alt={`Vista 4`}
-              className="w-96 h-full object-cover rounded-br-xl"
-            />
+            {quinta.images.slice(0, 3).map((image: string) => (
+              <img
+                src={image}
+                alt={`Vista ${quinta.images.indexOf(image) + 1}`}
+                className="w-96 h-full object-cover"
+              />
+            ))}
           </div>
           <div className="flex flex-col gap-2">
-            <h2 className="text-xl">Galvez 657, Barrio cerrado, Los Rosales</h2>
+            <h2 className="text-xl">{quinta.address}</h2>
             <p className="text-lg font-light">
-              10 huéspedes - 4 dormitorios - 8 camas - 3 baños
+              {`${quinta.guests} huéspedes - ${quinta.bedrooms} dormitorios - ${quinta.bathrooms} camas - ${quinta.ambients} baños`}
+              {/* 10 huéspedes - 4 dormitorios - 8 camas - 3 baños */}
             </p>
           </div>
         </div>
@@ -176,7 +195,7 @@ export default function QuintaIdPage() {
                 className="rounded-full w-10 h-10"
               />
               <div className="text-sm">
-                <p className="font-semibold">Anfitrión: Valentín</p>
+                <p className="font-semibold">{`Anfitrión: ${quinta.owner}`}</p>
                 <p className="text-gray-500">1 año como anfitrión</p>
               </div>
             </div>
@@ -244,7 +263,7 @@ export default function QuintaIdPage() {
         {/* Reservar derecha */}
         <div className="rounded-xl bg-white shadow-md shadow-black/50 py-6 px-12 flex top-22 flex-col md:sticky h-fit">
           <p className="text-2xl text-center font-semibold mb-5">
-            USD 1.000 <span className="text-sm font-normal">por noche</span>
+            {`${formatedPrice} por noche`}
           </p>
 
           <div className="border-t border-x border-black/40 rounded-t-md divide-x grid grid-cols-2 overflow-hidden">
@@ -279,16 +298,20 @@ export default function QuintaIdPage() {
 
           <div className="text-sm space-y-1 flex flex-col gap-2 my-5 text-gray-700">
             <div className="flex justify-between">
-              <span>USD 1.000 por 1 noche</span>
-              <span className="text-black font-semibold">USD 1.000</span>
+              <span>{`${formatedPrice} por noche`}</span>
+              <span className="text-black font-semibold">{formatedPrice}</span>
             </div>
             <div className="flex justify-between">
               <span>Costo de servicio</span>
-              <span className="text-black font-semibold">USD 119</span>
+              <span className="text-black font-semibold">
+                {costOfService()}
+              </span>
             </div>
             <div className="flex justify-between font-semibold py-5 border-t border-gray-400">
               <span>Total</span>
-              <span className="text-black">USD 1.119</span>
+              <span className="text-black">
+                ${total(costOfServiceFromTotal()).toLocaleString()} 
+              </span>
             </div>
           </div>
 
@@ -297,11 +320,11 @@ export default function QuintaIdPage() {
           </button>
         </div>
       </section>
-      <SecondSeparator />
+      {/* <SecondSeparator /> */}
 
       <section className="mx-30 px-4 py-8 space-y-8" id="opinions">
         {/* Puntuación general */}
-        <div id="opinions" className="text-center space-y-2">
+        {/* <div id="opinions" className="text-center space-y-2">
           <div className="flex justify-center items-center text-yellow-500">
             {[...Array(4)].map((_, i) => (
               <Star
@@ -312,13 +335,13 @@ export default function QuintaIdPage() {
             <StarHalf className="w-10 fill-yellow-500 stroke-yellow-500" />
           </div>
           <p className="text-3xl font-bold">4,5</p>
-        </div>
+        </div> */}
 
         {/* Categorías */}
-        <CategorySection categorias={categorias} />
+        {/* <CategorySection categorias={categorias} /> */}
 
         {/* Reseñas */}
-        <div className="grid md:grid-cols-2 place-items-center gap-6">
+        {/* <div className="grid md:grid-cols-2 place-items-center gap-6">
           {reseñas.map((resena, i) => (
             <div
               key={i}
@@ -353,7 +376,7 @@ export default function QuintaIdPage() {
           <button className="border border-gray-400 px-4 py-2 rounded-md text-sm cursor-pointer hover:bg-gray-100">
             Ver más de lo que ofrece
           </button>
-        </div>
+        </div> */}
       </section>
       <SecondSeparator />
       <section className="mx-30 my-5" id="map">
@@ -382,7 +405,7 @@ export default function QuintaIdPage() {
               />
               <p className="font-semibold">Anfitrión: Valentín</p>
             </div>
-            <div className="flex flex-col justify-between gap-10 text-center">
+            {/* <div className="flex flex-col justify-between gap-10 text-center">
               <div>
                 <p className="text-xl font-semibold">72</p>
                 <p className="text-gray-500">Opiniones de huéspedes</p>
@@ -397,7 +420,7 @@ export default function QuintaIdPage() {
                 <p className="text-xl font-semibold">1 año</p>
                 <p className="text-gray-500">Como anfitrión</p>
               </div>
-            </div>
+            </div> */}
           </div>
 
           {/* Información y contacto */}
@@ -419,9 +442,9 @@ export default function QuintaIdPage() {
               <p>Responde en el mismo día de la consulta</p>
             </div>
 
-            <button className="bg-primaryDark max-w-xs cursor-pointer hover:bg-green-700 text-white font-medium px-6 py-2 rounded-xl transition">
+            {/* <button className="bg-primaryDark max-w-xs cursor-pointer hover:bg-green-700 text-white font-medium px-6 py-2 rounded-xl transition">
               Ponerse en contacto
-            </button>
+            </button> */}
           </div>
         </div>
 
@@ -457,7 +480,7 @@ export default function QuintaIdPage() {
         <h2 className="text-xl font-semibold">Qué tenés que saber</h2>
         <div className="grid md:grid-cols-3 gap-6">
           {/* Normas de la casa */}
-          <div className="space-y-2">
+          {/* <div className="space-y-2">
             <h3 className="font-semibold">Normas de la casa</h3>
             <ul className="space-y-1">
               <li>Check-in a partir de las 4:00 p. m.</li>
@@ -467,10 +490,10 @@ export default function QuintaIdPage() {
             <button className="text-black underline flex items-center hover:text-gray-700">
               Mostrar más <span className="ml-1">›</span>
             </button>
-          </div>
+          </div> */}
 
           {/* Seguridad y propiedad */}
-          <div className="space-y-2">
+          {/* <div className="space-y-2">
             <h3 className="font-semibold">Sobre la seguridad y la propiedad</h3>
             <ul className="space-y-1">
               <li>No hay un detector de monóxido de carbono</li>
@@ -480,7 +503,7 @@ export default function QuintaIdPage() {
             <button className="text-black underline flex items-center hover:text-gray-700">
               Mostrar más <span className="ml-1">›</span>
             </button>
-          </div>
+          </div> */}
 
           {/* Política de cancelación */}
           <div className="space-y-2">
@@ -488,13 +511,13 @@ export default function QuintaIdPage() {
             <ul className="space-y-1">
               <li>Esta reserva no es reembolsable.</li>
               <li>
-                Consultá la política completa del anfitrión para obtener más
+                Consultá la políticas completas para obtener más
                 información.
               </li>
             </ul>
-            <button className="text-black underline flex items-center hover:text-gray-700">
+            <Link href="/terms" className="text-black cursor-pointer underline flex items-center hover:text-gray-700">
               Mostrar más <span className="ml-1">›</span>
-            </button>
+            </Link>
           </div>
         </div>
       </section>

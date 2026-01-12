@@ -3,8 +3,8 @@ import Header from "./components/Header";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Footer from "./components/Footer";
-import { ClerkProvider } from "@clerk/nextjs";
-import { esES } from '@clerk/localizations'
+import { FiltersProvider } from "./context/ContextFilters";
+import { SearchProvider } from "./context/SearchContext";
 
 const inter = Inter({
   variable: "--font-geist-sans",
@@ -18,6 +18,8 @@ export const metadata: Metadata = {
   keywords: "ZonaQuintas, fin de semana, vacaciones, viajes, hotel, apartamento, alquiler, reservas",
   icons: {
     icon: "/logo.png",
+    shortcut: "/logo.png",
+    apple: "/logo.png",
   },
 };
 
@@ -27,14 +29,21 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider localization={esES}>
     <html lang="es">
-      <body className={`bg-[#f7f3f0] mt-32 ${inter.className}`}>
-        <Header />
-        {children}
-        <Footer />
-      </body>
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="icon" href="/logo.png" />
+        <link rel="apple-touch-icon" href="/logo.png" />
+      </head>
+      <FiltersProvider>
+      <SearchProvider>
+        <body className={`bg-[#f7f3f0] mt-32 ${inter.className}`}>
+          <Header />
+          {children}
+          <Footer />
+        </body>
+      </SearchProvider>
+      </FiltersProvider>
     </html>
-    </ClerkProvider>
   );
 }

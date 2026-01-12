@@ -7,19 +7,11 @@ import { useState } from "react";
 import { Separator } from "./ui/Separator";
 import { usePathname } from "next/navigation";
 import FormQuintas from "./FormQuintas";
-import { useUser } from "@clerk/nextjs";
 
-import {
-  SignedIn,
-  SignedOut,
-  SignInButton,
-  SignUpButton,
-  UserButton,
-} from "@clerk/nextjs";
+
 
 export default function Header() {
-  const {  user } = useUser()
-  console.log(user)
+  const [user] = useState(false);
   const path = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const [isOpen2, setIsOpen2] = useState(false);
@@ -41,17 +33,13 @@ export default function Header() {
           <User />
           {isOpen2 && (
             <ul className="text-white font-medium flex flex-col gap-2 right-0 top-16 md:right-4 text-md absolute bg-primaryDark rounded-xl px-6 py-3">
-              <SignInButton>
                 <Link onClick={() => setIsOpen2(false)} href="/login">
                   Iniciar sesión
                 </Link>
-              </SignInButton>
 
-              <SignUpButton>
                 <Link onClick={() => setIsOpen2(false)} href="/register">
                   Registrate
                 </Link>
-              </SignUpButton>
 
               <Separator color="bg-gray-200" />
               <Link onClick={() => setIsOpen2(false)} href="/">
@@ -64,42 +52,46 @@ export default function Header() {
           )}
         </div>
       </section>
-      <p className="font-semibold text-wrap text-sm md:text-lg">
+      <div className="font-semibold md:pr-26 text-wrap text-sm md:text-lg">
         {path === "/" && "Encontrá, reservá y disfrutá."}
         {path === "/favorites" && "Mis favoritos"}
         {path === "/support" && "Soporte"}
         {path === "/quintas" && <FormQuintas />}
         {path === "/terms" && "Términos y condiciones"}
         {path === "/politics" && "Políticas de privacidad"}
-      </p>
-      <div className="bg-primaryDark md:flex hidden items-center gap-5 px-3 py-1 rounded-4xl justify-between">
+        {path === "/dashboard" && "Panel administador"}
+      </div>
+      <div className="bg-primaryDark md:flex hidden items-center gap-3 px-3 py-1 rounded-4xl justify-between">
         <Menu onClick={handleClick} />
-        <SignedIn>
           <Link className="flex items-center justify-center" href="/my-account">
-          <UserButton />
+          {/* SI HAY USUARIO, ACA VA EL NOMBRE ACTIVO  */}
           </Link>
-        </SignedIn>
-        <SignedOut>
           <User />
-        </SignedOut>
         {isOpen && (
           <ul className="text-white font-medium flex flex-col gap-2 top-36 right-32 md:top-16 md:right-4 text-md absolute bg-primaryDark rounded-xl px-6 py-3">
-            <Link onClick={() => setIsOpen(false)} href="/login">
-              Iniciar sesión
-            </Link>
-            {user && 
-            <Link onClick={() => setIsOpen(false)} href="/my-account">
-              Mis datos
-            </Link>
-            }
-            <Link onClick={() => setIsOpen(false)} href="/register">
-              Registrate
-            </Link>
+            {!user && (
+              <Link onClick={() => setIsOpen(false)} href="/login">
+                Iniciar sesión
+              </Link>
+            )}
+            {user && (
+              <Link onClick={() => setIsOpen(false)} href="/my-account">
+                Mis datos
+              </Link>
+            )}
+            {!user && (
+              <Link onClick={() => setIsOpen(false)} href="/register">
+                Registrate
+              </Link>
+            )}
             <Separator color="bg-gray-200" />
             <Link onClick={() => setIsOpen(false)} href="/publicar-quinta">
               Publicá tu quinta
             </Link>
-            <Link onClick={() => setIsOpen(false)} href="/support">
+            <Link onClick={() => setIsOpen(false)} href="/membresia">
+              Membresia premium
+            </Link>
+            <Link onClick={() => setIsOpen(false)} href="/support#form">
               Soporte
             </Link>
           </ul>

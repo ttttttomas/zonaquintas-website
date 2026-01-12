@@ -1,28 +1,25 @@
-'use client'
+"use client";
 import { useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
-
 export default function CalendarPage() {
-const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([null, null])
-const [startDate, endDate] = dateRange;
+  const [startDate, setStartDate] = useState<Date | null>(new Date());
+  const [endDate, setEndDate] = useState<Date | null>(null);
+  console.log(startDate, endDate?.getDay());
 
   return (
-    <section className="flex gap-20">
-     <DatePicker
-     className="border border-gray-300 cursor-pointer rounded-md p-2 text-sm"
-      selectsRange={true}
-      placeholderText="Selecciona tus fechas"
-      startDate={startDate}
-      endDate={endDate}
-      minDate={new Date()}
-      onChange={(update) => {
-        setDateRange(update);
-        console.log(dateRange[0], dateRange[1]);
-      }}
-      withPortal
-    />
+    <section className="flex gap-10">
+      <DatePicker
+        selected={startDate}
+        onChange={(date) => setStartDate(date)}
+        inline
+      />
+      <DatePicker
+        selected={endDate}
+        onChange={(date) => setEndDate(date)}
+        inline
+      />  
     </section>
-  )
+  );
 }

@@ -36,16 +36,6 @@ export default function FAQContact() {
         </div>
 
         <div>
-          <h3 className="font-bold">
-            ¿Puedo modificar los datos de mi publicación?
-          </h3>
-          <p>
-            Sí. Desde tu panel de anfitrión podés editar la información, fotos,
-            precios y disponibilidad en cualquier momento.
-          </p>
-        </div>
-
-        <div>
           <h3 className="font-bold">¿Cómo me contacto con los interesados?</h3>
           <p>
             Cada consulta llega a tu panel y a tu correo. Podés responder desde
@@ -83,7 +73,7 @@ export default function FAQContact() {
         No hay problema, llena el formulario y te contestaremos a la brevedad.
       </p>
 
-      <form className="bg-white shadow-md shadow-black/20 p-6 flex flex-col gap-10 text-left w-full mx-auto">
+      <form id="form" className="bg-white shadow-md shadow-black/20 p-6 flex flex-col gap-10 text-left w-full mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <label className=" font-bold" htmlFor="">Nombre completo
             <input

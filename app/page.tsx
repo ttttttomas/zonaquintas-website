@@ -1,38 +1,18 @@
 import Form from './components/home/Form'
 import Filters from './components/home/Filters'
 // import { Separator } from './components/ui/Separator';
-import QuintaCard from './components/home/QuintaCard';
 import SecondSeparator from './components/SecondSeparator';
-// import {createServerComponentClient} from '@supabase/auth-helpers-nextjs'
-// import { cookies } from 'next/headers';
-
-
+import QuintasFilters from './components/home/QuintasFilters';
 
 export default async function Home() {
-  // const supabase = createServerComponentClient({cookies});
-  // const {data: quintas} = await supabase.from('quintas').select('*');
-  // console.log(quintas);
   return (
   <main className='px-10'>
     <Form />
      <SecondSeparator />
+      <h2 className="block font-semibold py-1 text-2xl w-fit mx-auto px-10 rounded-xl text-center mt-5">Filtros</h2>
     <Filters />
-    <h1 className='text-2xl font-medium mt-14 text-center'>Algunos destacados</h1>
-    <section className='flex flex-wrap lg:gap-x-16 gap-x-10 justify-center'>
-    <QuintaCard />
-    <QuintaCard />
-    <QuintaCard />
-    <QuintaCard />
-    <QuintaCard />
-    <QuintaCard />
-    <QuintaCard />
-    <QuintaCard />
-    <QuintaCard />
-    <QuintaCard />
-    </section>
-    {/* <pre className='fixed bottom-10 right-10'>
-      {JSON.stringify(quintas, null, 2)}
-    </pre> */}
+    <h1 className='text-2xl font-semibold mt-10 text-center'>Algunos destacados</h1>
+    <QuintasFilters />
   </main>
   );
 }
