@@ -267,8 +267,7 @@ function Chip({
         active
           ? "border-primaryDark bg-emerald-500/20 text-white"
           : "border-neutral-600 text-neutral-200 hover:bg-white/5",
-      ].join(" ")}
-    >
+      ].join(" ")}>
       <span className="h-5 w-5">{icon}</span>
       <span className="text-sm">{label}</span>
     </button>
@@ -287,8 +286,7 @@ function Stepper({
       <button
         className="px-4 py-2 text-lg text-neutral-200 hover:bg-white/5"
         onClick={() => setValue(Math.max(0, value - 1))}
-        aria-label="Restar"
-      >
+        aria-label="Restar">
         –
       </button>
       <div className="w-10 select-none text-center text-sm text-neutral-200">
@@ -297,8 +295,7 @@ function Stepper({
       <button
         className="px-4 py-2 text-lg text-neutral-200 hover:bg-white/5"
         onClick={() => setValue(value + 1)}
-        aria-label="Sumar"
-      >
+        aria-label="Sumar">
         +
       </button>
     </div>
@@ -604,16 +601,14 @@ export default function FiltrosInmuebles({
                 vajilla: null,
               }));
             }}
-            className="px-6 py-2 rounded-full border border-neutral-600 text-neutral-200 hover:bg-white/5 transition-colors"
-          >
+            className="px-6 py-2 rounded-full border border-neutral-600 text-neutral-200 hover:bg-white/5 transition-colors">
             Limpiar filtros
           </button>
           <button
             onClick={() => {
               handleClick();
             }}
-            className="px-6 py-2 rounded-full bg-emerald-600 text-white hover:bg-emerald-700 transition-colors"
-          ></button>
+            className="px-6 py-2 rounded-full bg-emerald-600 text-white hover:bg-emerald-700 transition-colors"></button>
         </div>
       </section>
     </section>

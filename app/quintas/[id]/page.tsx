@@ -1,5 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
-
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import Heart from "@/app/components/icons/Heart";
 import {
   CalendarDays,
@@ -16,21 +16,21 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { Separator } from "@/app/components/ui/Separator";
-import CategorySection from "@/app/components/CategorySection";
+// import CategorySection from "@/app/components/CategorySection";
 import Calendar from "@/app/components/Calendar";
 import { ProductsServices } from "@/app/services/ProductsServices";
 import Link from "next/link";
 import SecondSeparator from "@/app/components/SecondSeparator";
 interface QuintaIdPageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 export default async function QuintaIdPage({ params }: QuintaIdPageProps) {
   const { id } = await params;
   const res = await ProductsServices.getQuintaById(id);
-  const quinta = res;  
+  const quinta = res;
   const formatedPrice = quinta.price.toLocaleString("es-AR", {
     style: "currency",
     currency: quinta.currency_price,
@@ -47,7 +47,7 @@ export default async function QuintaIdPage({ params }: QuintaIdPageProps) {
     });
     return formated;
   };
-  const total = (cost) => {
+  const total = (cost: number) => {
     const res = quinta.price + cost;
     return res;
   };
@@ -55,66 +55,66 @@ export default async function QuintaIdPage({ params }: QuintaIdPageProps) {
     const res = quinta.price * 0.06;
     return res;
   };
-  const categorias = [
-    { nombre: "Limpieza", valor: 5.0, icono: <Sparkles className="" /> },
-    { nombre: "Veracidad", valor: 5.0, icono: <CalendarCheck className="" /> },
-    { nombre: "Check-in", valor: 4.5, icono: <Key className="" /> },
-    {
-      nombre: "Comunicación",
-      valor: 4.8,
-      icono: <MessageCircle className="" />,
-    },
-    { nombre: "Ubicación", valor: 4.8, icono: <MapPin className="" /> },
-    {
-      nombre: "Precio según calidad",
-      valor: 5.0,
-      icono: <DollarSign className="" />,
-    },
-  ];
-  const reseñas = [
-    {
-      nombre: "Camila",
-      fecha: "Hace 3 semanas",
-      noches: 6,
-      texto:
-        "Me encantó el ambiente, muy reservado y con una vista muy hermosa. Un lugar muy tranquilo para pasar la semana y alejarse de las prisas. Marcela siempre fue muy atenta, inclus…",
-    },
-    {
-      nombre: "Nazario",
-      fecha: "Hace 4 meses",
-      noches: 6,
-      texto:
-        "Mi esposa y yo elegimos esta casa de campo para pasar nuestra luna de miel, y no podría ser un lugar más perfecto, un lugar súper privado y totalmente equipado para poder…",
-    },
-    {
-      nombre: "Leandro",
-      fecha: "Hace 3 meses",
-      noches: 5,
-      texto:
-        "Me encantó el ambiente, muy reservado y con una vista muy hermosa. Un lugar muy tranquilo para pasar la semana y alejarse de las prisas. Marcela siempre fue muy atenta, inclus…",
-    },
-    {
-      nombre: "Kauan",
-      fecha: "Hace 3 años",
-      noches: 2,
-      texto:
-        "Mi esposa y yo elegimos esta casa de campo para pasar nuestra luna de miel, y no podría ser un lugar más perfecto, un lugar súper privado y totalmente equipado para poder…",
-    },
-    {
-      nombre: "Rodrigo",
-      fecha: "Hace 3 semanas",
-      noches: 4,
-      texto:
-        "Me encantó el ambiente, muy reservado y con una vista muy hermosa. Un lugar muy tranquilo para pasar la semana y alejarse de las prisas. Marcela siempre fue muy atenta, inclus…",
-    },
-    {
-      nombre: "Gabriel",
-      fecha: "Hace 2 semanas",
-      noches: 3,
-      texto:
-        "Mi esposa y yo elegimos esta casa de campo para pasar nuestra luna de miel, y no podría ser un lugar más perfecto, un lugar súper privado y totalmente equipado para poder…",
-    },
-  ];
+  // const categorias = [
+  //   { nombre: "Limpieza", valor: 5.0, icono: <Sparkles className="" /> },
+  //   { nombre: "Veracidad", valor: 5.0, icono: <CalendarCheck className="" /> },
+  //   { nombre: "Check-in", valor: 4.5, icono: <Key className="" /> },
+  //   {
+  //     nombre: "Comunicación",
+  //     valor: 4.8,
+  //     icono: <MessageCircle className="" />,
+  //   },
+  //   { nombre: "Ubicación", valor: 4.8, icono: <MapPin className="" /> },
+  //   {
+  //     nombre: "Precio según calidad",
+  //     valor: 5.0,
+  //     icono: <DollarSign className="" />,
+  //   },
+  // ];
+  // const reseñas = [
+  //   {
+  //     nombre: "Camila",
+  //     fecha: "Hace 3 semanas",
+  //     noches: 6,
+  //     texto:
+  //       "Me encantó el ambiente, muy reservado y con una vista muy hermosa. Un lugar muy tranquilo para pasar la semana y alejarse de las prisas. Marcela siempre fue muy atenta, inclus…",
+  //   },
+  //   {
+  //     nombre: "Nazario",
+  //     fecha: "Hace 4 meses",
+  //     noches: 6,
+  //     texto:
+  //       "Mi esposa y yo elegimos esta casa de campo para pasar nuestra luna de miel, y no podría ser un lugar más perfecto, un lugar súper privado y totalmente equipado para poder…",
+  //   },
+  //   {
+  //     nombre: "Leandro",
+  //     fecha: "Hace 3 meses",
+  //     noches: 5,
+  //     texto:
+  //       "Me encantó el ambiente, muy reservado y con una vista muy hermosa. Un lugar muy tranquilo para pasar la semana y alejarse de las prisas. Marcela siempre fue muy atenta, inclus…",
+  //   },
+  //   {
+  //     nombre: "Kauan",
+  //     fecha: "Hace 3 años",
+  //     noches: 2,
+  //     texto:
+  //       "Mi esposa y yo elegimos esta casa de campo para pasar nuestra luna de miel, y no podría ser un lugar más perfecto, un lugar súper privado y totalmente equipado para poder…",
+  //   },
+  //   {
+  //     nombre: "Rodrigo",
+  //     fecha: "Hace 3 semanas",
+  //     noches: 4,
+  //     texto:
+  //       "Me encantó el ambiente, muy reservado y con una vista muy hermosa. Un lugar muy tranquilo para pasar la semana y alejarse de las prisas. Marcela siempre fue muy atenta, inclus…",
+  //   },
+  //   {
+  //     nombre: "Gabriel",
+  //     fecha: "Hace 2 semanas",
+  //     noches: 3,
+  //     texto:
+  //       "Mi esposa y yo elegimos esta casa de campo para pasar nuestra luna de miel, y no podría ser un lugar más perfecto, un lugar súper privado y totalmente equipado para poder…",
+  //   },
+  // ];
   return (
     <main className="flex flex-col">
       <section className="ml-30 mb-10 mr-50 pr-30" id="hero">
@@ -142,6 +142,7 @@ export default async function QuintaIdPage({ params }: QuintaIdPageProps) {
           <div className="grid grid-cols-2 grid-rows-2 gap-5">
             {quinta.images.slice(0, 3).map((image: string) => (
               <img
+                key={image}
                 src={image}
                 alt={`Vista ${quinta.images.indexOf(image) + 1}`}
                 className="w-96 h-full object-cover"
@@ -310,7 +311,7 @@ export default async function QuintaIdPage({ params }: QuintaIdPageProps) {
             <div className="flex justify-between font-semibold py-5 border-t border-gray-400">
               <span>Total</span>
               <span className="text-black">
-                ${total(costOfServiceFromTotal()).toLocaleString()} 
+                ${total(costOfServiceFromTotal()).toLocaleString()}
               </span>
             </div>
           </div>
@@ -511,11 +512,12 @@ export default async function QuintaIdPage({ params }: QuintaIdPageProps) {
             <ul className="space-y-1">
               <li>Esta reserva no es reembolsable.</li>
               <li>
-                Consultá la políticas completas para obtener más
-                información.
+                Consultá la políticas completas para obtener más información.
               </li>
             </ul>
-            <Link href="/terms" className="text-black cursor-pointer underline flex items-center hover:text-gray-700">
+            <Link
+              href="/terms"
+              className="text-black cursor-pointer underline flex items-center hover:text-gray-700">
               Mostrar más <span className="ml-1">›</span>
             </Link>
           </div>

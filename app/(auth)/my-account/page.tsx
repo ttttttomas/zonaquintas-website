@@ -1,16 +1,18 @@
-'use client'
-import Logo from "@/app/components/icons/Logo";
+"use client";
+// import Logo from "@/app/components/icons/Logo";
 import AddLanguage from "@/app/components/AddLanguage";
 import Link from "next/link";
 
 export default function MyAccountPage() {
-  
   return (
     <main className="flex flex-col md:flex-row w-full md:px-20 justify-between gap-10 md:gap-20 items-center md:items-start">
-      <img src="picture_user.jpg" alt="User profile" className="w-32 md:w-[150px] rounded-xl" />
-    {/* <Logo className="w-[150px]" /> */}
-      <form
-        className="flex flex-col md:mx-0 mx-10 bg-white w-full max-w-5xl px-5 xl:px-20 gap-2 shadow-lg py-10 shadow-black/20 flex-1 text-black">
+      <img
+        src="picture_user.jpg"
+        alt="User profile"
+        className="w-32 md:w-[150px] rounded-xl"
+      />
+      {/* <Logo className="w-[150px]" /> */}
+      <form className="flex flex-col md:mx-0 mx-10 bg-white w-full max-w-5xl px-5 xl:px-20 gap-2 shadow-lg py-10 shadow-black/20 flex-1 text-black">
         <h1 className="text-center font-semibold text-xl">Mis datos</h1>
         <input
           placeholder="Nombre completo"
