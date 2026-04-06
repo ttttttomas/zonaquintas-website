@@ -8,8 +8,6 @@ import { Separator } from "./ui/Separator";
 import { usePathname } from "next/navigation";
 import FormQuintas from "./FormQuintas";
 
-
-
 export default function Header() {
   const [user] = useState(false);
   const path = usePathname();
@@ -33,13 +31,13 @@ export default function Header() {
           <User />
           {isOpen2 && (
             <ul className="text-white font-medium flex flex-col gap-2 right-0 top-16 md:right-4 text-md absolute bg-primaryDark rounded-xl px-6 py-3">
-                <Link onClick={() => setIsOpen2(false)} href="/login">
-                  Iniciar sesión
-                </Link>
+              <Link onClick={() => setIsOpen2(false)} href="/login">
+                Iniciar sesión
+              </Link>
 
-                <Link onClick={() => setIsOpen2(false)} href="/register">
-                  Registrate
-                </Link>
+              <Link onClick={() => setIsOpen2(false)} href="/register">
+                Registrate
+              </Link>
 
               <Separator color="bg-gray-200" />
               <Link onClick={() => setIsOpen2(false)} href="/">
@@ -63,10 +61,10 @@ export default function Header() {
       </div>
       <div className="bg-primaryDark md:flex hidden items-center gap-3 px-3 py-1 rounded-4xl justify-between">
         <Menu onClick={handleClick} />
-          <Link className="flex items-center justify-center" href="/my-account">
+        <Link className="flex items-center justify-center" href="/my-account">
           {/* SI HAY USUARIO, ACA VA EL NOMBRE ACTIVO  */}
-          </Link>
-          <User />
+        </Link>
+        <User />
         {isOpen && (
           <ul className="text-white font-medium flex flex-col gap-2 top-36 right-32 md:top-16 md:right-4 text-md absolute bg-primaryDark rounded-xl px-6 py-3">
             {!user && (
@@ -91,7 +89,7 @@ export default function Header() {
             <Link onClick={() => setIsOpen(false)} href="/membresia">
               Membresia premium
             </Link>
-            <Link onClick={() => setIsOpen(false)} href="/support#form">
+            <Link onClick={() => setIsOpen(false)} href="/support">
               Soporte
             </Link>
           </ul>

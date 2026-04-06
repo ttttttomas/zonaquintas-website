@@ -1,47 +1,74 @@
 "use client";
-// import Logo from "@/app/components/icons/Logo";
 import AddLanguage from "@/app/components/AddLanguage";
 import Link from "next/link";
+import { useUser } from "@/app/context/UserContext";
 
 export default function MyAccountPage() {
+  const { user, loading, error } = useUser();
+
+  if (loading) {
+    return (
+      <main className="flex w-full justify-center items-center py-20">
+        <p className="text-gray-500 text-lg">Cargando datos...</p>
+      </main>
+    );
+  }
+
+  if (error) {
+    return (
+      <main className="flex w-full justify-center items-center py-20">
+        <p className="text-red-500 text-lg">{error}</p>
+      </main>
+    );
+  }
+
   return (
     <main className="flex flex-col md:flex-row w-full md:px-20 justify-between gap-10 md:gap-20 items-center md:items-start">
       <img
-        src="picture_user.jpg"
+        src={user?.picture ?? "picture_user.jpg"}
         alt="User profile"
         className="w-32 md:w-[150px] rounded-xl"
       />
-      {/* <Logo className="w-[150px]" /> */}
       <form className="flex flex-col md:mx-0 mx-10 bg-white w-full max-w-5xl px-5 xl:px-20 gap-2 shadow-lg py-10 shadow-black/20 flex-1 text-black">
         <h1 className="text-center font-semibold text-xl">Mis datos</h1>
         <input
           placeholder="Nombre completo"
+          defaultValue={user?.name ?? ""}
           className="border-gray-200 px-2 border-2 xl:w-full mx-auto py-1 rounded-md w-full"
           type="text"
         />
         <input
           placeholder="Telefono"
+          defaultValue={user?.phone ?? ""}
           className="border-gray-200 px-2 border-2 xl:w-full mx-auto py-1 rounded-md w-full"
           type="text"
         />
         <input
           placeholder="Fecha de nacimiento"
+          defaultValue={
+            user?.date_of_birth
+              ? new Date(user.date_of_birth).toLocaleDateString()
+              : ""
+          }
           className="border-gray-200 px-2 border-2 xl:w-full mx-auto py-1 rounded-md w-full"
           type="text"
         />
         <input
           placeholder="Mail"
+          defaultValue={user?.email ?? ""}
           className="border-gray-200 px-2 border-2 xl:w-full mx-auto py-1 rounded-md w-full"
           type="text"
         />
         <input
           placeholder="Dirección"
+          defaultValue={user?.address ?? ""}
           className="border-gray-200 px-2 border-2 xl:w-full mx-auto py-1 rounded-md w-full"
           type="text"
         />
         <AddLanguage />
         <input
           placeholder="Descripcion"
+          defaultValue={user?.description ?? ""}
           className="border-gray-200 px-2 border-2 xl:w-full mx-auto py-1 rounded-md w-full"
           type="text"
         />

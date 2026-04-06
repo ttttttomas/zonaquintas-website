@@ -1,32 +1,29 @@
-import axios from "axios";
+import { apiClient } from "@/lib/axios";
 
 export const AuthServices = {
   login: async (email: string, password: string) => {
-    const response = await axios.post(
-      "/api/auth/login", 
+    const response = await apiClient.post(
+      "/login",
       { email, password },
       {
         headers: { "Content-Type": "application/json" },
-      }
+      },
     );
-
-    if (response.status === 200) {
-      return response;
-    }
-    return null;
+    return response;
   },
-  register: async (email: string, password: string, name: string, date_of_birth: string) => {
-     const response = await axios.post(
-      "/api/auth/register", 
-      { email, password, name, date_of_birth },
+  register: async (data: any) => {
+    const response = await apiClient.post(
+      "/register",
+      { data },
       {
         headers: { "Content-Type": "application/json" },
-      }
+      },
     );
 
-    if (response.status === 200) {
-      return response;
-    }
-    return null;
+    return response;
+  },
+  me: async () => {
+    const response = await apiClient.get("/me");
+    return response.data;
   },
 };

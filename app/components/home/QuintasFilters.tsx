@@ -6,7 +6,6 @@ import { ProductsServices } from "@/app/services/ProductsServices";
 import { Quintas } from "@/types";
 
 export default function QuintasFilters() {
-
   const [quintas, setQuintas] = useState<Quintas[]>([]);
   const { filtersQuintas } = useFilters();
   useEffect(() => {
@@ -22,27 +21,12 @@ export default function QuintasFilters() {
     fetchQuintas();
   }, []);
 
-
   return (
     <section className="flex flex-wrap lg:gap-x-16 gap-x-10 justify-center">
       {quintas?.map((product: Quintas) => (
         <QuintaCard key={product.id} product={product} />
       ))}
-      {quintas?.map((product: Quintas) => (
-        <QuintaCard key={product.id} product={product} />
-      ))}
-      {quintas?.map((product: Quintas) => (
-        <QuintaCard key={product.id} product={product} />
-      ))}
-      {quintas?.map((product: Quintas) => (
-        <QuintaCard key={product.id} product={product} />
-      ))}
-      {quintas?.map((product: Quintas) => (
-        <QuintaCard key={product.id} product={product} />
-      ))}
-      {!quintas && (
-        <p className="text-center m-20">No hay resultados</p>
-      )}
+      {!quintas && <p className="text-center m-20">No hay resultados</p>}
     </section>
   );
 }

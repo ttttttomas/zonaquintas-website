@@ -30,6 +30,8 @@ interface QuintaIdPageProps {
 export default async function QuintaIdPage({ params }: QuintaIdPageProps) {
   const { id } = await params;
   const res = await ProductsServices.getQuintaById(id);
+  console.log(res);
+
   const quinta = res;
   const formatedPrice = quinta.price.toLocaleString("es-AR", {
     style: "currency",
