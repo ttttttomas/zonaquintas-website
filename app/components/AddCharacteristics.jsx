@@ -2,17 +2,30 @@
 import { useState } from "react";
 import Add from "./icons/Add";
 
-export default function AddLanguage() {
+export default function AddCharacteristics({
+  selected: controlledSelected,
+  onChangeSelected,
+} = {}) {
   const [showPopup, setShowPopup] = useState(false);
-  const [selected, setSelected] = useState([]);
+  const [internalSelected, setInternalSelected] = useState([]);
 
-    const handleClear = () => {
-        setSelected([])
-    }
+  // Si viene controlado desde afuera, usamos esas props; sino el state interno
+  const selected = controlledSelected ?? internalSelected;
+  const setSelected = onChangeSelected
+    ? (valOrFn) => {
+        const next =
+          typeof valOrFn === "function" ? valOrFn(selected) : valOrFn;
+        onChangeSelected(next);
+      }
+    : setInternalSelected;
+
+  const handleClear = () => {
+    setSelected([]);
+  };
 
   const toggleProp = (prop) => {
     setSelected((prev) =>
-      prev.includes(prop) ? prev.filter((l) => l !== prop) : [...prev, prop]
+      prev.includes(prop) ? prev.filter((l) => l !== prop) : [...prev, prop],
     );
   };
 
@@ -54,7 +67,7 @@ export default function AddLanguage() {
     <section className="bg-white flex flex-col p-2 rounded-lg gap-2 w-full mx-auto">
       <div className="relative">
         <input
-        className="w-full"
+          className="w-full"
           type="text"
           placeholder="Seleecciona las características de tu quinta*"
         />
@@ -80,11 +93,15 @@ export default function AddLanguage() {
               </div>
             </div>
           ))}
-      <button onClick={handleClear} className="cursor-pointer bg-primaryDark text-white py-2 rounded-lg font-bold px-5">Limpiar</button>
+          <button
+            onClick={handleClear}
+            className="cursor-pointer bg-primaryDark text-white py-2 rounded-lg font-bold px-5">
+            Limpiar
+          </button>
         </div>
       )}
       {showPopup && (
-        <section className="absolute top-0 bottom-0 left-0 right-0 bg-gray-900 text-white rounded-2xl my-auto w-1/2 h-2/3 mx-auto p-6 shadow-xl z-10">
+        <section className="absolute top-0 bottom-0 left-0 right-0 bg-[#2B2B2B] text-white rounded-2xl my-auto w-1/2 h-2/3 mx-auto p-6 shadow-xl z-10">
           <h3 className="text-lg font-semibold mb-4 text-center">
             Seleccioná los caracteristicas de tu quinta
           </h3>

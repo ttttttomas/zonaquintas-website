@@ -5,7 +5,7 @@ const protectedRoutes = [
   "/my-account",
   "/reservations",
   "/publications",
-  "/publicar-quinta/paso-1",
+  // "/publicar-quinta/paso-1",
 ];
 
 export function middleware(request: NextRequest) {

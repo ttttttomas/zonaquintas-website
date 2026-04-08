@@ -1,17 +1,11 @@
 "use client";
 import Link from "next/link";
-// import { useState } from "react";
-// import DatePicker from "react-datepicker";
+import { useQuintaForm } from "@/app/context/QuintaFormContext";
 import "react-datepicker/dist/react-datepicker.css";
 
 export default function Paso3Page() {
-  //   const [startDate, setStartDate] = useState(new Date());
-  //   const [endDate, setEndDate] = useState(null);
-  //   const onChange = (dates) => {
-  //     const [start, end] = dates;
-  //     setStartDate(start);
-  //     setEndDate(end);
-  //   };
+  const { form, updateForm } = useQuintaForm();
+
   return (
     <main className="flex md:flex-row flex-col mb-10 md:mb-0 gap-10 md:gap-0 md:h-[50vh] items-center justify-between mx-10 md:mx-20">
       <section className="flex flex-col items-start justify-center w-full md:w-1/3">
@@ -19,64 +13,66 @@ export default function Paso3Page() {
           Brindanos la ultima información para tu publicación
         </h1>
         <form className="w-full flex flex-col gap-5 rounded-xl">
-          {/* <input
-            placeholder="Marca la disponibilidad de tu quinta*"
-            className="bg-white p-2 rounded-lg"
-            type="text"
-          />
-          <div className="flex justify-between">
-            <DatePicker
-            selected={startDate}
-            onChange={onChange}
-            startDate={startDate}
-            endDate={endDate}
-            selectsRange
-            inline
-            withPortal
-
-          />
-          <DatePicker
-            selected={startDate}
-            onChange={onChange}
-            startDate={startDate}
-            endDate={endDate}
-            selectsRange
-            inline
-            withPortal
-          />
-          </div> */}
           <div className="w-full flex bg-white rounded-lg">
             <input
               placeholder="Ponele precio a tu quinta (Precio por dia)*"
-              className=" p-2 flex-1"
-              type="text"
+              className="p-2 flex-1"
+              type="number"
+              value={form.price || ""}
+              onChange={(e) => updateForm({ price: Number(e.target.value) })}
             />
-            <select name="" id="">
+            <select
+              value={form.currency_price}
+              onChange={(e) =>
+                updateForm({
+                  currency_price: e.target.value as "ARS" | "USD",
+                })
+              }>
               <option value="USD">USD</option>
               <option value="ARS">ARS</option>
             </select>
           </div>
           <div className="w-full flex bg-white rounded-lg">
             <input
-              placeholder="Precio por quincena (opcional)*"
-              className=" p-2 flex-1"
-              type="text"
+              placeholder="Precio por quincena (opcional)"
+              className="p-2 flex-1"
+              type="number"
+              value={form.price_quincena || ""}
+              onChange={(e) =>
+                updateForm({ price_quincena: Number(e.target.value) })
+              }
             />
-            <select name="" id="">
+            <select
+              value={form.currency_quincena}
+              onChange={(e) =>
+                updateForm({
+                  currency_quincena: e.target.value as "ARS" | "USD",
+                })
+              }>
               <option value="USD">USD</option>
               <option value="ARS">ARS</option>
             </select>
           </div>
           <div className="w-full flex bg-white rounded-lg">
-          <input
-            placeholder="Precio por mes (opcional)*"
-              className=" p-2 flex-1"
-            type="text"
-          />
-          <select name="" id="">
-            <option value="USD">USD</option>
-            <option value="ARS">ARS</option>
-          </select>
+            <input
+              placeholder="Precio por mes (opcional)"
+              className="p-2 flex-1"
+              type="number"
+              value={form.price_mes || ""}
+              onChange={(e) =>
+                updateForm({ price_mes: Number(e.target.value) })
+              }
+            />
+            <select
+              value={form.currency_mes}
+              onChange={(e) =>
+                updateForm({
+                  currency_mes: e.target.value as "ARS" | "USD",
+                })
+              }>
+              <option value="USD">USD</option>
+              <option value="ARS">ARS</option>
+            </select>
           </div>
           <Link
             href={"/publicar-quinta/paso-4"}

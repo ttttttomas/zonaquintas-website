@@ -1,4 +1,5 @@
 import { apiClient } from "@/lib/axios";
+import { Users } from "@/types";
 
 export const ProductsServices = {
   getQuintas: async () => {
@@ -11,6 +12,23 @@ export const ProductsServices = {
   },
   getQuintaById: async (id: string) => {
     const response = await apiClient.get(`/quintas/${id}`);
+
+    if (response.status === 200) {
+      return response.data;
+    }
+    return null;
+  },
+
+  createQuinta: async (data: any) => {
+    const response = await apiClient.post("/quintas", data);
+
+    if (response.status === 200) {
+      return response.data;
+    }
+    return null;
+  },
+  getOwnerById: async (id: string) => {
+    const response = await apiClient.get<Users>(`/users?id=${id}`);
 
     if (response.status === 200) {
       return response.data;

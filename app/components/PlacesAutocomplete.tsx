@@ -2,6 +2,25 @@
 import { useEffect, useRef } from "react";
 import { Loader } from "@googlemaps/js-api-loader";
 
+/** Extrae el barrio/localidad de los address_components */
+function extractNeighborhood(
+  components?: google.maps.GeocoderAddressComponent[],
+): string {
+  if (!components) return "";
+  // Orden de prioridad: barrio → sublocality → locality
+  const priorities = [
+    "neighborhood",
+    "sublocality_level_1",
+    "sublocality",
+    "locality",
+  ];
+  for (const type of priorities) {
+    const comp = components.find((c) => c.types.includes(type));
+    if (comp) return comp.long_name;
+  }
+  return "";
+}
+
 type Props = {
   apiKey: string;
   // Te paso el valor al formulario cuando cambia la ubicación
@@ -10,6 +29,7 @@ type Props = {
     lat: number;
     lng: number;
     placeId?: string;
+    neighborhood?: string;
   }) => void;
   // Centro/zoom inicial (Argentina por defecto)
   initialCenter?: google.maps.LatLngLiteral;
@@ -26,7 +46,9 @@ export default function PlacesWithMap({
   const mapDivRef = useRef<HTMLDivElement | null>(null);
 
   const mapRef = useRef<google.maps.Map | null>(null);
-  const markerRef = useRef<google.maps.marker.AdvancedMarkerElement | null>(null);
+  const markerRef = useRef<google.maps.marker.AdvancedMarkerElement | null>(
+    null,
+  );
   const acRef = useRef<google.maps.places.Autocomplete | null>(null);
   const geocoderRef = useRef<google.maps.Geocoder | null>(null);
 
@@ -66,7 +88,12 @@ export default function PlacesWithMap({
         acRef.current = new google.maps.places.Autocomplete(inputRef.current, {
           types: ["geocode"],
           componentRestrictions: { country: ["ar"] },
-          fields: ["formatted_address", "geometry", "place_id"],
+          fields: [
+            "formatted_address",
+            "geometry",
+            "place_id",
+            "address_components",
+          ],
         });
 
         acRef.current.addListener("place_changed", () => {
@@ -84,12 +111,14 @@ export default function PlacesWithMap({
 
           // Mover pin
           markerRef.current!.position = loc;
-
+          console.log("lat", loc.lat());
+          console.log("lng", loc.lng());
           onLocation?.({
             address: place.formatted_address ?? inputRef.current!.value,
             lat: loc.lat(),
             lng: loc.lng(),
             placeId: place.place_id,
+            neighborhood: extractNeighborhood(place.address_components),
           });
         });
       }
@@ -100,16 +129,18 @@ export default function PlacesWithMap({
         markerRef.current!.position = e.latLng;
         mapRef.current!.panTo(e.latLng);
 
-        geocoderRef.current!
-          .geocode({ location: e.latLng })
+        geocoderRef
+          .current!.geocode({ location: e.latLng })
           .then(({ results }) => {
-            const addr = results?.[0]?.formatted_address ?? "";
+            const result = results?.[0];
+            const addr = result?.formatted_address ?? "";
             if (inputRef.current && addr) inputRef.current.value = addr;
             onLocation?.({
               address: addr,
               lat: e.latLng!.lat(),
               lng: e.latLng!.lng(),
-              placeId: results?.[0]?.place_id,
+              placeId: result?.place_id,
+              neighborhood: extractNeighborhood(result?.address_components),
             });
           })
           .catch(() => {
@@ -122,21 +153,26 @@ export default function PlacesWithMap({
       });
 
       // Cuando arrastran el pin, también actualizo dirección
-      markerRef.current.addListener("dragend", (e: google.maps.MapMouseEvent) => {
-        if (!e.latLng) return;
-        geocoderRef.current!
-          .geocode({ location: e.latLng })
-          .then(({ results }) => {
-            const addr = results?.[0]?.formatted_address ?? "";
-            if (inputRef.current && addr) inputRef.current.value = addr;
-            onLocation?.({
-              address: addr,
-              lat: e.latLng!.lat(),
-              lng: e.latLng!.lng(),
-              placeId: results?.[0]?.place_id,
+      markerRef.current.addListener(
+        "dragend",
+        (e: google.maps.MapMouseEvent) => {
+          if (!e.latLng) return;
+          geocoderRef
+            .current!.geocode({ location: e.latLng })
+            .then(({ results }) => {
+              const result = results?.[0];
+              const addr = result?.formatted_address ?? "";
+              if (inputRef.current && addr) inputRef.current.value = addr;
+              onLocation?.({
+                address: addr,
+                lat: e.latLng!.lat(),
+                lng: e.latLng!.lng(),
+                placeId: result?.place_id,
+                neighborhood: extractNeighborhood(result?.address_components),
+              });
             });
-          });
-      });
+        },
+      );
     });
 
     return () => {

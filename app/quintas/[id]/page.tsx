@@ -17,10 +17,12 @@ import {
 } from "lucide-react";
 import { Separator } from "@/app/components/ui/Separator";
 // import CategorySection from "@/app/components/CategorySection";
-import Calendar from "@/app/components/Calendar";
+import BookingSection from "@/app/components/BookingSection";
 import { ProductsServices } from "@/app/services/ProductsServices";
 import Link from "next/link";
 import SecondSeparator from "@/app/components/SecondSeparator";
+import StaticMap from "@/app/components/StaticMap";
+import { Users } from "@/types";
 interface QuintaIdPageProps {
   params: Promise<{
     id: string;
@@ -30,7 +32,8 @@ interface QuintaIdPageProps {
 export default async function QuintaIdPage({ params }: QuintaIdPageProps) {
   const { id } = await params;
   const res = await ProductsServices.getQuintaById(id);
-  console.log(res);
+  const owner: Users | null = await ProductsServices.getOwnerById(res.owner_id);
+  console.log(owner);
 
   const quinta = res;
   const formatedPrice = quinta.price.toLocaleString("es-AR", {
@@ -155,174 +158,101 @@ export default async function QuintaIdPage({ params }: QuintaIdPageProps) {
             <h2 className="text-xl">{quinta.address}</h2>
             <p className="text-lg font-light">
               {`${quinta.guests} huéspedes - ${quinta.bedrooms} dormitorios - ${quinta.bathrooms} camas - ${quinta.ambients} baños`}
-              {/* 10 huéspedes - 4 dormitorios - 8 camas - 3 baños */}
             </p>
           </div>
         </div>
       </section>
       <SecondSeparator />
 
-      <section
-        className="mx-30 flex justify-between gap-20 py-6"
-        id="quinta_info">
-        <div className="w-1/2 space-y-6">
-          {/* Calificaciones y anfitrión */}
-          <div className="flex flex-col items-start pr-30 gap-10">
-            <div className="flex items-center px-10 py-2 rounded-3xl bg-primaryDark">
-              <div className="flex flex-col items-center space-x-2 px-7">
-                <span className="text-white">4,5</span>
-                <div className="flex gap-1 items-center">
-                  {Array.from({ length: 4 }).map((_, i) => (
-                    <Star
-                      className="w-3 text-white fill-yellow-500 stroke-yellow-500"
-                      key={i}
-                    />
-                  ))}
-                  <StarHalf className="w-3 text-white fill-yellow-500 stroke-yellow-500" />
-                </div>
-              </div>
-              <p className="text-gray-500">|</p>
-              <div className="text-white flex flex-col items-center px-7">
-                <p>72 opiniones</p>
-                <Link
-                  href="#opinions"
-                  className="underline text-xs cursor-pointer">
-                  Ver opiniones
-                </Link>
+      <BookingSection
+        formatedPrice={formatedPrice}
+        costOfService={costOfService()}
+        totalPrice={total(costOfServiceFromTotal()).toLocaleString()}
+        maxGuests={quinta.guests}>
+        {/* Calificaciones y anfitrión */}
+        <div className="flex flex-col items-start pr-30 gap-10">
+          <div className="flex items-center px-10 py-2 rounded-3xl bg-primaryDark">
+            <div className="flex flex-col items-center space-x-2 px-7">
+              <span className="text-white">4,5</span>
+              <div className="flex gap-1 items-center">
+                {Array.from({ length: 4 }).map((_, i) => (
+                  <Star
+                    className="w-3 text-white fill-yellow-500 stroke-yellow-500"
+                    key={i}
+                  />
+                ))}
+                <StarHalf className="w-3 text-white fill-yellow-500 stroke-yellow-500" />
               </div>
             </div>
-            <div className="flex items-center space-x-2">
-              <img
-                src="/avatar.png"
-                alt="Avatar anfitrión"
-                className="rounded-full w-10 h-10"
-              />
-              <div className="text-sm">
-                <p className="font-semibold">{`Anfitrión: ${quinta.owner}`}</p>
-                <p className="text-gray-500">1 año como anfitrión</p>
-              </div>
+            <p className="text-gray-500">|</p>
+            <div className="text-white flex flex-col items-center px-7">
+              <p>72 opiniones</p>
+              <Link
+                href="#opinions"
+                className="underline text-xs cursor-pointer">
+                Ver opiniones
+              </Link>
             </div>
           </div>
-
-          {/* Descripción */}
-          <div className="pr-30">
-            <Separator color="bg-gray-300" />
-            <p className="text-sm text-gray-700 py-10">
-              Lorem ipsum dolor sit amet consectetur. Vitae nibh velit vel
-              tortor. Condimentum consequat mauris faucibus sit et sed nec
-              varius justo. Massa sed malesuada egestas habitant proin id
-              aliquam pellentesque. Ac natoque eros maecenas purus dui dui.
-            </p>
-            <Separator color="bg-gray-300" />
-          </div>
-          {/* Servicios */}
-          <div className="pr-30">
-            <h3 className="font-semibold mb-2">¿Qué ofrece este hospedaje?</h3>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 text-sm text-gray-700">
-              <span className="flex items-center space-x-2">
-                <Check className="w-4 h-4" /> Heladera
-              </span>
-              <span className="flex items-center space-x-2">
-                <Check className="w-4 h-4" /> Cocina
-              </span>
-              <span className="flex items-center space-x-2">
-                <Check className="w-4 h-4" /> Wifi estable
-              </span>
-              <span className="flex items-center space-x-2">
-                <Check className="w-4 h-4" /> Botiquín
-              </span>
-              <span className="flex items-center space-x-2">
-                <Check className="w-4 h-4" /> A.C. Frío/Calor
-              </span>
-              <span className="flex items-center space-x-2">
-                <Check className="w-4 h-4" /> Estufa Hogar
-              </span>
-              <span className="flex items-center space-x-2">
-                <Check className="w-4 h-4" /> Estacionamiento
-              </span>
-              <span className="flex items-center space-x-2">
-                <Check className="w-4 h-4" /> Parrilla
-              </span>
+          <div className="flex items-center space-x-2">
+            <img
+              src="/avatar.png"
+              alt="Avatar anfitrión"
+              className="rounded-full w-10 h-10"
+            />
+            <div className="text-sm">
+              <p className="font-semibold">{`Anfitrión: ${owner?.name}`}</p>
+              <p className="text-gray-500">
+                {owner?.owner_time} como anfitrión
+              </p>
             </div>
-            <button className="mt-4 border px-3 py-1 text-sm rounded-md text-gray-700 hover:bg-gray-100">
-              Ver más de lo que ofrece
-            </button>
-          </div>
-          <div className="pr-30">
-            <Separator color="bg-gray-300" />
-          </div>
-
-          {/* Calendario (maquetado estático) */}
-          <div>
-            <h3 className="font-semibold mb-2">
-              Modificar tu ingreso y salida
-            </h3>
-            <p className="text-sm text-gray-500 mb-2">
-              Estadía mínima 2 noches
-            </p>
-            <Calendar />
           </div>
         </div>
-        {/* Reservar derecha */}
-        <div className="rounded-xl bg-white shadow-md shadow-black/50 py-6 px-12 flex top-22 flex-col md:sticky h-fit">
-          <p className="text-2xl text-center font-semibold mb-5">
-            {`${formatedPrice} por noche`}
-          </p>
 
-          <div className="border-t border-x border-black/40 rounded-t-md divide-x grid grid-cols-2 overflow-hidden">
-            <div className="flex flex-col justify-center items-center py-1 px-10 text-sm">
-              <p className="text-black text-sm font-semibold">
-                Fecha de ingreso
-              </p>
-              <div className="flex items-center gap-2 justify-center">
-                <p className="font-medium text-gray-700">11/03/2025</p>
-                <CalendarDays className="w-4" />
-              </div>
-            </div>
-            <div className="flex flex-col justify-center items-center py-1 px-10 text-sm">
-              <p className="text-black text-sm font-semibold">
-                Fecha de salida
-              </p>
-              <div className="flex items-center gap-2 justify-center">
-                <p className="font-medium text-gray-700">13/03/2025</p>
-                <CalendarDays className="w-4" />
-              </div>
-            </div>
+        {/* Descripción */}
+        <div className="pr-30">
+          <Separator color="bg-gray-300" />
+          <p className="text-sm text-gray-700 py-10">{owner?.description}</p>
+          <Separator color="bg-gray-300" />
+        </div>
+
+        {/* Servicios */}
+        <div className="pr-30">
+          <h3 className="font-semibold mb-2">¿Qué ofrece este hospedaje?</h3>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 text-sm text-gray-700">
+            <span className="flex items-center space-x-2">
+              <Check className="w-4 h-4" /> Heladera
+            </span>
+            <span className="flex items-center space-x-2">
+              <Check className="w-4 h-4" /> Cocina
+            </span>
+            <span className="flex items-center space-x-2">
+              <Check className="w-4 h-4" /> Wifi estable
+            </span>
+            <span className="flex items-center space-x-2">
+              <Check className="w-4 h-4" /> Botiquín
+            </span>
+            <span className="flex items-center space-x-2">
+              <Check className="w-4 h-4" /> A.C. Frío/Calor
+            </span>
+            <span className="flex items-center space-x-2">
+              <Check className="w-4 h-4" /> Estufa Hogar
+            </span>
+            <span className="flex items-center space-x-2">
+              <Check className="w-4 h-4" /> Estacionamiento
+            </span>
+            <span className="flex items-center space-x-2">
+              <Check className="w-4 h-4" /> Parrilla
+            </span>
           </div>
-
-          <div className="border border-black/40 rounded-b-md p-2 text-sm">
-            <p className="text-black font-semibold">Cantidad de Huéspedes</p>
-            <select className="w-1/2" name="huespedes">
-              <option value="1">1 Huesped</option>
-              <option value="2">2 Huespedes</option>
-              <option value="3">3 Huespedes</option>
-            </select>
-          </div>
-
-          <div className="text-sm space-y-1 flex flex-col gap-2 my-5 text-gray-700">
-            <div className="flex justify-between">
-              <span>{`${formatedPrice} por noche`}</span>
-              <span className="text-black font-semibold">{formatedPrice}</span>
-            </div>
-            <div className="flex justify-between">
-              <span>Costo de servicio</span>
-              <span className="text-black font-semibold">
-                {costOfService()}
-              </span>
-            </div>
-            <div className="flex justify-between font-semibold py-5 border-t border-gray-400">
-              <span>Total</span>
-              <span className="text-black">
-                ${total(costOfServiceFromTotal()).toLocaleString()}
-              </span>
-            </div>
-          </div>
-
-          <button className="w-full bg-primaryDark text-white py-2 rounded-md hover:bg-green-700 transition">
-            Reservar
+          <button className="mt-4 border px-3 py-1 text-sm rounded-md text-gray-700 hover:bg-gray-100">
+            Ver más de lo que ofrece
           </button>
         </div>
-      </section>
+        <div className="pr-30">
+          <Separator color="bg-gray-300" />
+        </div>
+      </BookingSection>
       {/* <SecondSeparator /> */}
 
       <section className="mx-30 px-4 py-8 space-y-8" id="opinions">
@@ -384,14 +314,12 @@ export default async function QuintaIdPage({ params }: QuintaIdPageProps) {
       <SecondSeparator />
       <section className="mx-30 my-5" id="map">
         <div>
-          <h3>Ubicación del hospedaje</h3>
-          <p className="text-gray-500">Ezeiza, Buenos Aires</p>
+          <h3 className="font-semibold text-lg">Ubicación del hospedaje</h3>
+          <p className="text-gray-500">{quinta.address}</p>
         </div>
-        <img
-          src="/map.png"
-          alt="mapa de zona"
-          className="w-full mx-auto max-w-7xl mt-5 h-full object-cover rounded-xl"
-        />
+        <div className="mt-5">
+          <StaticMap lat={quinta.latitude} lng={quinta.longitude} />
+        </div>
       </section>
       <SecondSeparator />
 
@@ -406,7 +334,7 @@ export default async function QuintaIdPage({ params }: QuintaIdPageProps) {
                 alt="Avatar"
                 className="w-30 mx-auto"
               />
-              <p className="font-semibold">Anfitrión: Valentín</p>
+              <p className="font-semibold">Anfitrión: {owner?.name}</p>
             </div>
             {/* <div className="flex flex-col justify-between gap-10 text-center">
               <div>
