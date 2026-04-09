@@ -19,10 +19,12 @@ export const ProductsServices = {
     return null;
   },
 
-  createQuinta: async (data: any) => {
-    const response = await apiClient.post("/quintas", data);
+  createQuinta: async (formData: FormData) => {
+    const response = await apiClient.post("/quintas", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
 
-    if (response.status === 200) {
+    if (response.status === 200 || response.status === 201) {
       return response.data;
     }
     return null;

@@ -12,30 +12,32 @@ export default function Footer() {
           <div className="mx-auto md:mx-0">
             <Logo className="w-[120px]" />
           </div>
-          <small>
+          <small className="font-semibold">
             ZonaQuintas es una plataforma digital para alquilar casas de fin de
             semana en Argentina. Conectamos propietarios y viajeros de forma
             simple, rápida y segura.
           </small>
-          <div className="flex md:flex-col underline items-start justify-between w-full flex-row">
+          <div className="flex md:flex-col text-sm md:text-md underline items-start justify-between w-full flex-row">
             <Link href="/terms">Términos y condiciones</Link>
             <Link href="/politics">Políticas de privacidad</Link>
           </div>
         </div>
         <div className="flex justify-center gap-10 items-center">
           <ul className="flex flex-col">
-            <p className="font-medium underline">
+            <p className="font-medium underline  text-sm md:text-md">
               Como ser anfitrion
             </p>
-            <Link className="font-light text-black/60" href="publicar-quinta">
+            <Link
+              className="font-light  text-sm md:text-md text-black/60"
+              href="publicar-quinta">
               Publicá tu Quinta
             </Link>
-            {/* <Link className="font-light text-black/60" href="">
-              Foro de la comunidad
-            </Link> */}
           </ul>
-          <ul className="flex flex-col">
-            <Link target="_blank" className="font-medium flex items-center gap-2" href="https://www.instagram.com/zonaquintas/">
+          <ul className="flex flex-col  text-sm md:text-md">
+            <Link
+              target="_blank"
+              className="font-medium flex items-center gap-2"
+              href="https://www.instagram.com/zonaquintas/">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="20"
@@ -48,10 +50,9 @@ export default function Footer() {
               </svg>
               <p>Instagram</p>
             </Link>
-            {/* <Link className="font-light text-black/60" href="">
-              Manejo de la web
-            </Link> */}
-            <Link className="font-light text-black/60" href="/support">
+            <Link
+              className="font-light text-black/60  text-sm md:text-md"
+              href="/support">
               Preguntas frecuentes
             </Link>
           </ul>
@@ -64,11 +65,13 @@ export default function Footer() {
         </Link>
       </section>
       <section className="flex flex-col md:flex-row w-full justify-between items-center font-bold md:px-10 bg-white">
-        <p className="text-xs md:text-md">©2025 - Todos los derechos reservados</p>
+        <p className="text-xs md:text-md">
+          ©2025 - Todos los derechos reservados
+        </p>
         <div className="flex justify-between md:w-auto w-full md:pl-0 pl-5 items-center gap-5">
           <p className="text-xs md:text-md">Desarrollado por </p>
           <Link target="_blank" href="https://www.iwebtecnology.com/">
-            <img src='/iweb.png' alt="logo" className="h-10" />
+            <img src="/iweb.png" alt="logo" className="h-10" />
           </Link>
         </div>
       </section>

@@ -3,12 +3,12 @@ export type Quintas = {
   title: string;
   address: string;
   latitude: number; // FLOAT
-  longitude: number; // FLOAT
+  length: number; // FLOAT
   city: string;
   guests: number;
   bedrooms: number;
   bathrooms: number;
-  ambients: number;
+  environments: number;
   beds: number;
   price: number;
   images: string[]; // TABLA INTERMEDIA
@@ -26,14 +26,14 @@ export type Quintas = {
   toilettes: boolean;
   shampoo: boolean;
   toallas: boolean;
-  secador: boolean; // Secador de pelo
+  secador_pelo: boolean; // Secador de pelo
   // Artículos de limpieza general
   lavarropas: boolean;
-  cambio_de_toallas: boolean;
+  cambio_toallas: boolean;
 
   // ── Características adicionales ──
   // Cocina
-  utensilios_cocina: boolean;
+  utensillos_cocina: boolean;
   vajilla: boolean;
   freezer: boolean;
   // Entretenimiento
@@ -41,17 +41,16 @@ export type Quintas = {
   radio: boolean;
   tv: boolean;
   cable: boolean;
-  wifi: boolean; // Internet
+  internet: boolean; // Internet
   jacuzzi: boolean;
   playroom: boolean;
   sofas: boolean;
   // Estacionamiento
-  estacionamiento: boolean;
   estacionamiento_techado: boolean;
 
   // ── Otras características ──
   parrilla: boolean;
-  estufa_a_gas: boolean;
+  estufa_gas: boolean;
   hogar: boolean;
   hamacas_paraguayas: boolean;
   arboleda: boolean; // Arboleda con buena sombra
@@ -63,15 +62,7 @@ export type Quintas = {
   hamacas: boolean;
   parlantes: boolean;
 
-  // ── Otros ──
-  a_a: boolean; // Aire acondicionado
-  botiquin: boolean;
-  cocina: boolean;
-  cubiertos: boolean;
-  heladera: boolean;
-  juegos_infantiles: boolean;
-  ropa_de_camara: boolean;
-  visits: boolean;
+
 };
 
 export type Users = {

@@ -85,41 +85,26 @@ export const FiltersProvider = ({ children }: any) => {
         quinta.price <= filters.priceRange[1] &&
         filters.bedrooms <= quinta.bedrooms &&
         filters.bathrooms <= quinta.bathrooms &&
-        filters.amb <= quinta.ambients &&
+        filters.amb <= quinta.environments &&
         filters.beds <= quinta.beds &&
         (filters.guests === null || filters.guests <= quinta.guests) &&
         (filters.place === null || filters.place === quinta.city) &&
         // Filtros booleanos - solo filtrar si están activos (true)
-        (filters.a_a === null ||
-          filters.a_a === false ||
-          quinta.a_a === true) &&
-        (filters.botiquin === null ||
-          filters.botiquin === false ||
-          quinta.botiquin === true) &&
         (filters.cable === null ||
           filters.cable === false ||
           quinta.cable === true) &&
-        (filters.cocina === null ||
-          filters.cocina === false ||
-          quinta.cocina === true) &&
         (filters.cubiertos === null ||
           filters.cubiertos === false ||
-          quinta.cubiertos === true) &&
+          quinta.vajilla === true) &&
         (filters.estacionamiento === null ||
           filters.estacionamiento === false ||
-          quinta.estacionamiento === true) &&
+          quinta.estacionamiento_techado === true) &&
         (filters.estufa_hogar === null ||
           filters.estufa_hogar === false ||
-          quinta.estufa_hogar === true) &&
-        (filters.heladera === null ||
-          filters.heladera === false ||
-          quinta.heladera === true) &&
+          quinta.estufa_gas === true) &&
         (filters.jacuzzi === null ||
           filters.jacuzzi === false ||
           quinta.jacuzzi === true) &&
-        (filters.juegos_infantiles === null ||
-          filters.juegos_infantiles === false ||
-          quinta.juegos_infantiles === true) &&
         (filters.lavarropas === null ||
           filters.lavarropas === false ||
           quinta.lavarropas === true) &&
@@ -137,20 +122,20 @@ export const FiltersProvider = ({ children }: any) => {
           quinta.playroom === true) &&
         (filters.ropa_de_camara === null ||
           filters.ropa_de_camara === false ||
-          quinta.ropa_de_camara === true) &&
+          quinta.sabanas === true) &&
         (filters.sabanas === null ||
           filters.sabanas === false ||
           quinta.sabanas === true) &&
         (filters.secador === null ||
           filters.secador === false ||
-          quinta.secador === true) &&
+          quinta.secador_pelo === true) &&
         (filters.toallas === null ||
           filters.toallas === false ||
           quinta.toallas === true) &&
         (filters.tv === null || filters.tv === false || quinta.tv === true) &&
         (filters.wifi === null ||
           filters.wifi === false ||
-          quinta.wifi === true) &&
+          quinta.internet === true) &&
         (filters.vajilla === null ||
           filters.vajilla === false ||
           quinta.vajilla === true)

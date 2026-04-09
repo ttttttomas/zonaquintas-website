@@ -3,33 +3,41 @@ import SecondSeparator from "@/app/components/SecondSeparator";
 import { useState, useMemo } from "react";
 import { useQuintaForm } from "@/app/context/QuintaFormContext";
 import { useRouter } from "next/navigation";
-import { apiClient } from "@/lib/axios";
+import { ProductsServices } from "@/app/services/ProductsServices";
+import { useUser } from "@/app/context/UserContext";
 
-/** Mapeo de nombre legible → key del tipo Quintas */
+/** Mapeo de nombre legible → key exacta de la API */
 const CHAR_TO_KEY: Record<string, string> = {
+  // Habitaciones
   Sabanas: "sabanas",
   Mantas: "mantas",
   Almohadas: "almohadas",
+  // Artículos de limpieza personal
   Toilettes: "toilettes",
   Shampoo: "shampoo",
   Toallas: "toallas",
-  "Secador de pelo": "secador",
+  "Secador de pelo": "secador_pelo",
+  // Artículos de limpieza general
   Lavarropas: "lavarropas",
-  "Cambio de toallas": "cambio_de_toallas",
-  "Utensilios para cocinar": "utensilios_cocina",
+  "Cambio de toallas": "cambio_toallas",
+  // Cocina
+  "Utensilios para cocinar": "utensillos_cocina",
   Vajilla: "vajilla",
   Freezer: "freezer",
+  // Entretenimiento
   Televisor: "televisor",
   Radio: "radio",
   TV: "tv",
   Cable: "cable",
-  Internet: "wifi",
+  Internet: "internet",
   Jacuzzi: "jacuzzi",
   Playroom: "playroom",
-  "Sofás": "sofas",
+  Sofás: "sofas",
+  // Estacionamiento
   "Estacionamiento techado": "estacionamiento_techado",
+  // Otras
   Parrilla: "parrilla",
-  "Estufa a gas": "estufa_a_gas",
+  "Estufa a gas": "estufa_gas",
   Hogar: "hogar",
   "Hamacas paraguayas": "hamacas_paraguayas",
   "Arboleda con buena sombra": "arboleda",
@@ -44,11 +52,12 @@ const CHAR_TO_KEY: Record<string, string> = {
 
 export default function Paso4Page() {
   const { form, resetForm } = useQuintaForm();
+  const { user } = useUser();
   const router = useRouter();
   const [popUp, setPopUp] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
+  console.log(user?.id);
   // Previews de las imágenes seleccionadas
   const imagePreviews = useMemo(
     () => form.images.map((file) => URL.createObjectURL(file)),
@@ -60,9 +69,9 @@ export default function Paso4Page() {
       setSubmitting(true);
       setError(null);
 
-      // Construir el body con las características como booleans
+      // Construir los booleans de características
       const charBooleans: Record<string, boolean> = {};
-      for (const [, key] of Object.entries(CHAR_TO_KEY)) {
+      for (const key of Object.values(CHAR_TO_KEY)) {
         charBooleans[key] = false;
       }
       for (const charName of form.characteristics) {
@@ -70,43 +79,52 @@ export default function Paso4Page() {
         if (key) charBooleans[key] = true;
       }
 
-      // FormData para enviar imágenes + datos
+      const ownerId = user?.id ?? "";
+
+      // Armar el objeto JSON que va dentro del campo "data"
+      const dataPayload = {
+        title: form.title,
+        description: form.description,
+        address: form.address,
+        latitude: form.latitude,
+        length: form.longitude,
+        city: form.city,
+        guests: form.guests,
+        bedrooms: form.bedrooms,
+        bathrooms: form.bathrooms,
+        environments: form.ambients,
+        beds: form.beds,
+        price: form.price,
+        currency_price: form.currency_price,
+        owner_id: ownerId,
+        ...charBooleans,
+      };
+
+      // Construir FormData como lo espera la API:
+      // - "data": JSON string con todos los campos
+      // - "main_image": primera imagen (binario)
+      // - "images": resto de imágenes (binarios)
       const formData = new FormData();
-      formData.append("title", form.title);
-      formData.append("description", form.description);
-      formData.append("address", form.address);
-      formData.append("latitude", String(form.latitude));
-      formData.append("longitude", String(form.longitude));
-      formData.append("city", form.city);
-      formData.append("guests", String(form.guests));
-      formData.append("bedrooms", String(form.bedrooms));
-      formData.append("bathrooms", String(form.bathrooms));
-      formData.append("ambients", String(form.ambients));
-      formData.append("beds", String(form.beds));
-      formData.append("price", String(form.price));
-      formData.append("currency_price", form.currency_price);
-      formData.append("m2", String(form.m2));
+      formData.append("data", JSON.stringify(dataPayload));
 
-      // Características
-      for (const [key, val] of Object.entries(charBooleans)) {
-        formData.append(key, String(val));
+      if (form.images.length > 0) {
+        formData.append("main_image", form.images[0]);
       }
 
-      // Imágenes
-      for (const file of form.images) {
-        formData.append("images", file);
+      for (let i = 1; i < form.images.length; i++) {
+        formData.append("images", form.images[i]);
       }
 
-      await apiClient.post("/quintas", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      await ProductsServices.createQuinta(formData);
 
       resetForm();
       setPopUp(false);
       router.push("/");
     } catch (err: any) {
       setError(
-        err?.response?.data?.message ?? "Error al publicar la quinta",
+        err?.response?.data?.detail ??
+          err?.response?.data?.message ??
+          "Error al publicar la quinta",
       );
     } finally {
       setSubmitting(false);
@@ -137,12 +155,10 @@ export default function Paso4Page() {
             <b className="italic">{form.bedrooms || "—"}</b>
           </li>
           <li>
-            Cantidad de camas:{" "}
-            <b className="italic">{form.beds || "—"}</b>
+            Cantidad de camas: <b className="italic">{form.beds || "—"}</b>
           </li>
           <li>
-            Cantidad de baños:{" "}
-            <b className="italic">{form.bathrooms || "—"}</b>
+            Cantidad de baños: <b className="italic">{form.bathrooms || "—"}</b>
           </li>
           <li>
             Cantidad de huéspedes:{" "}
@@ -171,14 +187,11 @@ export default function Paso4Page() {
         </p>
         <ul className="flex flex-col gap-5 w-full text-lg">
           <li>
-            Título:{" "}
-            <b className="italic">{form.title || "Sin título"}</b>
+            Título: <b className="italic">{form.title || "Sin título"}</b>
           </li>
           <li>
             Descripción:{" "}
-            <b className="italic">
-              {form.description || "Sin descripción"}
-            </b>
+            <b className="italic">{form.description || "Sin descripción"}</b>
           </li>
           <li className="flex items-center gap-2">
             <p>Imágenes:</p>
@@ -193,17 +206,13 @@ export default function Paso4Page() {
                   />
                 ))
               ) : (
-                <span className="italic text-gray-400">
-                  Sin imágenes
-                </span>
+                <span className="italic text-gray-400">Sin imágenes</span>
               )}
             </div>
           </li>
           <li>
             Ubicación:{" "}
-            <b className="italic">
-              {form.address || "Sin dirección"}
-            </b>
+            <b className="italic">{form.address || "Sin dirección"}</b>
           </li>
           {form.city && (
             <li>
@@ -233,8 +242,7 @@ export default function Paso4Page() {
             <li>
               Precio por quincena:{" "}
               <b className="italic">
-                {form.currency_quincena}{" "}
-                {form.price_quincena.toLocaleString()}
+                {form.currency_quincena} {form.price_quincena.toLocaleString()}
               </b>
             </li>
           )}
@@ -250,9 +258,7 @@ export default function Paso4Page() {
       </section>
 
       {error && (
-        <p className="text-red-500 font-semibold text-center mb-4">
-          {error}
-        </p>
+        <p className="text-red-500 font-semibold text-center mb-4">{error}</p>
       )}
 
       <button
@@ -269,8 +275,8 @@ export default function Paso4Page() {
               ¿Estás seguro de que deseas enviar tu publicación?
             </p>
             <small className="text-black text-center text-lg">
-              Esta será enviada a revisión y próximamente se te notificará
-              de si es aprobada o denegada.
+              Esta será enviada a revisión y próximamente se te notificará de si
+              es aprobada o denegada.
             </small>
             <small className="text-black text-center text-lg">
               Verificá que todos los datos sean correctos.

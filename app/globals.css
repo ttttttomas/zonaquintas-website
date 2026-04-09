@@ -54,3 +54,9 @@
 .react-datepicker__day--keyboard-selected {
   background: none;
 }
+
+.react-datepicker__day--today {
+  background-color: transparent !important;
+  color: #1a1a1a !important;
+  font-weight: 500;
+}
