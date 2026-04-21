@@ -1,9 +1,12 @@
-/* eslint-disable @next/next/no-img-element */
+'use client'
 import { Separator } from '@/app/components/ui/Separator'
 import Link from 'next/link'
 import React from 'react'
+import {useUser} from '@/app/context/UserContext'
 
 export default function PublicationsPage() {
+  const { user } = useUser() || {};
+  console.log(user)
   return (
     <main className='mx-10'>
       <h1 className='text-2xl font-semibold'>Mis publicaciones</h1>
@@ -11,6 +14,7 @@ export default function PublicationsPage() {
       <div className='flex gap-10'>
         <div className='bg-white flex flex-col shadow-md shadow-black/50 p-2 rounded-xl'>
           <div className='flex gap-5 mb-5'>
+            {user?.id}
             <img src="quinta.jpg" alt="foto de la quinta" className="size-20 object-cover rounded-xl" />
             <div>
               <p>Casa quinta en Ezeiza, Buenos Aires</p>

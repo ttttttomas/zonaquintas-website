@@ -1,10 +1,8 @@
-import React from "react";
-
-export default function Add() {
+export default function Add({ className }) {
   return (
     <svg
-      className="cursor-pointer"
-      height="30"
+      className={className}
+      height="20"
       viewBox="0 0 36 36"
       fill="none"
       xmlns="http://www.w3.org/2000/svg">

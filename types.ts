@@ -72,15 +72,16 @@ export type Users = {
   date_of_birth: Date;
   address: string;
   description: string;
-  languages: string[]; // TABLA INTERMEDIA
   owner_time: string;
   owner_location: string;
-  opinions: string[]; // TABLA INTERMEDIA
-  average_opinions: number; // PROMEDIO DE OPINION; FLOAT
-  picture: string; // FOTO DE PERFIL DEL WACHO
   created_at: string;
-  role: "ADMIN" | "USER"; // STRING
+  average_opinions: number; // PROMEDIO DE OPINION; FLOAT
+  role: "admin" | "user";
   email: string;
+  password: string;
+  languages: string[]; // TABLA INTERMEDIA
+  opinions: string[]; // TABLA INTERMEDIA
+  picture: string[]; // FOTO DE PERFIL DEL WACHO
 };
 
 export type Search = {

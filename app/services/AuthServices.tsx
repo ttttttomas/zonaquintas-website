@@ -1,4 +1,5 @@
 import { apiClient } from "@/lib/axios";
+import { Users } from "@/types";
 
 export const AuthServices = {
   login: async (email: string, password: string) => {
@@ -26,4 +27,18 @@ export const AuthServices = {
     const response = await apiClient.get("/me");
     return response.data;
   },
+  getUserById: async (id: string): Promise<Users | null> => {
+    const response = await apiClient.get(`/users/?id=${id}`);
+    return response.data;
+  },
+  updateUser: async (id: any, data: any) => {
+    const response = await apiClient.put(`/user/${id}`,
+      data ,
+      {
+        headers: { "Content-Type": "application/json" },
+      },
+    );
+    return response.data;
+  },
 };
+                

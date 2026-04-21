@@ -15,7 +15,7 @@ export default function LoginPage() {
           toast.success(response.data.message, { duration: 2000 });
           setTimeout(resolve, 2000);
         });
-        router.push("/my-account");
+        router.push("/");
       }
     } catch (error: any) {
       const message =

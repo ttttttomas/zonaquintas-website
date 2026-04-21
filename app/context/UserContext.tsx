@@ -3,7 +3,6 @@ import { Users } from "@/types";
 import { AuthServices } from "@/app/services/AuthServices";
 import {
   createContext,
-  useCallback,
   useContext,
   useState,
   useEffect,
@@ -16,7 +15,7 @@ interface UserContextType {
   error: string | null;
   isAuthenticated: boolean;
   refetchUser: () => Promise<void>;
-  checkAuthentication: () => Promise<boolean>;
+  // checkAuthentication: () => Promise<boolean>;
 }
 
 const UserContext = createContext<UserContextType | null>(null);
@@ -30,7 +29,8 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     try {
       setLoading(true);
       setError(null);
-      const data = await AuthServices.me();
+      const {current_user} = await AuthServices.me();
+      const data = await AuthServices.getUserById(current_user);
       setUser(data);
     } catch (err: any) {
       setError(err?.response?.data?.message ?? "Error al obtener el usuario");
@@ -40,17 +40,17 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const checkAuthentication = useCallback(async (): Promise<boolean> => {
-    try {
-      const data = await AuthServices.me();
-      setUser(data);
-      setError(null);
-      return true;
-    } catch {
-      setUser(null);
-      return false;
-    }
-  }, []);
+  // const checkAuthentication = useCallback(async (): Promise<boolean> => {
+  //   try {
+  //     const data = await AuthServices.me();
+  //     setUser(data);
+  //     setError(null);
+  //     return true;
+  //   } catch {
+  //     setUser(null);
+  //     return false;
+  //   }
+  // }, []);
 
   useEffect(() => {
     fetchUser();
@@ -64,7 +64,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
         error,
         isAuthenticated: !!user,
         refetchUser: fetchUser,
-        checkAuthentication,
+        // checkAuthentication,
       }}>
       {children}
     </UserContext.Provider>
