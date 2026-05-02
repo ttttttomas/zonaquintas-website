@@ -21,12 +21,14 @@ export default function QuintasFilters() {
     fetchQuintas();
   }, []);
 
+  const quintasFiltered = filtersQuintas(quintas);
+
   return (
     <section className="flex flex-wrap lg:gap-x-16 gap-x-10 justify-center">
-      {quintas?.map((product: Quintas) => (
+      {quintasFiltered?.map((product: Quintas) => (
         <QuintaCard key={product.id} product={product} />
       ))}
-      {!quintas && <p className="text-center m-20">No hay resultados</p>}
+      {quintasFiltered?.length === 0 && <p className="text-center m-20">No hay resultados</p>}
     </section>
   );
 }

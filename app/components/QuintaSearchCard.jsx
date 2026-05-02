@@ -53,15 +53,7 @@ export default function QuintaSearchCard({ product }) {
         </div>
 
         <div className="md:flex grid grid-cols-2 gap-2 md:gap-0 grid-rows-2 place-items-center flex-col justify-between pl-1 py-2">
-          {product.images.map((_, i) => (
-            <img
-              key={i}
-              src={product.images[i]}
-              alt={`mini-${i}`}
-              className="size-16 object-cover"
-            />
-          ))}
-          {product.images.map((_, i) => (
+          {product.images.slice(0, 4).map((_, i) => (
             <img
               key={i}
               src={product.images[i]}

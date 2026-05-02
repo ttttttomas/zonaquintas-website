@@ -3,9 +3,13 @@
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState, useMemo } from "react";
 import { ProductsServices } from "@/app/services/ProductsServices";
-import { Quintas } from "@/types";
-import { Star, ChevronLeft, ShieldCheck } from "lucide-react";
+import { BookingsServices } from "@/app/services/BookingsServices";
+import { useUser } from "@/app/context/UserContext";
+import { Quintas, Users } from "@/types";
+import { ChevronLeft, ShieldCheck } from "lucide-react";
 import Link from "next/link";
+import toast from "react-hot-toast";
+import { AuthServices } from "@/app/services/AuthServices";
 
 function formatDateDisplay(iso: string): string {
   if (!iso) return "—";
@@ -19,6 +23,7 @@ function formatDateDisplay(iso: string): string {
 }
 
 export default function PreviewReservationPage() {
+  const { user } = useUser();
   const params = useParams();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -30,30 +35,32 @@ export default function PreviewReservationPage() {
   const guestsParam = Number(searchParams.get("guests")) || 1;
 
   const [quinta, setQuinta] = useState<Quintas | null>(null);
+  const [userData, setUserData] = useState<Users | null>(null);
+  const [owner, setOwner] = useState<Users | null>(null);
   const [loading, setLoading] = useState(true);
-
-  // Payment form state
-  const [cardNumber, setCardNumber] = useState("");
-  const [expiry, setExpiry] = useState("");
-  const [cvv, setCvv] = useState("");
-  const [billingAddress, setBillingAddress] = useState("");
-  const [postalCode, setPostalCode] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [bookingMessage, setBookingMessage] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const ownerId = quinta?.owner_id ?? "";
 
   useEffect(() => {
-    const fetchQuinta = async () => {
+    const fetchQuintaAndOwner = async () => {
       try {
-        const data = await ProductsServices.getQuintaById(id);
-        setQuinta(data);
+        const res = await Promise.all([
+          ProductsServices.getQuintaById(id),
+          AuthServices.getUserById(ownerId),
+        ]);
+        const [quinta, owner] = res;
+        setQuinta(quinta);
+        setOwner(owner);
       } catch {
         console.error("Error cargando quinta");
       } finally {
         setLoading(false);
       }
     };
-    fetchQuinta();
-  }, [id]);
-
+    fetchQuintaAndOwner();
+  }, [id, ownerId, user]);
   // Calcular noches y precios
   const nights = useMemo(() => {
     if (!startDateParam || !endDateParam) return 1;
@@ -64,6 +71,9 @@ export default function PreviewReservationPage() {
   }, [startDateParam, endDateParam]);
 
   const pricePerNight = quinta?.price ?? 0;
+  const userId = user?.id ?? "";
+  const quintaId = quinta?.id ?? "";
+
   const currency = quinta?.currency_price ?? "USD";
   const subtotal = pricePerNight * nights;
   const serviceCost = Math.round(subtotal * 0.119);
@@ -72,19 +82,99 @@ export default function PreviewReservationPage() {
   const formatCurrency = (val: number) =>
     `${currency} ${val.toLocaleString("es-AR")}`;
 
+  const sendEmailToOwner = async () => {
+    // Suponiendo que tienes un Date (o string ISO)
+
+    console.log("user desde fetch", userData);
+    const res = await fetch("/api/test-email/new-booking", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        owner: {
+          name: owner?.name,
+          email: owner?.email,
+        },
+        guest: {
+          name: user?.name,
+        },
+        property: {
+          title: quinta?.title,
+          checkIn: startDateParam,
+          checkOut: endDateParam,
+          guests: guestsParam,
+          total: total,
+          currency: currency,
+          message: bookingMessage,
+        },
+      }),
+    });
+    console.log(res);
+  };
+
+  const createdBooking = async () => {
+    const fixDateToMidnightUTC = (date: string | Date) => {
+      const d = new Date(date);
+      d.setUTCHours(0, 0, 0, 0);
+      return d.toISOString();
+    };
+
+    const formattedCheckIn = fixDateToMidnightUTC(startDateParam);
+    const formattedCheckOut = fixDateToMidnightUTC(endDateParam);
+
+    console.log(formattedCheckIn, "-", formattedCheckOut);
+
+    await BookingsServices.createBooking({
+      status: "pending",
+      owner_id: ownerId,
+      quinta_id: quintaId,
+      guest_id: userId,
+      check_in: formattedCheckIn,
+      check_out: formattedCheckOut,
+      guest_count: guestsParam,
+      message: bookingMessage || "",
+      currency_price: currency,
+      amount: total,
+      quinta_title: quinta?.title,
+      quinta_main_image: quinta?.main_image,
+      quinta_address: quinta?.address,
+    });
+  };
+
   const handleConfirm = async () => {
+    if (!bookingMessage) {
+      alert("Por favor, agrega un mensaje para el anfitrión");
+      return;
+    }
     setSubmitting(true);
-    // TODO: Integrar con pasarela de pago
-    setTimeout(() => {
-      setSubmitting(false);
-      router.push("/");
-    }, 2000);
+    try {
+      await Promise.all([createdBooking(), sendEmailToOwner()]);
+      setTimeout(() => {
+        toast.success(
+          "Reserva creada exitosamente. Esperando confirmación del anfitrión.",
+        );
+        router.push(`/quintas/${quintaId}/success`);
+      }, 2000);
+    } catch (error) {
+      console.error("Error al confirmar reserva desde el back:", error);
+      toast.error("Error al confirmar reserva. Por favor, inténtalo de nuevo.");
+    }
   };
 
   if (loading) {
     return (
       <main className="flex items-center justify-center min-h-[60vh]">
         <div className="animate-spin rounded-full h-10 w-10 border-4 border-primaryDark border-t-transparent" />
+      </main>
+    );
+  }
+
+  if (submitting) {
+    return (
+      <main className="flex items-center flex-col gap-10 justify-center min-h-[60vh]">
+        <div className="animate-spin rounded-full h-10 w-10 border-4 border-primaryDark border-t-transparent" />
+        <p className="text-gray-500 text-xl text-center">Procesando...</p>
       </main>
     );
   }
@@ -103,7 +193,8 @@ export default function PreviewReservationPage() {
       <div className="flex items-center gap-3 mb-6">
         <button
           onClick={() => router.back()}
-          className="flex items-center gap-1 text-black hover:text-primaryDark transition cursor-pointer">
+          className="flex items-center gap-1 text-black hover:text-primaryDark transition cursor-pointer"
+        >
           <ChevronLeft className="w-5 h-5" />
         </button>
         <h1 className="text-xl font-semibold">Tu Reserva</h1>
@@ -130,7 +221,8 @@ export default function PreviewReservationPage() {
             </div>
             <button
               onClick={() => router.back()}
-              className="text-sm font-semibold underline cursor-pointer hover:text-primaryDark">
+              className="text-sm font-semibold underline cursor-pointer hover:text-primaryDark"
+            >
               Editar
             </button>
           </div>
@@ -147,90 +239,22 @@ export default function PreviewReservationPage() {
             </div>
             <button
               onClick={() => router.back()}
-              className="text-sm font-semibold underline cursor-pointer hover:text-primaryDark">
+              className="text-sm font-semibold underline cursor-pointer hover:text-primaryDark"
+            >
               Editar
             </button>
           </div>
-
-          <hr className="border-gray-200" />
-
-          {/* Payment Methods */}
-          {/* <div>
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="font-semibold">Poder pagar con</h2>
-              <div className="flex gap-2 items-center">
-                <img
-                  src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg"
-                  alt="Visa"
-                  className="h-5"
-                />
-                <img
-                  src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg"
-                  alt="Mastercard"
-                  className="h-5"
-                />
-                <img
-                  src="https://upload.wikimedia.org/wikipedia/commons/f/fa/American_Express_logo_%282018%29.svg"
-                  alt="Amex"
-                  className="h-5"
-                />
-                <div className="w-8 h-5 bg-blue-600 rounded flex items-center justify-center">
-                  <span className="text-white text-[8px] font-bold">PAY</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="space-y-3">
-              <input
-                type="text"
-                placeholder="Número de tarjeta"
-                value={cardNumber}
-                onChange={(e) => setCardNumber(e.target.value)}
-                className="w-full md:w-2/3 border border-gray-300 rounded-md px-4 py-2.5 text-sm focus:outline-none focus:border-primaryDark transition"
-              />
-              <div className="flex gap-3 w-full md:w-2/3">
-                <input
-                  type="text"
-                  placeholder="Vencimiento"
-                  value={expiry}
-                  onChange={(e) => setExpiry(e.target.value)}
-                  className="flex-1 border border-gray-300 rounded-md px-4 py-2.5 text-sm focus:outline-none focus:border-primaryDark transition"
-                />
-                <input
-                  type="text"
-                  placeholder="CVV"
-                  value={cvv}
-                  onChange={(e) => setCvv(e.target.value)}
-                  className="w-24 border border-gray-300 rounded-md px-4 py-2.5 text-sm focus:outline-none focus:border-primaryDark transition"
-                />
-              </div>
-              <input
-                type="text"
-                placeholder="Dirección de facturación"
-                value={billingAddress}
-                onChange={(e) => setBillingAddress(e.target.value)}
-                className="w-full md:w-2/3 border border-gray-300 rounded-md px-4 py-2.5 text-sm focus:outline-none focus:border-primaryDark transition"
-              />
-              <input
-                type="text"
-                placeholder="Código postal"
-                value={postalCode}
-                onChange={(e) => setPostalCode(e.target.value)}
-                className="w-full md:w-2/3 border border-gray-300 rounded-md px-4 py-2.5 text-sm focus:outline-none focus:border-primaryDark transition"
-              />
-            </div>
-          </div> */}
-
           <hr className="border-gray-200" />
 
           {/* Cancellation Policy */}
-          <div>
+          <div className="">
             <h2 className="font-semibold mb-2">Política de cancelación</h2>
-            <p className="text-sm text-gray-700">
+            <p className="text-sm flex items-center gap-2 text-gray-700">
               Esta reserva no es reembolsable.
               <Link
                 href="/terms"
-                className="font-semibold underline hover:text-primaryDark">
+                className="font-semibold underline hover:text-primaryDark"
+              >
                 Mas información
               </Link>
             </p>
@@ -255,54 +279,90 @@ export default function PreviewReservationPage() {
                 <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-black shrink-0" />
                 Tratá el alojamiento del anfitrión como si fuese tu casa.
               </li>
+              <li className="flex items-start gap-2">
+                <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-black shrink-0" />
+                No realices actividades ilegales dentro del alojamiento.
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-black shrink-0" />
+                No realices fiestas o eventos sin autorización del anfitrión.
+              </li>
             </ul>
           </div>
 
           <hr className="border-gray-200" />
 
           {/* Host Acceptance Notice */}
-          <div className="flex items-start gap-4 bg-gray-50 rounded-xl p-4">
-            <ShieldCheck className="w-10 h-10 text-primaryDark shrink-0 mt-1" />
+          <div className="flex flex-col items-start gap-4 bg-gray-50 rounded-xl p-4">
+            <div className="flex items-center gap-2">
+              <ShieldCheck className="w-10 h-10 text-primaryDark shrink-0 mt-1" />
+              <p className="text-sm text-gray-700">
+                El anfitrión tendrá 72 horas hábiles para aceptar o rechazar tu
+                estadía, no se te cobrará nada hasta que esto pase y recibirás
+                por correo la notificación con la respuesta.
+              </p>
+            </div>
             <p className="text-sm text-gray-700">
-              Una vez confirmada la reserva el anfitrión tendrá 24 horas hábiles
-              para aceptar o rechazar tu estadía, no se te cobrará nada hasta
-              que esto pase y recibirás por correo la notificación con la
-              respuesta.
+              Una vez confirmada la reserva, te llegará un correo con las
+              instrucciones para realizar la transferencia de la seña junto al
+              enlace del link de pago. Tendrás 72 horas hábiles para realizar la
+              misma.
             </p>
           </div>
 
           <hr className="border-gray-200" />
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="font-semibold mb-2">
+                ¿Qué ocurre si no pago la reserva?
+              </h3>
 
+              <p className="text-sm text-gray-700">
+                En caso de que no llegues a pagar la reserva dentro del plazo de
+                expiración, te enviaremos un correo electrónico y te avisaremos
+                de la situación.
+              </p>
+            </div>
+          </div>
+          <hr className="border-gray-200" />
           {/* Terms & Conditions */}
           <p className="text-xs text-gray-500 leading-relaxed">
-            Al seleccionar el botón de a continuación, acepto los{" "}
+            Al seleccionar el botón a continuación, acepto los{" "}
             <Link
               href="/terms"
-              className="font-semibold underline text-black hover:text-primaryDark">
-              Términos y condiciones
+              className="font-semibold underline text-black hover:text-primaryDark"
+            >
+              Términos y Condiciones
             </Link>{" "}
             y{" "}
             <Link
               href="/politics"
-              className="font-semibold underline text-black hover:text-primaryDark">
+              className="font-semibold underline text-black hover:text-primaryDark"
+            >
               Privacidad
             </Link>
-            . Además, doy mi consentimiento para que se pueda cobrarme a mi
-            tarjeta el monto indicado en caso de que el anfitrión acepte y si
-            soy responsable de algún daño también se me cobrará.
+            . Además, doy mi consentimiento para que se me pueda cobrar a mi
+            tarjeta el monto indicado en caso de que el anfitrión acepte, y si
+            soy responsable de algún daño, también se me cobrará.
           </p>
-
+          <p className="text-xs text-gray-500 leading-relaxed">
+            ZonaQuintas no se hace responsable de cualquier situación que pueda
+            surgir por fuera de nuestros medios de comunicación oficiales entre
+            el anfitrión y el huésped. En caso de cualquier inconveniente, por
+            favor contáctanos a través de nuestro centro de Soporte.
+          </p>
           {/* Submit */}
           <button
             onClick={handleConfirm}
             disabled={submitting}
-            className="w-full md:w-auto bg-primaryDark hover:bg-green-700 text-white font-bold py-3 px-16 rounded-full text-lg transition cursor-pointer disabled:opacity-50">
+            className="w-full md:w-auto bg-primaryDark hover:bg-green-700 text-white font-bold py-3 px-16 rounded-full text-lg transition cursor-pointer disabled:opacity-50"
+          >
             {submitting ? "Procesando..." : "Confirmar reserva"}
           </button>
         </div>
 
         {/* ── RIGHT COLUMN — Quinta Summary Card ── */}
-        <div className="md:w-[340px] shrink-0">
+        <div className="md:w-[400px] shrink-0">
           <div className="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden md:sticky md:top-24">
             {/* Quinta Image + Info */}
             <div className="flex gap-3 p-4">
@@ -323,13 +383,13 @@ export default function PreviewReservationPage() {
             </div>
 
             {/* Rating */}
-            <div className="flex items-center gap-2 px-4 pb-3">
+            {/* <div className="flex items-center gap-2 px-4 pb-3">
               <span className="font-semibold text-sm">4,5</span>
               <Star className="w-3.5 h-3.5 fill-yellow-400 stroke-yellow-400" />
               <span className="text-sm text-blue-600 font-medium">
                 72 opiniones
               </span>
-            </div>
+            </div> */}
 
             <hr className="border-gray-200" />
 
@@ -349,11 +409,27 @@ export default function PreviewReservationPage() {
               </div>
 
               <hr className="border-gray-200 my-2" />
-
-              <div className="flex justify-between font-bold text-base">
-                <span>Total</span>
-                <span>{formatCurrency(total)}</span>
+              <p className="text-center text-lg font-bold">Pago de seña</p>
+              <div className="flex justify-between text-sm">
+                <p>Pagarás de seña (30% + servicio):</p>
+                <span className="font-semibold">
+                  {formatCurrency(total * 0.3 + serviceCost)}
+                </span>
               </div>
+              <p className="text-center text-lg font-bold">Total</p>
+              <div className="flex justify-between text-sm">
+                <p>Total de la reserva:</p>
+                <span className="font-semibold">{formatCurrency(total)}</span>
+              </div>
+              <p className="text-black font-semibold mb-2 underline text-center my-5">
+                Agregá un mensaje para el anfitrión
+              </p>
+              <textarea
+                className="border w-full border-gray-200 p-2"
+                placeholder="Agregá un mensaje para el anfitrión..."
+                value={bookingMessage || ""}
+                onChange={(e) => setBookingMessage(e.target.value)}
+              ></textarea>
             </div>
           </div>
         </div>

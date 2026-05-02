@@ -30,8 +30,12 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       setLoading(true);
       setError(null);
       const {current_user} = await AuthServices.me();
+      console.log(current_user);
+      
       const data = await AuthServices.getUserById(current_user);
       setUser(data);
+      console.log(data);
+      
     } catch (err: any) {
       setError(err?.response?.data?.message ?? "Error al obtener el usuario");
       setUser(null);

@@ -9,8 +9,10 @@ export default function RegisterPage() {
     const response = await AuthServices.register(data);
     if (response?.status === 200) {
       console.log(response);
-      toast.success(`${response.data.message}!`);
-      // window.location.href = "/my-account";
+      toast.success(`${response.data.message}`);
+      setTimeout(() => {
+        window.location.href = "/my-account";
+      }, 2000);
     }
   });
   return (
@@ -18,7 +20,10 @@ export default function RegisterPage() {
       <Toaster position="bottom-center" />
       <div className="absolute publicar h-[66vh] -z-10 w-full" />
       <form
-        onSubmit={onSubmit}
+        onSubmit={(e) => {
+          e.preventDefault();
+          onSubmit();
+        }}
         className="bg-white w-full max-w-4xl px-5 md:px-20 gap-5 shadow-lg py-10 shadow-black/20 flex flex-col text-black">
         <img
           src="/logo.png"

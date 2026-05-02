@@ -15,7 +15,7 @@ export const AuthServices = {
   register: async (data: any) => {
     const response = await apiClient.post(
       "/register",
-      { data },
+      data ,
       {
         headers: { "Content-Type": "application/json" },
       },
@@ -28,7 +28,7 @@ export const AuthServices = {
     return response.data;
   },
   getUserById: async (id: string): Promise<Users | null> => {
-    const response = await apiClient.get(`/users/?id=${id}`);
+    const response = await apiClient.get(`/user_by_id?id=${id}`);
     return response.data;
   },
   updateUser: async (id: any, data: any) => {
@@ -40,5 +40,9 @@ export const AuthServices = {
     );
     return response.data;
   },
+  logout: async () => {
+    const response = await apiClient.post("/logout");
+    return response.data;
+  }
 };
                 

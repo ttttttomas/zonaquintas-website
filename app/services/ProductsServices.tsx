@@ -30,7 +30,24 @@ export const ProductsServices = {
     return null;
   },
   getOwnerById: async (id: string) => {
-    const response = await apiClient.get<Users>(`/users?id=${id}`);
+    const response = await apiClient.get<Users>(`/user_by_id?id=${id}`);
+
+    if (response.status === 200) {
+      return response.data;
+    }
+    return null;
+  },
+  getWallet: async (id: string) => {
+    const response = await apiClient.get(`/dashboard/${id}`);
+
+    if (response.status === 200) {
+      return response.data;
+    }
+    return null;
+  },
+
+  getAddressFromQuintas: async () => {
+    const response = await apiClient.get(`/quintas/getAddressFromQuintas`);
 
     if (response.status === 200) {
       return response.data;

@@ -39,7 +39,7 @@
     "app/components/home/Filters.jsx",
     ".next/types/app/(auth)/login/page.tsx",
     ".next/dev/types/**/*.ts"
-  ],
+, "app/not-found"  ],
   "exclude": [
     "node_modules"
   ]

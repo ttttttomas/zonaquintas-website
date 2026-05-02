@@ -89,3 +89,167 @@ export type Search = {
   dates: Date[];
   guests: number | null;
 };
+
+export type Booking = {
+  id?: string;
+  payment_id?: string;
+  quinta_id: string;
+  guest_id: string;
+  owner_id: string;
+  check_in: string;
+  check_out: string;
+  guest_count: number;
+  message: string;
+  currency_price: "ARS" | "USD";
+  amount: number;
+  status: "pending" | "finished" | "rejected" | "cancelled" | "accepted" | "paid";
+  payment_expire?: string;
+  created_at?: string;
+  updated_at?: string | null;
+  quinta_title?: string;
+  quinta_main_image?: string;
+  quinta_address?: string;
+  guest_email?: string;
+  guest_phone?: string;
+  guest_name?: string;
+}
+
+export type BookingPayments = {
+  payment_id?: string;
+  booking_id: string;
+  payment_type: "deposit" | "balance";
+  amount: number;
+  currency: "ARS" | "USD";
+  status: "pending" | "finished" | "rejected" | "cancelled" | "accepted" | "paid";
+  rebill_payment_link_id: string;
+  rebill_payment_link_url: string;
+  rebill_transaction_id: string;
+  payment_expire?: string;
+  created_at?: string;
+  updated_at?: string;
+  paid_at?: string;
+}
+
+export type Favorite = {
+  favorite_id?: string;
+  user_id: string;
+  quinta_id: string;
+  created_at?: string;
+}
+
+export type Review = {
+  review_id?: string;
+  booking_id: string;
+  stars: number;
+  review_text: string;
+  created_at?: string;
+}
+
+export interface PaymentLink {
+  id: string;
+  organizationId: string;
+  url: string;
+  status: "active" | "inactive" | "expired";
+  description: string | null;
+  metadata: Record<string, unknown> | null;
+  expirationDate: string | null; // ISO date
+  redirectUrls: RedirectUrls;
+  prefilledFields: Record<string, unknown> | null;
+  showCoupon: boolean;
+  createdAt: string; // ISO date
+  updatedAt: string; // ISO date
+  isSingleUse: boolean;
+
+  paymentMethods: PaymentMethod[];
+  installmentsSettings: InstallmentsSettings[];
+  prices: Price[];
+
+  type: "instant" | "subscription";
+}
+
+export interface CreatePaymentLinkRequest {
+  title: Title[];
+
+  paymentMethods: PaymentMethod[];
+
+  prices?: PriceInput[]; // 👈 opcional porque en suscripciones no se usa
+  plans?: string[]; // 👈 para suscripciones
+
+  installmentsSettings?: InstallmentsSettings[];
+
+  isSingleUse?: boolean;
+
+  redirectUrls?: RedirectUrls;
+
+  description?: string;
+  metadata?: Record<string, unknown>;
+  expirationDate?: string; // ISO date
+  prefilledFields?: Record<string, unknown>;
+  showCoupon?: boolean;
+}
+
+export interface PaymentMethod {
+  methods: ("card" | "bank_transfer" | string)[];
+  currency: string;
+}
+
+export interface PriceInput {
+  amount: number;
+  currency: string;
+  isDefault?: boolean;
+}
+
+export interface InstallmentsSettings {
+  currency: string;
+  enabledInstallments: number[];
+}
+
+export interface RedirectUrls {
+  approved: string;
+  rejected?: string;
+  pending?: string;
+}
+
+export interface Title {
+  text: string;
+  language: string;
+}
+
+export interface Price {
+  id: string;
+  amount: number;
+  currency: string;
+  isPriceFixed: boolean | null;
+  isDefault: boolean;
+}
+
+export interface Balance {
+  ARS: number;
+  USD: number;
+}
+
+export interface Balances {
+  retenido: Balance;
+  disponible: Balance;
+  entregado: Balance;
+}
+
+export type Currency = "ARS" | "USD";
+
+export type Status = "RETENIDO" | 'ENTREGADO' | 'DISPONIBLE';
+
+export interface Transaction {
+  id: string;
+  date: string;       // Podrías usar Date si parseas la fecha
+  quinta_name: string;
+  amount: number;
+  currency: Currency;
+  status: Status;
+  description: string;
+}
+
+export interface Wallet {
+  balances: Balances;
+  next_transfer: null | string;  // Si puede ser fecha o undefined, adaptar
+  recent_transactions: Transaction[];
+}

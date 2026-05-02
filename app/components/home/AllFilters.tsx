@@ -326,142 +326,55 @@ export default function FiltrosInmuebles({
 }: {
   handleClick: any;
 }) {
-  const { filters, setFilters } = useFilters();
-  // const [minPrice, setMinPrice] = useState(50000);
-  // const [maxPrice, setMaxPrice] = useState(5000000);
-  const [habitaciones, setHabitaciones] = useState(1);
-  const [ambientes, setAmbientes] = useState(0);
-  const [baños, setbaños] = useState(0);
-  const [priceRange, setPriceRange] = useState<[number, number]>([
-    50000, 5000000,
-  ]);
+  const { filters, setFilters, resetFilters } = useFilters();
+  // Estado local del slider — solo se aplica al contexto al clickar "Ver resultados"
+  const [priceRange, setPriceRange] = useState<[number, number]>(filters.priceRange);
+
   const fmt = (n: number) =>
-    n.toLocaleString("es-AR", {
-      style: "currency",
-      currency: "ARS",
-      maximumFractionDigits: 0,
-    });
-
-  const formatedMinPrice = priceRange[0].toLocaleString("es-AR", {
-    style: "currency",
-    currency: "ARS",
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  });
-
-  const formatedMaxPrice = priceRange[1].toLocaleString("es-AR", {
-    style: "currency",
-    currency: "ARS",
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  });
-
-  console.log(filters);
+    n.toLocaleString("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 0 });
 
   const featureList = useMemo(
     () => [
-      { key: "wifi", label: "WiFi", icon: <IconWifi className="h-5 w-5" /> },
-      { key: "tv", label: "Televisión", icon: <IconTv className="h-5 w-5" /> },
-      {
-        key: "a_a",
-        label: "Aire Acondicionado",
-        icon: <IconAC className="h-5 w-5" />,
-      },
-      {
-        key: "estacionamiento",
-        label: "Estacionamiento",
-        icon: <IconParking className="h-5 w-5" />,
-      },
-      {
-        key: "parrilla",
-        label: "Parrilla",
-        icon: <IconGrill className="h-5 w-5" />,
-      },
-      {
-        key: "piscina",
-        label: "Piscina",
-        icon: <IconPool className="h-5 w-5" />,
-      },
-      {
-        key: "jacuzzi",
-        label: "Jacuzzi",
-        icon: <IconJacuzzi className="h-5 w-5" />,
-      },
-      {
-        key: "playroom",
-        label: "Sala de Juegos",
-        icon: <IconGame className="h-5 w-5" />,
-      },
-      {
-        key: "juegos_infantiles",
-        label: "Juegos Infantiles",
-        icon: <IconToys className="h-5 w-5" />,
-      },
-      {
-        key: "cocina",
-        label: "Cocina",
-        icon: <IconKitchen className="h-5 w-5" />,
-      },
-      {
-        key: "heladera",
-        label: "Heladera",
-        icon: <IconFreezer className="h-5 w-5" />,
-      },
-      {
-        key: "lavarropas",
-        label: "Lavarropas",
-        icon: <IconWasher className="h-5 w-5" />,
-      },
-      {
-        key: "secador",
-        label: "Secador de pelo",
-        icon: <IconDryer className="h-5 w-5" />,
-      },
-      {
-        key: "botiquin",
-        label: "Botiquín",
-        icon: <IconFirstAid className="h-5 w-5" />,
-      },
-      {
-        key: "cable",
-        label: "TV por Cable",
-        icon: <IconCable className="h-5 w-5" />,
-      },
-      {
-        key: "cubiertos",
-        label: "Cubiertos",
-        icon: <IconUtensils className="h-5 w-5" />,
-      },
-      {
-        key: "vajilla",
-        label: "Vajilla",
-        icon: <IconDishes className="h-5 w-5" />,
-      },
-      {
-        key: "estufa_hogar",
-        label: "Estufa/Hogar",
-        icon: <IconFireplace className="h-5 w-5" />,
-      },
-      {
-        key: "mantas",
-        label: "Mantas",
-        icon: <IconBlanket className="h-5 w-5" />,
-      },
-      {
-        key: "ropa_de_camara",
-        label: "Ropa de Cama",
-        icon: <IconBedding className="h-5 w-5" />,
-      },
-      {
-        key: "sabanas",
-        label: "Sábanas",
-        icon: <IconSheets className="h-5 w-5" />,
-      },
-      {
-        key: "toallas",
-        label: "Toallas",
-        icon: <IconTowel className="h-5 w-5" />,
-      },
+      // Habitaciones
+      { key: "sabanas",        label: "Sábanas",              icon: <IconSheets   className="h-5 w-5" /> },
+      { key: "mantas",         label: "Mantas",               icon: <IconBlanket  className="h-5 w-5" /> },
+      { key: "almohadas",      label: "Almohadas",            icon: <IconBedding  className="h-5 w-5" /> },
+      // Limpieza personal
+      { key: "toilettes",      label: "Toilettes",            icon: <IconToilet   className="h-5 w-5" /> },
+      { key: "shampoo",        label: "Shampoo",              icon: <IconSettings className="h-5 w-5" /> },
+      { key: "toallas",        label: "Toallas",              icon: <IconTowel    className="h-5 w-5" /> },
+      { key: "secador_pelo",   label: "Secador de pelo",      icon: <IconDryer    className="h-5 w-5" /> },
+      // Limpieza general
+      { key: "lavarropas",     label: "Lavarropas",           icon: <IconWasher   className="h-5 w-5" /> },
+      { key: "cambio_toallas", label: "Cambio de toallas",    icon: <IconBroom    className="h-5 w-5" /> },
+      // Cocina
+      { key: "utensillos_cocina", label: "Utensillos de cocina", icon: <IconUtensils className="h-5 w-5" /> },
+      { key: "vajilla",        label: "Vajilla",              icon: <IconDishes   className="h-5 w-5" /> },
+      { key: "freezer",        label: "Heladera / Freezer",   icon: <IconFreezer  className="h-5 w-5" /> },
+      // Entretenimiento
+      { key: "televisor",      label: "Televisor",            icon: <IconTv       className="h-5 w-5" /> },
+      { key: "radio",          label: "Radio",                icon: <IconChip     className="h-5 w-5" /> },
+      { key: "tv",             label: "Smart TV",             icon: <IconTv       className="h-5 w-5" /> },
+      { key: "cable",          label: "TV por Cable",         icon: <IconCable    className="h-5 w-5" /> },
+      { key: "internet",       label: "WiFi / Internet",      icon: <IconWifi     className="h-5 w-5" /> },
+      { key: "jacuzzi",        label: "Jacuzzi",              icon: <IconJacuzzi  className="h-5 w-5" /> },
+      { key: "playroom",       label: "Sala de Juegos",       icon: <IconGame     className="h-5 w-5" /> },
+      { key: "sofas",          label: "Sofás",                icon: <IconSofa     className="h-5 w-5" /> },
+      // Estacionamiento
+      { key: "estacionamiento_techado", label: "Estacionamiento techado", icon: <IconParking className="h-5 w-5" /> },
+      // Otras características
+      { key: "parrilla",           label: "Parrilla",              icon: <IconGrill     className="h-5 w-5" /> },
+      { key: "estufa_gas",         label: "Estufa a gas",          icon: <IconFireplace className="h-5 w-5" /> },
+      { key: "hogar",              label: "Hogar / Chimenea",      icon: <IconFireplace className="h-5 w-5" /> },
+      { key: "hamacas_paraguayas", label: "Hamacas paraguayas",    icon: <IconSofa      className="h-5 w-5" /> },
+      { key: "arboleda",           label: "Arboleda con sombra",   icon: <IconChip      className="h-5 w-5" /> },
+      { key: "cancha_futbol",      label: "Cancha de fútbol",      icon: <IconSoccer    className="h-5 w-5" /> },
+      { key: "piscina",            label: "Piscina",               icon: <IconPool      className="h-5 w-5" /> },
+      { key: "cancha_basquet",     label: "Cancha de básquet",     icon: <IconChip      className="h-5 w-5" /> },
+      { key: "cancha_tenis",       label: "Cancha de tenis",       icon: <IconTennis    className="h-5 w-5" /> },
+      { key: "cancha_padel",       label: "Cancha de pádel",       icon: <IconTennis    className="h-5 w-5" /> },
+      { key: "hamacas",            label: "Hamacas",               icon: <IconSofa      className="h-5 w-5" /> },
+      { key: "parlantes",          label: "Parlantes",             icon: <IconChip      className="h-5 w-5" /> },
     ],
     []
   );
@@ -476,7 +389,6 @@ export default function FiltrosInmuebles({
   return (
     <section className="fixed top-0 rounded-2xl z-10 scrollbar-hide inset-0 left-0 overflow-y-scroll md:m-30 m-5 bg-[#2B2B2B] py-10 text-white">
       <div className="fixed -z-20 top-0 inset-0 bg-black/70"></div>
-      {/* Header */}
       <h2 className="text-2xl text-center font-bold">Todos los Filtros</h2>
 
       {/* Rango de precio */}
@@ -485,31 +397,20 @@ export default function FiltrosInmuebles({
           <span>Mínimo {fmt(priceRange[0])}</span>
           <span>Máximo {fmt(priceRange[1])}</span>
         </div>
-
         <Slider
           range
           min={0}
           max={5000000}
-          step={0}
+          step={10000}
           value={priceRange}
           onChange={(v) => setPriceRange(v as [number, number])}
           allowCross={false}
           pushable={0}
           trackStyle={[{ backgroundColor: "#10B981", height: 6 }]}
-          railStyle={{ backgroundColor: "#fff", height: 6 }} // emerald-600
+          railStyle={{ backgroundColor: "#fff", height: 6 }}
           handleStyle={[
-            {
-              borderColor: "#28a728",
-              backgroundColor: "#28a728",
-              width: 18,
-              height: 18,
-            },
-            {
-              borderColor: "#28a728",
-              backgroundColor: "#28a728",
-              width: 18,
-              height: 18,
-            },
+            { borderColor: "#28a728", backgroundColor: "#28a728", width: 18, height: 18 },
+            { borderColor: "#28a728", backgroundColor: "#28a728", width: 18, height: 18 },
           ]}
         />
       </div>
@@ -534,19 +435,18 @@ export default function FiltrosInmuebles({
               <span className="text-base">Baños</span>
             </div>
           </div>
-
           <div className="flex w-full flex-col items-center gap-7">
             <Stepper
               value={filters.bedrooms}
-              setValue={(v) => setFilters({ ...filters, bedrooms: v })}
+              setValue={(v: number) => setFilters((prev: any) => ({ ...prev, bedrooms: v }))}
             />
             <Stepper
               value={filters.amb}
-              setValue={(v) => setFilters({ ...filters, amb: v })}
+              setValue={(v: number) => setFilters((prev: any) => ({ ...prev, amb: v }))}
             />
             <Stepper
               value={filters.bathrooms}
-              setValue={(v) => setFilters({ ...filters, bathrooms: v })}
+              setValue={(v: number) => setFilters((prev: any) => ({ ...prev, bathrooms: v }))}
             />
           </div>
         </div>
@@ -554,10 +454,7 @@ export default function FiltrosInmuebles({
 
       {/* Otras características */}
       <section className="mt-16 w-full">
-        <h3 className="mb-6 text-center text-lg font-semibold">
-          Otras características
-        </h3>
-
+        <h3 className="mb-6 text-center text-lg font-semibold">Otras características</h3>
         <div className="mx-auto grid w-full place-items-center grid-cols-1 place-content-center gap-4 sm:grid-cols-2 lg:grid-cols-3 px-5">
           {featureList.map((f) => (
             <Chip
@@ -570,47 +467,26 @@ export default function FiltrosInmuebles({
           ))}
         </div>
 
-        {/* Botones de acción */}
         <div className="mt-10 flex justify-center gap-4">
           <button
             onClick={() => {
-              // Limpiar todos los filtros booleanos
-              setFilters((prev: any) => ({
-                ...prev,
-                a_a: null,
-                botiquin: null,
-                cable: null,
-                cocina: null,
-                cubiertos: null,
-                estacionamiento: null,
-                estufa_hogar: null,
-                heladera: null,
-                jacuzzi: null,
-                juegos_infantiles: null,
-                lavarropas: null,
-                mantas: null,
-                parrilla: null,
-                piscina: null,
-                playroom: null,
-                ropa_de_camara: null,
-                sabanas: null,
-                secador: null,
-                toallas: null,
-                tv: null,
-                wifi: null,
-                vajilla: null,
-              }));
+              resetFilters();
+              setPriceRange([0, 5000000]);
             }}
             className="px-6 py-2 rounded-full border border-neutral-600 text-neutral-200 hover:bg-white/5 transition-colors">
             Limpiar filtros
           </button>
           <button
             onClick={() => {
+              setFilters((prev: any) => ({ ...prev, priceRange }));
               handleClick();
             }}
-            className="px-6 py-2 rounded-full bg-emerald-600 text-white hover:bg-emerald-700 transition-colors"></button>
+            className="px-6 py-2 rounded-full bg-emerald-600 text-white hover:bg-emerald-700 transition-colors">
+            Ver resultados
+          </button>
         </div>
       </section>
     </section>
   );
 }
+

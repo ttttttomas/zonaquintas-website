@@ -20,44 +20,40 @@ interface LinkPagoEmailProps {
   currency: string;
 }
 
-export function LinkPagoEmail({
+export function PayBalanceEmail({
   nombreHuesped,
   nombrePropiedad,
-  fechaIngreso,
-  fechaEgreso,
   monto,
   linkPago,
   currency
 }: LinkPagoEmailProps) {
 
-  const seña = monto * 0.3;
+  const saldo = monto * 0.7;
   return (
     <Html lang="es">
       <Head />
       <Preview>
-        Tu reserva fue aceptada — completá el pago para confirmarla
+        ¡Es dia de completar el pago de tu estadia!
       </Preview>
       <Body style={styles.body}>
         <Container style={styles.container}>
-          <Heading style={styles.heading}>¡Tu reserva fue aceptada!</Heading>
+          <Heading style={styles.heading}>Paga el saldo restante de la reserva en ZonaQuintas</Heading>
 
           <Text style={styles.text}>Hola {nombreHuesped},</Text>
           <Text style={styles.text}>
-            El propietario de <strong>{nombrePropiedad}</strong> aceptó tu
-            solicitud. Para confirmar la reserva, completá el pago antes de que
-            el link expire.
+            Te adjuntamos el link de pago para completar el pago de la reserva de <strong>{nombrePropiedad}</strong>.
           </Text>
 
           <Hr style={styles.hr} />
 
           <Text style={styles.detail}>
-            📅 Ingreso: <strong>{fechaIngreso}</strong>
+            Tenes un plazo de 24 horas para pagar el saldo restante de la reserva.
           </Text>
           <Text style={styles.detail}>
-            📅 Egreso: <strong>{fechaEgreso}</strong>
+            De lo contrario, se te contactará de parte de ZonaQuintas para avisarte sobre la situación.
           </Text>
           <Text style={styles.detail}>
-            💰 Total: <strong>${seña.toLocaleString("es-AR")} {currency}</strong>
+            💰 Saldo restante a pagar: <strong>${saldo.toLocaleString("es-AR")} {currency}</strong>
           </Text>
 
           <Hr style={styles.hr} />
@@ -67,7 +63,7 @@ export function LinkPagoEmail({
           </Button>
 
           <Text style={styles.footer}>
-            Si no realizaste esta solicitud, ignorá este mail.
+            Si notas algún inconveniente, comunícate con nosotros en <a href="https://www.zonaquintas.com/contact">https://www.zonaquintas.com/support</a>
           </Text>
         </Container>
       </Body>

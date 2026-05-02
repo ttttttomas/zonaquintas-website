@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useUser } from "@/app/context/UserContext";
-import { use, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "react-hot-toast";
 import { AuthServices } from "@/app/services/AuthServices";
 import AddLanguage from "@/app/components/AddLanguage";

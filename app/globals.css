@@ -60,3 +60,50 @@
   color: #1a1a1a !important;
   font-weight: 500;
 }
+
+.menu-container {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height 0.6s ease, opacity 0.6s ease, transform 0.6s ease;
+  transform: translateY(-20px);
+  padding: 0 1rem;  /* Mantener padding fijo */
+  background-color: #2DB40A;
+  border-radius: 0 0 10px 10px;
+  color: white;
+}
+
+.menu-container.open {
+  max-height: 500px; /* fijo para animar */
+  opacity: 1;
+  transform: translateY(0);
+  /* padding ya definido en base */
+}
+
+/* Estado cerrado */
+.menu-container.closed {
+  max-height: 0;
+  opacity: 0;
+  transform: translateY(-20px);
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.dash {
+  /* Firefox */
+  scrollbar-width: thin;
+}
+
+/* Chrome, Edge, Safari */
+.dash::-webkit-scrollbar {
+  width: 8px;
+}
+
+.dash::-webkit-scrollbar-track {
+  border-radius: 10px;
+}
+
+.dash::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  border: 2px solid #2DB40A; /* Espacio alrededor se mezcla con el track */
+}

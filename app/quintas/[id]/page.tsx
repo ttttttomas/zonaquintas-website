@@ -19,43 +19,59 @@ import SecondSeparator from "@/app/components/SecondSeparator";
 import StaticMap from "@/app/components/StaticMap";
 import ImageGallery from "@/app/components/quintas/ImageGallery";
 import { Quintas, Users } from "@/types";
-interface QuintaIdPageProps {
+import { use, useEffect, useState } from "react";
+interface quintaIdPageProps {
   params: Promise<{
     id: string;
   }>;
 }
 
-export default async function QuintaIdPage({ params }: QuintaIdPageProps) {
-  const { id } = await params;
-  const res = await ProductsServices.getQuintaById(id);
-  const owner: Users | null = await ProductsServices.getOwnerById(res.owner_id);
-  console.log(owner);
+export default function quintaIdPage({ params }: quintaIdPageProps) {
+    const { id } = use(params);
 
-  const quinta: Quintas = res;
-  const formatedPrice = quinta.price.toLocaleString("es-AR", {
-    style: "currency",
-    currency: quinta.currency_price,
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  });
-  const costOfService = () => {
-    const res = quinta.price * 0.06;
-    const formated = res.toLocaleString("es-AR", {
+  const [quinta, setQuinta] = useState<Quintas | null>(null);
+  const [owner, setOwner] = useState<Users | null>(null);
+
+  useEffect(() => {
+    const getQuintaAndOwner = async () => {
+      try {
+        // Primero obtengo la quinta usando el id
+        const quintaData = await ProductsServices.getQuintaById(id);
+        setQuinta(quintaData);
+
+        // Luego obtengo el owner, usando el owner_id de quintaData
+        if (quintaData && quintaData.owner_id) {
+          const ownerData = await ProductsServices.getOwnerById(
+            quintaData.owner_id,
+          );
+          setOwner(ownerData);
+        }
+      } catch (error) {
+        // Manejar error si alguna petición falla
+        console.error("Error al obtener la quinta o el owner:", error);
+      }
+    };
+
+    getQuintaAndOwner();
+  }, [id]);
+
+  const currency = quinta?.currency_price ?? "ARS";
+  const priceNum = quinta?.price ?? 0;
+  const serviceCostNum = priceNum * 0.06;
+  const totalNum = priceNum + serviceCostNum;
+
+  const formatCurrency = (amount: number) => {
+    return amount.toLocaleString("es-AR", {
       style: "currency",
-      currency: quinta.currency_price,
+      currency: currency,
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     });
-    return formated;
   };
-  const total = (cost: number) => {
-    const res = quinta.price + cost;
-    return res;
-  };
-  const costOfServiceFromTotal = () => {
-    const res = quinta.price * 0.06;
-    return res;
-  };
+
+  const formatedPrice = formatCurrency(priceNum);
+  const costOfService = formatCurrency(serviceCostNum);
+  const totalPrice = formatCurrency(totalNum);
 
   const handleShare = () => {
     navigator.clipboard.writeText(window.location.href);
@@ -65,7 +81,7 @@ export default async function QuintaIdPage({ params }: QuintaIdPageProps) {
       {/* Hero */}
       <section className="px-4 md:px-10 lg:mx-20 mb-10" id="hero">
         <div className="flex flex-col md:flex-row justify-between gap-2">
-          <h1 className="font-semibold text-xl md:text-2xl">{quinta.title}</h1>
+          <h1 className="font-semibold text-xl md:text-2xl">{quinta?.title}</h1>
           <ul className="flex gap-5 items-center">
             <button
               onClick={handleShare}
@@ -89,26 +105,28 @@ export default async function QuintaIdPage({ params }: QuintaIdPageProps) {
             </li>
           </ul>
         </div>
-        <ImageGallery
-          mainImage={quinta.main_image}
-          images={quinta.images}
-          title={quinta.title}
-        />
+        {quinta && (
+  <ImageGallery
+    mainImage={quinta.main_image}
+    images={quinta.images}
+    title={quinta.title}
+  />
+)}
         <div className="flex flex-col gap-2 mt-3">
-          <h2 className="text-lg md:text-xl">{quinta.address}</h2>
+          <h2 className="text-lg md:text-xl">{quinta?.address}</h2>
           <p className="text-sm md:text-lg font-light">
-            {`${quinta.guests} huéspedes - ${quinta.bedrooms} dormitorios - ${quinta.bathrooms} baños - ${quinta.environments} ambientes`}
+            {`${quinta?.guests} huéspedes - ${quinta?.bedrooms} dormitorios - ${quinta?.bathrooms} baños - ${quinta?.environments} ambientes`}
           </p>
         </div>
       </section>
       <SecondSeparator />
 
       <BookingSection
-        quinta={quinta}
+        quinta={quinta!}
         formatedPrice={formatedPrice}
-        costOfService={costOfService()}
-        totalPrice={total(costOfServiceFromTotal()).toLocaleString()}
-        maxGuests={quinta.guests}>
+        costOfService={costOfService}
+        totalPrice={totalPrice}
+        maxGuests={quinta?.guests || 0}>
         {/* Calificaciones y anfitrión */}
         <div className="flex flex-col items-start md:pr-10 lg:pr-20 gap-6 md:gap-10">
           {owner?.opinions && owner.opinions.length > 0 ? (
@@ -143,7 +161,7 @@ export default async function QuintaIdPage({ params }: QuintaIdPageProps) {
             </div>
           ) : (
             <div className="flex items-center md:justify-start justify-center md:w-max w-full px-6 py-2 rounded-3xl border border-primaryDark text-primaryDark font-semibold text-sm">
-              ✨ Nuevo en ZonaQuintas
+              ✨ Nuevo en Zonaquintas
             </div>
           )}
           <div className="flex items-center space-x-2">
@@ -173,25 +191,25 @@ export default async function QuintaIdPage({ params }: QuintaIdPageProps) {
           <h3 className="font-semibold mb-4">¿Qué ofrece este hospedaje?</h3>
 
           {/* Habitaciones */}
-          {!!quinta.sabanas ||
-            !!quinta.mantas ||
-            (!!quinta.almohadas && (
+          {!!quinta?.sabanas ||
+            !!quinta?.mantas ||
+            (!!quinta?.almohadas && (
               <>
                 <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">
                   Habitaciones
                 </p>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-sm text-gray-700 mb-4">
-                  {!!quinta.sabanas && (
+                  {!!quinta?.sabanas && (
                     <span className="flex items-center space-x-2">
                       <Check className="w-4 h-4" /> Sábanas
                     </span>
                   )}
-                  {!!quinta.mantas && (
+                  {!!quinta?.mantas && (
                     <span className="flex items-center space-x-2">
                       <Check className="w-4 h-4" /> Mantas
                     </span>
                   )}
-                  {!!quinta.almohadas && (
+                  {!!quinta?.almohadas && (
                     <span className="flex items-center space-x-2">
                       <Check className="w-4 h-4" /> Almohadas
                     </span>
@@ -201,31 +219,31 @@ export default async function QuintaIdPage({ params }: QuintaIdPageProps) {
             ))}
 
           {/* Artículos de limpieza personal */}
-          {!!quinta.toilettes ||
-            !!quinta.shampoo ||
-            !!quinta.toallas ||
-            (!!quinta.secador_pelo && (
+          {!!quinta?.toilettes ||
+            !!quinta?.shampoo ||
+            !!quinta?.toallas ||
+            (!!quinta?.secador_pelo && (
               <>
                 <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">
                   Limpieza personal
                 </p>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-sm text-gray-700 mb-4">
-                  {!!quinta.toilettes && (
+                  {!!quinta?.toilettes && (
                     <span className="flex items-center space-x-2">
                       <Check className="w-4 h-4" /> Toilettes
                     </span>
                   )}
-                  {!!quinta.shampoo && (
+                  {!!quinta?.shampoo && (
                     <span className="flex items-center space-x-2">
                       <Check className="w-4 h-4" /> Shampoo
                     </span>
                   )}
-                  {!!quinta.toallas && (
+                  {!!quinta?.toallas && (
                     <span className="flex items-center space-x-2">
                       <Check className="w-4 h-4" /> Toallas
                     </span>
                   )}
-                  {!!quinta.secador_pelo && (
+                  {!!quinta?.secador_pelo && (
                     <span className="flex items-center space-x-2">
                       <Check className="w-4 h-4" /> Secador de pelo
                     </span>
@@ -235,19 +253,19 @@ export default async function QuintaIdPage({ params }: QuintaIdPageProps) {
             ))}
 
           {/* Artículos de limpieza general */}
-          {!!quinta.lavarropas ||
-            (!!quinta.cambio_toallas && (
+          {!!quinta?.lavarropas ||
+            (!!quinta?.cambio_toallas && (
               <>
                 <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">
                   Limpieza general
                 </p>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-sm text-gray-700 mb-4">
-                  {!!quinta.lavarropas && (
+                  {!!quinta?.lavarropas && (
                     <span className="flex items-center space-x-2">
                       <Check className="w-4 h-4" /> Lavarropas
                     </span>
                   )}
-                  {!!quinta.cambio_toallas && (
+                  {!!quinta?.cambio_toallas && (
                     <span className="flex items-center space-x-2">
                       <Check className="w-4 h-4" /> Cambio de toallas
                     </span>
@@ -257,25 +275,25 @@ export default async function QuintaIdPage({ params }: QuintaIdPageProps) {
             ))}
 
           {/* Cocina */}
-          {!!quinta.utensillos_cocina ||
-            !!quinta.vajilla ||
-            (!!quinta.freezer && (
+          {!!quinta?.utensillos_cocina ||
+            !!quinta?.vajilla ||
+            (!!quinta?.freezer && (
               <>
                 <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">
                   Cocina
                 </p>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-sm text-gray-700 mb-4">
-                  {!!quinta.utensillos_cocina && (
+                  {!!quinta?.utensillos_cocina && (
                     <span className="flex items-center space-x-2">
                       <Check className="w-4 h-4" /> Utensilios para cocinar
                     </span>
                   )}
-                  {!!quinta.vajilla && (
+                  {!!quinta?.vajilla && (
                     <span className="flex items-center space-x-2">
                       <Check className="w-4 h-4" /> Vajilla
                     </span>
                   )}
-                  {!!quinta.freezer && (
+                  {!!quinta?.freezer && (
                     <span className="flex items-center space-x-2">
                       <Check className="w-4 h-4" /> Freezer
                     </span>
@@ -285,55 +303,55 @@ export default async function QuintaIdPage({ params }: QuintaIdPageProps) {
             ))}
 
           {/* Entretenimiento */}
-          {!!quinta.televisor ||
-            !!quinta.radio ||
-            !!quinta.tv ||
-            !!quinta.cable ||
-            !!quinta.internet ||
-            !!quinta.jacuzzi ||
-            quinta.playroom ||
-            (quinta.sofas && (
+          {!!quinta?.televisor ||
+            !!quinta?.radio ||
+            !!quinta?.tv ||
+            !!quinta?.cable ||
+            !!quinta?.internet ||
+            !!quinta?.jacuzzi ||
+            quinta?.playroom ||
+            (quinta?.sofas && (
               <>
                 <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">
                   Entretenimiento
                 </p>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-sm text-gray-700 mb-4">
-                  {!!quinta.televisor && (
+                  {!!quinta?.televisor && (
                     <span className="flex items-center space-x-2">
                       <Check className="w-4 h-4" /> Televisor
                     </span>
                   )}
-                  {!!quinta.radio && (
+                  {!!quinta?.radio && (
                     <span className="flex items-center space-x-2">
                       <Check className="w-4 h-4" /> Radio
                     </span>
                   )}
-                  {!!quinta.tv && (
+                  {!!quinta?.tv && (
                     <span className="flex items-center space-x-2">
                       <Check className="w-4 h-4" /> TV
                     </span>
                   )}
-                  {!!quinta.cable && (
+                  {!!quinta?.cable && (
                     <span className="flex items-center space-x-2">
                       <Check className="w-4 h-4" /> Cable
                     </span>
                   )}
-                  {!!quinta.internet && (
+                  {!!quinta?.internet && (
                     <span className="flex items-center space-x-2">
                       <Check className="w-4 h-4" /> Internet
                     </span>
                   )}
-                  {!!quinta.jacuzzi && (
+                  {!!quinta?.jacuzzi && (
                     <span className="flex items-center space-x-2">
                       <Check className="w-4 h-4" /> Jacuzzi
                     </span>
                   )}
-                  {!!quinta.playroom && (
+                  {!!quinta?.playroom && (
                     <span className="flex items-center space-x-2">
                       <Check className="w-4 h-4" /> Playroom
                     </span>
                   )}
-                  {!!quinta.sofas && (
+                  {!!quinta?.sofas && (
                     <span className="flex items-center space-x-2">
                       <Check className="w-4 h-4" /> Sofás
                     </span>
@@ -343,7 +361,7 @@ export default async function QuintaIdPage({ params }: QuintaIdPageProps) {
             ))}
 
           {/* Estacionamiento */}
-          {!!quinta.estacionamiento_techado && (
+          {!!quinta?.estacionamiento_techado && (
             <>
               <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">
                 Estacionamiento
@@ -357,79 +375,79 @@ export default async function QuintaIdPage({ params }: QuintaIdPageProps) {
           )}
 
           {/* Otras características */}
-          {!!quinta.parrilla ||
-            !!quinta.estufa_gas ||
-            !!quinta.hogar ||
-            !!quinta.hamacas_paraguayas ||
-            !!quinta.arboleda ||
-            !!quinta.cancha_futbol ||
-            !!quinta.piscina ||
-            !!quinta.cancha_basquet ||
-            !!quinta.cancha_tenis ||
-            !!quinta.cancha_padel ||
-            !!quinta.hamacas ||
-            (!!quinta.parlantes && (
+          {!!quinta?.parrilla ||
+            !!quinta?.estufa_gas ||
+            !!quinta?.hogar ||
+            !!quinta?.hamacas_paraguayas ||
+            !!quinta?.arboleda ||
+            !!quinta?.cancha_futbol ||
+            !!quinta?.piscina ||
+            !!quinta?.cancha_basquet ||
+            !!quinta?.cancha_tenis ||
+            !!quinta?.cancha_padel ||
+            !!quinta?.hamacas ||
+            (!!quinta?.parlantes && (
               <>
                 <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">
                   Otras características
                 </p>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-sm text-gray-700 mb-4">
-                  {!!quinta.parrilla && (
+                  {!!quinta?.parrilla && (
                     <span className="flex items-center space-x-2">
                       <Check className="w-4 h-4" /> Parrilla
                     </span>
                   )}
-                  {!!quinta.estufa_gas && (
+                  {!!quinta?.estufa_gas && (
                     <span className="flex items-center space-x-2">
                       <Check className="w-4 h-4" /> Estufa a gas
                     </span>
                   )}
-                  {!!quinta.hogar && (
+                  {!!quinta?.hogar && (
                     <span className="flex items-center space-x-2">
                       <Check className="w-4 h-4" /> Hogar
                     </span>
                   )}
-                  {!!quinta.hamacas_paraguayas && (
+                  {!!quinta?.hamacas_paraguayas && (
                     <span className="flex items-center space-x-2">
                       <Check className="w-4 h-4" /> Hamacas paraguayas
                     </span>
                   )}
-                  {!!quinta.arboleda && (
+                  {!!quinta?.arboleda && (
                     <span className="flex items-center space-x-2">
                       <Check className="w-4 h-4" /> Arboleda con buena sombra
                     </span>
                   )}
-                  {!!quinta.cancha_futbol && (
+                  {!!quinta?.cancha_futbol && (
                     <span className="flex items-center space-x-2">
                       <Check className="w-4 h-4" /> Cancha de fútbol
                     </span>
                   )}
-                  {!!quinta.piscina && (
+                  {!!quinta?.piscina && (
                     <span className="flex items-center space-x-2">
                       <Check className="w-4 h-4" /> Piscina
                     </span>
                   )}
-                  {!!quinta.cancha_basquet && (
+                  {!!quinta?.cancha_basquet && (
                     <span className="flex items-center space-x-2">
                       <Check className="w-4 h-4" /> Cancha de basquet
                     </span>
                   )}
-                  {!!quinta.cancha_tenis && (
+                  {!!quinta?.cancha_tenis && (
                     <span className="flex items-center space-x-2">
                       <Check className="w-4 h-4" /> Cancha de tenis
                     </span>
                   )}
-                  {!!quinta.cancha_padel && (
+                  {!!quinta?.cancha_padel && (
                     <span className="flex items-center space-x-2">
                       <Check className="w-4 h-4" /> Cancha de padel
                     </span>
                   )}
-                  {!!quinta.hamacas && (
+                  {!!quinta?.hamacas && (
                     <span className="flex items-center space-x-2">
                       <Check className="w-4 h-4" /> Hamacas
                     </span>
                   )}
-                  {!!quinta.parlantes && (
+                  {!!quinta?.parlantes && (
                     <span className="flex items-center space-x-2">
                       <Check className="w-4 h-4" /> Parlantes
                     </span>
@@ -459,10 +477,10 @@ export default async function QuintaIdPage({ params }: QuintaIdPageProps) {
       <section className="px-4 md:px-10 lg:mx-20 my-5" id="map">
         <div>
           <h3 className="font-semibold text-lg">Ubicación del hospedaje</h3>
-          <p className="text-gray-500">{quinta.address}</p>
+          <p className="text-gray-500">{quinta?.address}</p>
         </div>
         <div className="mt-5">
-          <StaticMap lat={quinta.latitude} lng={quinta.length} />
+          {quinta && <StaticMap lat={quinta?.latitude} lng={quinta?.length} />}
         </div>
       </section>
       <SecondSeparator />
@@ -478,10 +496,7 @@ export default async function QuintaIdPage({ params }: QuintaIdPageProps) {
           <div className="bg-white flex max-w-xl rounded-xl shadow-sm py-6 px-6 md:px-12 gap-6 md:gap-10 text-sm text-center">
             <div className="flex flex-col gap-3 mx-auto justify-center items-center">
               <img
-                src={
-                  owner?.picture ||
-                  "https://www.svgrepo.com/show/384674/account-avatar-profile-user-11.svg"
-                }
+                src={owner?.picture?.[0] || "https://www.svgrepo.com/show/384674/account-avatar-profile-user-11.svg"}
                 alt="Avatar"
                 className="w-24 h-24 rounded-full object-cover mx-auto"
               />
@@ -533,12 +548,12 @@ export default async function QuintaIdPage({ params }: QuintaIdPageProps) {
                   Este es el inmueble de {owner?.name}
                 </h3>
                 <p>
-                  {owner?.name} es un nuevo anfitrión en ZonaQuintas. Estamos
+                  {owner?.name} es un nuevo anfitrión en Zonaquintas. Estamos
                   seguros de que hará todo lo posible para que tengas una
                   estadía inolvidable en su propiedad.
                 </p>
                 <b className="text-primaryDark underline">
-                  En ZonaQuintas nos encargamos de verificar la identidad del
+                  En Zonaquintas nos encargamos de verificar la identidad del
                   anfitrión y de que su propiedad cumpla con nuestros estándares
                   de calidad.
                 </b>
@@ -609,7 +624,7 @@ export default async function QuintaIdPage({ params }: QuintaIdPageProps) {
 
             <p className="text-xs md:text-medium">
               Por seguridad, recomendamos siempre usar la página oficial de
-              ZonaQuintas a la hora de transferir dinero y comunicarte con los
+              Zonaquintas a la hora de transferir dinero y comunicarte con los
               anfitriones.
             </p>
           </div>
