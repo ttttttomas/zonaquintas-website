@@ -44,7 +44,9 @@ export default function WalletPage() {
   if (loading) {
     return (
       <main className="flex items-center justify-center min-h-[60vh]">
-        <div className="animate-spin rounded-full h-10 w-10 border-4 border-primaryDark border-t-transparent" />
+        <div className="animate-spin rounded-full border-4 border-primaryDark border-t-transparent">
+          <img src="logo.png" width={80} height={80} alt="" />
+        </div>
       </main>
     );
   }
@@ -258,13 +260,12 @@ export default function WalletPage() {
                           </td>
                           <td className="px-6 py-3">
                             <span
-                              className={`px-3 py-1 rounded-md text-xs font-semibold ${
-                                m.status === "DISPONIBLE"
-                                  ? "bg-yellow-400 text-black"
-                                  : m.status === "RETENIDO"
-                                    ? "bg-red-600 text-white"
-                                    : "bg-green-600 text-white"
-                              }`}
+                              className={`px-3 py-1 rounded-md text-xs font-semibold ${m.status === "DISPONIBLE"
+                                ? "bg-yellow-400 text-black"
+                                : m.status === "RETENIDO"
+                                  ? "bg-red-600 text-white"
+                                  : "bg-green-600 text-white"
+                                }`}
                             >
                               {m.status}
                             </span>
@@ -295,13 +296,12 @@ export default function WalletPage() {
                     <div className="flex justify-between items-center">
                       <span className="text-gray-500 text-sm">Estado</span>
                       <span
-                        className={`px-3 py-1 rounded-md text-xs font-semibold ${
-                          m.status === "DISPONIBLE"
-                            ? "bg-yellow-400 text-black"
-                            : m.status === "RETENIDO"
-                              ? "bg-red-600 text-white"
-                              : "bg-green-600 text-white"
-                        }`}
+                        className={`px-3 py-1 rounded-md text-xs font-semibold ${m.status === "DISPONIBLE"
+                          ? "bg-yellow-400 text-black"
+                          : m.status === "RETENIDO"
+                            ? "bg-red-600 text-white"
+                            : "bg-green-600 text-white"
+                          }`}
                       >
                         {m.status}
                       </span>

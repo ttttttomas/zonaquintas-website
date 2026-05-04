@@ -3,12 +3,10 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import Heart from "@/app/components/icons/Heart";
 import {
-  Check,
   Star,
   StarHalf,
   MapPin,
   Globe,
-  ShieldCheck,
 } from "lucide-react";
 import { Separator } from "@/app/components/ui/Separator";
 // import CategorySection from "@/app/components/CategorySection";
@@ -27,10 +25,11 @@ interface quintaIdPageProps {
 }
 
 export default function quintaIdPage({ params }: quintaIdPageProps) {
-    const { id } = use(params);
+  const { id } = use(params);
 
   const [quinta, setQuinta] = useState<Quintas | null>(null);
   const [owner, setOwner] = useState<Users | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const getQuintaAndOwner = async () => {
@@ -49,6 +48,8 @@ export default function quintaIdPage({ params }: quintaIdPageProps) {
       } catch (error) {
         // Manejar error si alguna petición falla
         console.error("Error al obtener la quinta o el owner:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -76,6 +77,23 @@ export default function quintaIdPage({ params }: quintaIdPageProps) {
   const handleShare = () => {
     navigator.clipboard.writeText(window.location.href);
   };
+  if (loading) {
+    return (
+      <main className="flex items-center justify-center min-h-[60vh]">
+        <div className="animate-spin rounded-full border-4 border-primaryDark border-t-transparent">
+          <img src="logo.png" width={80} height={80} alt="" />
+        </div>
+      </main>
+    );
+  }
+
+  if (!quinta) {
+    return (
+      <div className="flex flex-col gap-5 items-center justify-center min-h-[60vh]">
+        <p className="text-lg text-center font-semibold">No se encontro la quinta</p>
+      </div>
+    );
+  }
   return (
     <main className="flex flex-col">
       {/* Hero */}
@@ -106,12 +124,12 @@ export default function quintaIdPage({ params }: quintaIdPageProps) {
           </ul>
         </div>
         {quinta && (
-  <ImageGallery
-    mainImage={quinta.main_image}
-    images={quinta.images}
-    title={quinta.title}
-  />
-)}
+          <ImageGallery
+            mainImage={quinta.main_image}
+            images={quinta.images}
+            title={quinta.title}
+          />
+        )}
         <div className="flex flex-col gap-2 mt-3">
           <h2 className="text-lg md:text-xl">{quinta?.address}</h2>
           <p className="text-sm md:text-lg font-light">
@@ -124,7 +142,7 @@ export default function quintaIdPage({ params }: quintaIdPageProps) {
       <BookingSection
         quinta={quinta!}
         formatedPrice={formatedPrice}
-        costOfService={costOfService}
+        costOfService={String(serviceCostNum)}
         totalPrice={totalPrice}
         maxGuests={quinta?.guests || 0}>
         {/* Calificaciones y anfitrión */}
@@ -188,277 +206,126 @@ export default function quintaIdPage({ params }: quintaIdPageProps) {
 
         {/* Servicios */}
         <div className="pr-30">
-          <h3 className="font-semibold mb-4">¿Qué ofrece este hospedaje?</h3>
+          <h3 className="font-semibold text-xl mb-6">¿Qué ofrece este hospedaje?</h3>
 
-          {/* Habitaciones */}
-          {!!quinta?.sabanas ||
-            !!quinta?.mantas ||
-            (!!quinta?.almohadas && (
-              <>
-                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">
-                  Habitaciones
-                </p>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-sm text-gray-700 mb-4">
-                  {!!quinta?.sabanas && (
-                    <span className="flex items-center space-x-2">
-                      <Check className="w-4 h-4" /> Sábanas
-                    </span>
-                  )}
-                  {!!quinta?.mantas && (
-                    <span className="flex items-center space-x-2">
-                      <Check className="w-4 h-4" /> Mantas
-                    </span>
-                  )}
-                  {!!quinta?.almohadas && (
-                    <span className="flex items-center space-x-2">
-                      <Check className="w-4 h-4" /> Almohadas
-                    </span>
-                  )}
-                </div>
-              </>
-            ))}
+          {/* ── Helper: bloque por categoría ──────────────────────────── */}
+          {(() => {
+            type AmenityItem = { key: keyof Quintas; label: string; icon: React.ReactNode };
+            type Category = { title: string; items: AmenityItem[] };
 
-          {/* Artículos de limpieza personal */}
-          {!!quinta?.toilettes ||
-            !!quinta?.shampoo ||
-            !!quinta?.toallas ||
-            (!!quinta?.secador_pelo && (
-              <>
-                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">
-                  Limpieza personal
-                </p>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-sm text-gray-700 mb-4">
-                  {!!quinta?.toilettes && (
-                    <span className="flex items-center space-x-2">
-                      <Check className="w-4 h-4" /> Toilettes
-                    </span>
-                  )}
-                  {!!quinta?.shampoo && (
-                    <span className="flex items-center space-x-2">
-                      <Check className="w-4 h-4" /> Shampoo
-                    </span>
-                  )}
-                  {!!quinta?.toallas && (
-                    <span className="flex items-center space-x-2">
-                      <Check className="w-4 h-4" /> Toallas
-                    </span>
-                  )}
-                  {!!quinta?.secador_pelo && (
-                    <span className="flex items-center space-x-2">
-                      <Check className="w-4 h-4" /> Secador de pelo
-                    </span>
-                  )}
-                </div>
-              </>
-            ))}
-
-          {/* Artículos de limpieza general */}
-          {!!quinta?.lavarropas ||
-            (!!quinta?.cambio_toallas && (
-              <>
-                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">
-                  Limpieza general
-                </p>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-sm text-gray-700 mb-4">
-                  {!!quinta?.lavarropas && (
-                    <span className="flex items-center space-x-2">
-                      <Check className="w-4 h-4" /> Lavarropas
-                    </span>
-                  )}
-                  {!!quinta?.cambio_toallas && (
-                    <span className="flex items-center space-x-2">
-                      <Check className="w-4 h-4" /> Cambio de toallas
-                    </span>
-                  )}
-                </div>
-              </>
-            ))}
-
-          {/* Cocina */}
-          {!!quinta?.utensillos_cocina ||
-            !!quinta?.vajilla ||
-            (!!quinta?.freezer && (
-              <>
-                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">
-                  Cocina
-                </p>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-sm text-gray-700 mb-4">
-                  {!!quinta?.utensillos_cocina && (
-                    <span className="flex items-center space-x-2">
-                      <Check className="w-4 h-4" /> Utensilios para cocinar
-                    </span>
-                  )}
-                  {!!quinta?.vajilla && (
-                    <span className="flex items-center space-x-2">
-                      <Check className="w-4 h-4" /> Vajilla
-                    </span>
-                  )}
-                  {!!quinta?.freezer && (
-                    <span className="flex items-center space-x-2">
-                      <Check className="w-4 h-4" /> Freezer
-                    </span>
-                  )}
-                </div>
-              </>
-            ))}
-
-          {/* Entretenimiento */}
-          {!!quinta?.televisor ||
-            !!quinta?.radio ||
-            !!quinta?.tv ||
-            !!quinta?.cable ||
-            !!quinta?.internet ||
-            !!quinta?.jacuzzi ||
-            quinta?.playroom ||
-            (quinta?.sofas && (
-              <>
-                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">
-                  Entretenimiento
-                </p>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-sm text-gray-700 mb-4">
-                  {!!quinta?.televisor && (
-                    <span className="flex items-center space-x-2">
-                      <Check className="w-4 h-4" /> Televisor
-                    </span>
-                  )}
-                  {!!quinta?.radio && (
-                    <span className="flex items-center space-x-2">
-                      <Check className="w-4 h-4" /> Radio
-                    </span>
-                  )}
-                  {!!quinta?.tv && (
-                    <span className="flex items-center space-x-2">
-                      <Check className="w-4 h-4" /> TV
-                    </span>
-                  )}
-                  {!!quinta?.cable && (
-                    <span className="flex items-center space-x-2">
-                      <Check className="w-4 h-4" /> Cable
-                    </span>
-                  )}
-                  {!!quinta?.internet && (
-                    <span className="flex items-center space-x-2">
-                      <Check className="w-4 h-4" /> Internet
-                    </span>
-                  )}
-                  {!!quinta?.jacuzzi && (
-                    <span className="flex items-center space-x-2">
-                      <Check className="w-4 h-4" /> Jacuzzi
-                    </span>
-                  )}
-                  {!!quinta?.playroom && (
-                    <span className="flex items-center space-x-2">
-                      <Check className="w-4 h-4" /> Playroom
-                    </span>
-                  )}
-                  {!!quinta?.sofas && (
-                    <span className="flex items-center space-x-2">
-                      <Check className="w-4 h-4" /> Sofás
-                    </span>
-                  )}
-                </div>
-              </>
-            ))}
-
-          {/* Estacionamiento */}
-          {!!quinta?.estacionamiento_techado && (
-            <>
-              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">
-                Estacionamiento
-              </p>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-sm text-gray-700 mb-4">
-                <span className="flex items-center space-x-2">
-                  <Check className="w-4 h-4" /> Estacionamiento techado
-                </span>
+            const Ico = ({ d }: { d: string }) => (
+              <div className="w-10 h-10 flex items-center justify-center rounded-xl border border-gray-200 bg-white flex-shrink-0">
+                <svg viewBox="0 0 24 24" className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d={d} />
+                </svg>
               </div>
-            </>
-          )}
+            );
 
-          {/* Otras características */}
-          {!!quinta?.parrilla ||
-            !!quinta?.estufa_gas ||
-            !!quinta?.hogar ||
-            !!quinta?.hamacas_paraguayas ||
-            !!quinta?.arboleda ||
-            !!quinta?.cancha_futbol ||
-            !!quinta?.piscina ||
-            !!quinta?.cancha_basquet ||
-            !!quinta?.cancha_tenis ||
-            !!quinta?.cancha_padel ||
-            !!quinta?.hamacas ||
-            (!!quinta?.parlantes && (
-              <>
-                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">
-                  Otras características
-                </p>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-sm text-gray-700 mb-4">
-                  {!!quinta?.parrilla && (
-                    <span className="flex items-center space-x-2">
-                      <Check className="w-4 h-4" /> Parrilla
-                    </span>
-                  )}
-                  {!!quinta?.estufa_gas && (
-                    <span className="flex items-center space-x-2">
-                      <Check className="w-4 h-4" /> Estufa a gas
-                    </span>
-                  )}
-                  {!!quinta?.hogar && (
-                    <span className="flex items-center space-x-2">
-                      <Check className="w-4 h-4" /> Hogar
-                    </span>
-                  )}
-                  {!!quinta?.hamacas_paraguayas && (
-                    <span className="flex items-center space-x-2">
-                      <Check className="w-4 h-4" /> Hamacas paraguayas
-                    </span>
-                  )}
-                  {!!quinta?.arboleda && (
-                    <span className="flex items-center space-x-2">
-                      <Check className="w-4 h-4" /> Arboleda con buena sombra
-                    </span>
-                  )}
-                  {!!quinta?.cancha_futbol && (
-                    <span className="flex items-center space-x-2">
-                      <Check className="w-4 h-4" /> Cancha de fútbol
-                    </span>
-                  )}
-                  {!!quinta?.piscina && (
-                    <span className="flex items-center space-x-2">
-                      <Check className="w-4 h-4" /> Piscina
-                    </span>
-                  )}
-                  {!!quinta?.cancha_basquet && (
-                    <span className="flex items-center space-x-2">
-                      <Check className="w-4 h-4" /> Cancha de basquet
-                    </span>
-                  )}
-                  {!!quinta?.cancha_tenis && (
-                    <span className="flex items-center space-x-2">
-                      <Check className="w-4 h-4" /> Cancha de tenis
-                    </span>
-                  )}
-                  {!!quinta?.cancha_padel && (
-                    <span className="flex items-center space-x-2">
-                      <Check className="w-4 h-4" /> Cancha de padel
-                    </span>
-                  )}
-                  {!!quinta?.hamacas && (
-                    <span className="flex items-center space-x-2">
-                      <Check className="w-4 h-4" /> Hamacas
-                    </span>
-                  )}
-                  {!!quinta?.parlantes && (
-                    <span className="flex items-center space-x-2">
-                      <Check className="w-4 h-4" /> Parlantes
-                    </span>
-                  )}
-                </div>
-              </>
-            ))}
+            const CATEGORIES: Category[] = [
+              {
+                title: "Habitaciones",
+                items: [
+                  { key: "sabanas", label: "Sábanas", icon: <Ico d="M3 7h18M3 12h18M3 17h18" /> },
+                  { key: "mantas", label: "Mantas", icon: <Ico d="M4 6h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1z" /> },
+                  { key: "almohadas", label: "Almohadas", icon: <Ico d="M5 10a7 7 0 0 1 14 0v4a7 7 0 0 1-14 0v-4z" /> },
+                ],
+              },
+              {
+                title: "Limpieza personal",
+                items: [
+                  { key: "toilettes", label: "Toilettes", icon: <Ico d="M12 2C8 2 5 5 5 8v1h14V8c0-3-3-6-7-6zM5 9v2a7 7 0 0 0 14 0V9H5z" /> },
+                  { key: "shampoo", label: "Shampoo", icon: <Ico d="M9 2h6l1 4H8L9 2zM8 6v12a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2V6H8z" /> },
+                  { key: "toallas", label: "Toallas", icon: <Ico d="M3 5h18M6 5v14h12V5" /> },
+                  { key: "secador_pelo", label: "Secador de pelo", icon: <Ico d="M5 12a7 7 0 0 1 14 0M12 5v2M19 12h2M3 12h2M12 19v-2" /> },
+                ],
+              },
+              {
+                title: "Limpieza general",
+                items: [
+                  { key: "lavarropas", label: "Lavarropas", icon: <Ico d="M5 3h14a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1zm7 5a4 4 0 1 0 0 8 4 4 0 0 0 0-8z" /> },
+                  { key: "cambio_toallas", label: "Cambio de toallas", icon: <Ico d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z" /> },
+                ],
+              },
+              {
+                title: "Cocina",
+                items: [
+                  { key: "utensillos_cocina", label: "Utensilios de cocina", icon: <Ico d="M3 2v7c0 3 2 5 5 5v7M16 2v7c0 3 2 5 5 5v7M16 2a5 5 0 0 0-5 5" /> },
+                  { key: "vajilla", label: "Vajilla", icon: <Ico d="M12 2a9 9 0 1 0 0 18A9 9 0 0 0 12 2zm0 0v18M3 12h18" /> },
+                  { key: "freezer", label: "Heladera / Freezer", icon: <Ico d="M5 3h14a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1zm0 9h14M9 7v4M15 7v4" /> },
+                ],
+              },
+              {
+                title: "Entretenimiento",
+                items: [
+                  { key: "televisor", label: "Televisor", icon: <Ico d="M2 7h20v12a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V7zm7 16h6M12 3l-3 4h6l-3-4z" /> },
+                  { key: "tv", label: "Smart TV", icon: <Ico d="M2 7h20v12a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V7zm7 16h6" /> },
+                  { key: "cable", label: "TV por Cable", icon: <Ico d="M4 6h16M4 12h16M4 18h16" /> },
+                  { key: "radio", label: "Radio", icon: <Ico d="M5 3h14a1 1 0 0 1 1 1v16H4V4a1 1 0 0 1 1-1zm7 5a3 3 0 1 0 0 6 3 3 0 0 0 0-6z" /> },
+                  { key: "internet", label: "WiFi / Internet", icon: <Ico d="M1.5 8.5a17 17 0 0 1 21 0M5 12a12 12 0 0 1 14 0M8.5 15.5a7 7 0 0 1 7 0M12 19v.5" /> },
+                  { key: "jacuzzi", label: "Jacuzzi", icon: <Ico d="M2 12h20M2 8c1.5 0 2.5 1 4 1s2.5-1 4-1 2.5 1 4 1 2.5-1 4-1M6 16h.01M10 16h.01M14 16h.01M18 16h.01" /> },
+                  { key: "playroom", label: "Playroom", icon: <Ico d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2zm-2 5a2 2 0 1 0 4 0 2 2 0 0 0-4 0zm-4 6a2 2 0 1 0 4 0 2 2 0 0 0-4 0zm10 0a2 2 0 1 0 4 0 2 2 0 0 0-4 0z" /> },
+                  { key: "sofas", label: "Sofás", icon: <Ico d="M2 9a3 3 0 0 1 3-3h14a3 3 0 0 1 3 3v4H2V9zm0 4v3h2v2h3v-2h10v2h3v-2h2v-3" /> },
+                ],
+              },
+              {
+                title: "Estacionamiento",
+                items: [
+                  { key: "estacionamiento_techado", label: "Estacionamiento techado", icon: <Ico d="M3 9l9-7 9 7v11a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9z" /> },
+                ],
+              },
+              {
+                title: "Exterior y ocio",
+                items: [
+                  { key: "parrilla", label: "Parrilla", icon: <Ico d="M4 8h16M9 8V4m6 4V4M8 8c0 5 1 9 4 12 3-3 4-7 4-12M5 20h14" /> },
+                  { key: "estufa_gas", label: "Estufa a gas", icon: <Ico d="M12 2c0 4-4 6-4 10a4 4 0 0 0 8 0c0-4-4-6-4-10z" /> },
+                  { key: "hogar", label: "Hogar / Chimenea", icon: <Ico d="M3 22V10L12 3l9 7v12M9 22V16h6v6" /> },
+                  { key: "hamacas_paraguayas", label: "Hamacas paraguayas", icon: <Ico d="M4 8c4 4 12 4 16 0M4 16c4-4 12-4 16 0M4 8v8M20 8v8" /> },
+                  { key: "arboleda", label: "Arboleda con sombra", icon: <Ico d="M12 2l4 8H8l4-8zm0 8v12M8 18h8" /> },
+                  { key: "cancha_futbol", label: "Cancha de fútbol", icon: <Ico d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2zm0 0v20M2 12h20" /> },
+                  { key: "piscina", label: "Piscina", icon: <Ico d="M2 12h20M2 16c2 1.5 4 1.5 6 0s4-1.5 6 0 4 1.5 6 0M6 12V5a6 6 0 0 1 12 0v7" /> },
+                  { key: "cancha_basquet", label: "Cancha de básquet", icon: <Ico d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2zm0 0c0 10-5 15-5 15M12 2c0 10 5 15 5 15M2 12h20" /> },
+                  { key: "cancha_tenis", label: "Cancha de tenis", icon: <Ico d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2zm-9 6h18M3 18h18M12 2v20" /> },
+                  { key: "cancha_padel", label: "Cancha de pádel", icon: <Ico d="M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zm7 0v18M3 12h18" /> },
+                  { key: "hamacas", label: "Hamacas", icon: <Ico d="M4 6l16 12M4 18l16-12M8 12h8" /> },
+                  { key: "parlantes", label: "Parlantes", icon: <Ico d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2zm0 5a5 5 0 1 0 0 10A5 5 0 0 0 12 7zm0 3a2 2 0 1 0 0 4 2 2 0 0 0 0-4z" /> },
+                ],
+              },
+            ];
+
+            const anyActive = CATEGORIES.some((cat) =>
+              cat.items.some((item) => !!quinta?.[item.key])
+            );
+            if (!anyActive) return null;
+
+            return (
+              <div className="flex flex-col gap-6">
+                {CATEGORIES.map((cat) => {
+                  const activeItems = cat.items.filter((item) => !!quinta?.[item.key]);
+                  if (activeItems.length === 0) return null;
+                  return (
+                    <div key={cat.title}>
+                      <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-3">
+                        {cat.title}
+                      </p>
+                      <div className="grid grid-cols-2 gap-3">
+                        {activeItems.map((item) => (
+                          <div key={String(item.key)} className="flex items-center gap-3">
+                            {item.icon}
+                            <span className="text-sm text-gray-700">{item.label}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            );
+          })()}
         </div>
         <div className="pr-30">
           <Separator color="bg-gray-300" />
         </div>
+
       </BookingSection>
       {/* <SecondSeparator /> */}
 

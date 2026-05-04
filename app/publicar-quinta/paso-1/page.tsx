@@ -5,7 +5,6 @@ import { useQuintaForm } from "@/app/context/QuintaFormContext";
 
 export default function Paso1Page() {
   const { form, updateForm } = useQuintaForm();
-
   return (
     <main className="flex md:flex-row flex-col mb-10 md:mb-0 gap-10 md:gap-0 md:h-[50vh] items-center justify-between mx-10 md:mx-20">
       <section className="flex flex-col items-start justify-center w-full md:w-1/3">

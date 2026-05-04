@@ -33,6 +33,7 @@ export default function PreviewReservationPage() {
   const startDateParam = searchParams.get("startDate") ?? "";
   const endDateParam = searchParams.get("endDate") ?? "";
   const guestsParam = Number(searchParams.get("guests")) || 1;
+  const serviceCost = Number(searchParams.get("service")) || 0;
 
   const [quinta, setQuinta] = useState<Quintas | null>(null);
   const [userData, setUserData] = useState<Users | null>(null);
@@ -40,6 +41,7 @@ export default function PreviewReservationPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [bookingMessage, setBookingMessage] = useState<string | null>(null);
+  const [paymentType, setPaymentType] = useState<"deposit" | "balance">("balance");
   const [submitting, setSubmitting] = useState(false);
   const ownerId = quinta?.owner_id ?? "";
 
@@ -61,6 +63,7 @@ export default function PreviewReservationPage() {
     };
     fetchQuintaAndOwner();
   }, [id, ownerId, user]);
+
   // Calcular noches y precios
   const nights = useMemo(() => {
     if (!startDateParam || !endDateParam) return 1;
@@ -70,22 +73,34 @@ export default function PreviewReservationPage() {
     return n > 0 ? n : 1;
   }, [startDateParam, endDateParam]);
 
+  // ¿El check-in es en 2 o más meses desde hoy? → ofrecer seña
+  const isLongStay = useMemo(() => {
+    if (!startDateParam) return false;
+    const checkIn = new Date(startDateParam);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const twoMonthsFromNow = new Date(today);
+    twoMonthsFromNow.setMonth(twoMonthsFromNow.getMonth() + 2);
+    return checkIn >= twoMonthsFromNow;
+  }, [startDateParam]);
+
+  // Si NO es estadía larga, forzar pago total
+  useEffect(() => {
+    if (!isLongStay) setPaymentType("balance");
+  }, [isLongStay]);
+
   const pricePerNight = quinta?.price ?? 0;
   const userId = user?.id ?? "";
   const quintaId = quinta?.id ?? "";
 
   const currency = quinta?.currency_price ?? "USD";
   const subtotal = pricePerNight * nights;
-  const serviceCost = Math.round(subtotal * 0.119);
   const total = subtotal + serviceCost;
 
   const formatCurrency = (val: number) =>
     `${currency} ${val.toLocaleString("es-AR")}`;
 
   const sendEmailToOwner = async () => {
-    // Suponiendo que tienes un Date (o string ISO)
-
-    console.log("user desde fetch", userData);
     const res = await fetch("/api/test-email/new-booking", {
       method: "POST",
       headers: {
@@ -130,6 +145,7 @@ export default function PreviewReservationPage() {
       owner_id: ownerId,
       quinta_id: quintaId,
       guest_id: userId,
+      payment_type: paymentType,
       check_in: formattedCheckIn,
       check_out: formattedCheckOut,
       guest_count: guestsParam,
@@ -165,16 +181,19 @@ export default function PreviewReservationPage() {
   if (loading) {
     return (
       <main className="flex items-center justify-center min-h-[60vh]">
-        <div className="animate-spin rounded-full h-10 w-10 border-4 border-primaryDark border-t-transparent" />
+        <div className="animate-spin rounded-full border-4 border-primaryDark border-t-transparent">
+          <img src="logo.png" width={80} height={80} alt="" />
+        </div>
       </main>
     );
   }
 
   if (submitting) {
     return (
-      <main className="flex items-center flex-col gap-10 justify-center min-h-[60vh]">
-        <div className="animate-spin rounded-full h-10 w-10 border-4 border-primaryDark border-t-transparent" />
-        <p className="text-gray-500 text-xl text-center">Procesando...</p>
+      <main className="flex items-center justify-center min-h-[60vh]">
+        <div className="animate-spin rounded-full border-4 border-primaryDark border-t-transparent">
+          <img src="logo.png" width={80} height={80} alt="" />
+        </div>
       </main>
     );
   }
@@ -186,6 +205,7 @@ export default function PreviewReservationPage() {
       </main>
     );
   }
+  console.log(paymentType);
 
   return (
     <main className="max-w-6xl mx-auto px-4 md:px-8 py-8">
@@ -244,6 +264,70 @@ export default function PreviewReservationPage() {
               Editar
             </button>
           </div>
+          <hr className="border-gray-200" />
+
+          {/* ── Modalidad de pago (solo si la reserva es ≥ 2 meses) ── */}
+          {isLongStay && (
+            <div>
+              <h2 className="font-semibold mb-1">Modalidad de pago</h2>
+              <p className="text-sm text-gray-500 mb-3">
+                Elegí cómo querés pagar.
+              </p>
+              <div className="flex flex-col gap-3">
+                {/* Opción: Pago total */}
+                <label
+                  className={`flex items-start gap-3 p-4 border-2 rounded-xl cursor-pointer transition ${paymentType === "balance"
+                    ? "border-primaryDark bg-green-50"
+                    : "border-gray-200 hover:border-gray-300"
+                    }`}
+                >
+                  <input
+                    type="radio"
+                    name="paymentType"
+                    value="balance"
+                    checked={paymentType === "balance"}
+                    onChange={() => setPaymentType("balance")}
+                    className="mt-0.5 accent-green-600"
+                  />
+                  <div>
+                    <p className="font-semibold text-sm">Pago total</p>
+                    <p className="text-xs text-gray-500 mt-0.5">
+                      Pagás el total ahora:{" "}
+                      <span className="font-semibold text-gray-700">{formatCurrency(total)}</span>
+                    </p>
+                  </div>
+                </label>
+
+                {/* Opción: Seña + saldo */}
+                <label
+                  className={`flex items-start gap-3 p-4 border-2 rounded-xl cursor-pointer transition ${paymentType === "deposit"
+                    ? "border-primaryDark bg-green-50"
+                    : "border-gray-200 hover:border-gray-300"
+                    }`}
+                >
+                  <input
+                    type="radio"
+                    name="paymentType"
+                    value="deposit"
+                    checked={paymentType === "deposit"}
+                    onChange={() => setPaymentType("deposit")}
+                    className="mt-0.5 accent-green-600"
+                  />
+                  <div>
+                    <p className="font-semibold text-sm">Pago con seña (mitad y mitad)</p>
+                    <p className="text-xs text-gray-500 mt-0.5">
+                      Pagás el 50% ahora:{" "}
+                      <span className="font-semibold text-gray-700">
+                        {formatCurrency(Math.round(subtotal * 0.5) + serviceCost)}
+                      </span>
+                      {" "}y el resto antes del check-in.
+                    </p>
+                  </div>
+                </label>
+              </div>
+            </div>
+          )}
+
           <hr className="border-gray-200" />
 
           {/* Cancellation Policy */}
@@ -409,18 +493,35 @@ export default function PreviewReservationPage() {
               </div>
 
               <hr className="border-gray-200 my-2" />
-              <p className="text-center text-lg font-bold">Pago de seña</p>
-              <div className="flex justify-between text-sm">
-                <p>Pagarás de seña (30% + servicio):</p>
-                <span className="font-semibold">
-                  {formatCurrency(total * 0.3 + serviceCost)}
-                </span>
-              </div>
-              <p className="text-center text-lg font-bold">Total</p>
-              <div className="flex justify-between text-sm">
-                <p>Total de la reserva:</p>
-                <span className="font-semibold">{formatCurrency(total)}</span>
-              </div>
+
+              {paymentType === "deposit" ? (
+                <>
+                  <p className="text-center text-sm font-bold text-black mb-1">Pago con seña</p>
+                  <div className="flex justify-between text-sm">
+                    <p className="text-gray-600">Pagarás de seña (50%):</p>
+                    <span className="font-semibold">
+                      {formatCurrency(Math.round(subtotal * 0.5) + serviceCost)}
+                    </span>
+                  </div>
+                  <div className="flex justify-between text-sm text-gray-400">
+                    <p>Saldo restante:</p>
+                    <span>{formatCurrency(Math.round(subtotal * 0.5))}</span>
+                  </div>
+                  <hr className="border-gray-100 my-1" />
+                  <div className="flex justify-between text-sm font-bold">
+                    <p>Total de la reserva:</p>
+                    <span>{formatCurrency(total)}</span>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <p className="text-center text-sm font-bold mb-1">Pago total</p>
+                  <div className="flex justify-between text-sm font-bold">
+                    <p>Total de la reserva:</p>
+                    <span>{formatCurrency(total)}</span>
+                  </div>
+                </>
+              )}
               <p className="text-black font-semibold mb-2 underline text-center my-5">
                 Agregá un mensaje para el anfitrión
               </p>

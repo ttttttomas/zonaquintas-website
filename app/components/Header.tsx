@@ -6,7 +6,6 @@ import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Separator } from "./ui/Separator";
 import { usePathname } from "next/navigation";
-import FormQuintas from "./FormQuintas";
 import { useUser } from "../context/UserContext";
 import { AuthServices } from "@/app/services/AuthServices";
 import toast from "react-hot-toast";
@@ -60,6 +59,7 @@ export default function Header() {
     "/reservations": "Mis reservas",
     "/publications": "Mis publicaciones",
     "/wallet": "Wallet",
+    "/membresia": "Membresía para Propietarios",
   };
 
   const title = useMemo(() => titlesMap[path] || null, [path]);

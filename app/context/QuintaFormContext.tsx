@@ -16,19 +16,18 @@ export type QuintaFormData = {
   // ── Paso 2 ──
   title: string;
   description: string;
-  images: File[];
+  main_image: string;
+  images: string[];
   address: string;
   latitude: number;
-  longitude: number;
-  city: string; // barrio / neighborhood
+  length: number;
+  city: string;
+  status: 'pending' | 'active';
+  payment_type: string;
 
   // ── Paso 3 ──
   price: number;
   currency_price: "ARS" | "USD";
-  price_quincena: number;
-  currency_quincena: "ARS" | "USD";
-  price_mes: number;
-  currency_mes: "ARS" | "USD";
 };
 
 const DEFAULT_FORM: QuintaFormData = {
@@ -42,18 +41,18 @@ const DEFAULT_FORM: QuintaFormData = {
 
   title: "",
   description: "",
+  main_image: "",
   images: [],
   address: "",
   latitude: 0,
-  longitude: 0,
+  length: 0,
   city: "",
 
+
   price: 0,
-  currency_price: "USD",
-  price_quincena: 0,
-  currency_quincena: "USD",
-  price_mes: 0,
-  currency_mes: "USD",
+  currency_price: "ARS",
+  status: "pending",
+  payment_type: "",
 };
 
 interface QuintaFormContextType {

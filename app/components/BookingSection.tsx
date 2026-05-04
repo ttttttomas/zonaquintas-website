@@ -113,7 +113,7 @@ export default function BookingSection({
 
         {startDate && endDate ? (
           <Link
-            href={`/quintas/${quinta.id}/preview-reservation?startDate=${startDate?.toISOString() ?? ""}&endDate=${endDate?.toISOString() ?? ""}&guests=${selectedGuests}`}
+            href={`/quintas/${quinta.id}/preview-reservation?startDate=${startDate?.toISOString() ?? ""}&endDate=${endDate?.toISOString() ?? ""}&guests=${selectedGuests}&service=${costOfService}`}
             className="bg-primaryDark text-white text-center cursor-pointer py-2 rounded-md hover:bg-green-700 transition">
             Reservar
           </Link>

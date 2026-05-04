@@ -3,6 +3,7 @@ import Filters from "../components/home/Filters";
 import Form from "../components/home/Form";
 import { Separator } from "../components/ui/Separator";
 import QuintaSearchCard from "../components/QuintaSearchCard";
+import QuintaSearchCardSkeleton from "../components/quintas/QuintaSearchCardSkeleton";
 import { useEffect, Suspense } from "react";
 import { Quintas } from "@/types";
 import { useFilters } from "../context/ContextFilters";
@@ -16,16 +17,21 @@ function QuintasContent() {
   const searchParams = useSearchParams();
   const { filtersQuintas, setFilters } = useFilters();
   const [quintas, setQuintas] = useState<Quintas[]>([]);
+  const [loading, setLoading] = useState(true);
 
   // Leer searchParams y sincronizar con el contexto de filtros
   useEffect(() => {
     const place = searchParams.get("place");
     const guests = searchParams.get("guests");
+    const startDate = searchParams.get("startDate");
+    const endDate = searchParams.get("endDate");
 
     setFilters((prev: any) => ({
       ...prev,
       place: place || null,
       guests: guests ? Number(guests) : null,
+      startDate: startDate || null,
+      endDate: endDate || null,
     }));
   }, [searchParams]);
 
@@ -36,6 +42,8 @@ function QuintasContent() {
         setQuintas(res);
       } catch (error) {
         console.error("Error al cargar quintas:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -70,6 +78,16 @@ function QuintasContent() {
   const handleMarkerClick = (id: number | string) => {
     router.push(`/quintas/${id}`);
   };
+
+  // if (loading) {
+  //   return (
+  //     <main className="flex items-center justify-center min-h-[60vh]">
+  //       <div className="animate-spin rounded-full border-4 border-primaryDark border-t-transparent">
+  //         <img src="logo.png" width={80} height={80} alt="" />
+  //       </div>
+  //     </main>
+  //   );
+  // }
 
   return (
     <main className="p-4 md:pt-0 pt-32">
@@ -110,11 +128,21 @@ function QuintasContent() {
             </select>
           </div>
           <ul className="flex flex-col gap-5">
-            {quintasFiltered?.map((product: Quintas) => (
-              <QuintaSearchCard key={product.id} product={product} />
-            ))}
-            {quintasFiltered?.length === 0 && (
-              <p className="text-center py-10 text-gray-400">No hay resultados para tu búsqueda</p>
+            {loading ? (
+              <>
+                <QuintaSearchCardSkeleton />
+                <QuintaSearchCardSkeleton />
+                <QuintaSearchCardSkeleton />
+              </>
+            ) : (
+              <>
+                {quintasFiltered?.map((product: Quintas) => (
+                  <QuintaSearchCard key={product.id} product={product} />
+                ))}
+                {quintasFiltered?.length === 0 && (
+                  <p className="text-center py-10 text-gray-400">No hay resultados para tu búsqueda</p>
+                )}
+              </>
             )}
           </ul>
         </div>
@@ -134,7 +162,13 @@ function QuintasContent() {
 
 export default function QuintasPage() {
   return (
-    <Suspense fallback={<div className="p-4 pt-32 text-center text-gray-400">Cargando quintas...</div>}>
+    <Suspense fallback={
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="animate-spin rounded-full border-4 border-primaryDark border-t-transparent">
+          <img src="logo.png" width={80} height={80} alt="" />
+        </div>
+      </div>
+    }>
       <QuintasContent />
     </Suspense>
   );

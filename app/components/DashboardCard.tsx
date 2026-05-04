@@ -1,26 +1,145 @@
 import { Quintas } from "@/types";
 import Link from "next/link";
+import { useState, useEffect } from "react";
+import { ProductsServices } from "../services/ProductsServices";
 
-export default function DashboardCard({ quinta }: { quinta: Quintas }) {
+interface Props {
+  quinta: Quintas;
+  handleAccept?: () => void;
+  handleReject?: (id: string, reason: string) => void;
+}
+
+export default function DashboardCard({ quinta, handleAccept, handleReject }: Props) {
+  const [modal, setModal] = useState(false);
+  const [modal2, setModal2] = useState(false);
+  const [reason, setReason] = useState("");
+  const [phone, setPhone] = useState<string | null>(null);
+
+  useEffect(() => {
+    const getPhoneByOwnerId = async (id: string) => {
+      try {
+        const { owner_id } = await ProductsServices.getQuintaById(id);
+        const owner = await ProductsServices.getOwnerById(owner_id);
+        setPhone(owner?.phone as any);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    getPhoneByOwnerId(quinta.id.toString());
+  }, [])
+
+
+  const quintaAccepted = async (id: string) => {
+    try {
+      await ProductsServices.changeStatusQuinta(id, "active");
+      window.location.reload()
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  const handleRejectQuinta = async (id: string) => {
+    try {
+      await ProductsServices.changeStatusQuinta(id, "rejected");
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+
+
+
   return (
     <div className="border font-semibold pr-5 bg-white flex justify-between w-full">
+      {/* MODAL DE RECHAZO */}
+      {modal2 && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="bg-white w-full max-w-md rounded-2xl overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-200">
+            <div className="p-6">
+              <h3 className="text-xl font-bold text-center text-gray-900 mb-2">Quinta rechazada</h3>
+              <p className="text-sm text-gray-500 mb-4">Contactarse con el propietario para notificarle el motivo del rechazo</p>
+
+              <Link target="_blank" href={`https://wa.me/${phone}?text=Hola! Te hablamos de parte de Zona Quintas. Te contactamos para avisarte que tu quinta no ha sido aprobada.`} className="flex gap-5 hover:scale-105 transition-all bg-primaryDark/70 py-2 w-max px-5 rounded-lg justify-center mx-auto cursor-pointer items-center">
+                <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <g clip-path="url(#clip0_632_3566)">
+                    <path d="M0.595306 13.7337C0.59466 16.0694 1.20497 18.3501 2.36546 20.3603L0.484322 27.2286L7.5132 25.3856C9.4573 26.444 11.6355 26.9985 13.849 26.9987H13.8548C21.162 26.9987 27.1103 21.0526 27.1134 13.7441C27.1148 10.2026 25.7369 6.87244 23.2333 4.367C20.7303 1.86176 17.4013 0.481353 13.8543 0.479736C6.54623 0.479736 0.598431 6.42549 0.595414 13.7337" fill="url(#paint0_linear_632_3566)" />
+                    <path d="M0.122001 13.7293C0.121247 16.1491 0.753427 18.5114 1.95529 20.5936L0.00670624 27.7081L7.28761 25.799C9.29374 26.8928 11.5524 27.4695 13.8508 27.4704H13.8567C21.4261 27.4704 27.588 21.3104 27.5912 13.7403C27.5925 10.0716 26.165 6.62168 23.5721 4.02647C20.9788 1.43159 17.5307 0.00150853 13.8567 0C6.28606 0 0.125018 6.1591 0.122001 13.7293ZM4.45805 20.235L4.18619 19.8034C3.04337 17.9863 2.44018 15.8864 2.44104 13.7302C2.44341 7.43801 7.56421 2.31882 13.861 2.31882C16.9104 2.32012 19.7762 3.50883 21.9316 5.6656C24.087 7.82258 25.273 10.6899 25.2723 13.7395C25.2695 20.0316 20.1486 25.1515 13.8567 25.1515H13.8522C11.8035 25.1504 9.79425 24.6002 8.04198 23.5605L7.62498 23.3132L3.30435 24.446L4.45805 20.235Z" fill="url(#paint1_linear_632_3566)" />
+                    <path d="M10.4239 7.98962C10.1668 7.41821 9.89625 7.40668 9.65176 7.39666C9.45156 7.38804 9.22269 7.38868 8.99404 7.38868C8.76517 7.38868 8.39332 7.47478 8.07901 7.81797C7.76438 8.16148 6.87779 8.9916 6.87779 10.68C6.87779 12.3683 8.10757 14.0001 8.279 14.2293C8.45065 14.4581 10.6531 18.0337 14.1412 19.4093C17.0402 20.5524 17.6301 20.3251 18.2593 20.2677C18.8886 20.2106 20.2898 19.4378 20.5757 18.6365C20.8617 17.8352 20.8617 17.1484 20.776 17.0049C20.6902 16.8619 20.4613 16.776 20.1181 16.6045C19.7749 16.4329 18.0877 15.6026 17.7731 15.4881C17.4585 15.3736 17.2297 15.3165 17.0009 15.6602C16.772 16.0032 16.1148 16.776 15.9145 17.0049C15.7144 17.2343 15.5141 17.2629 15.171 17.0912C14.8276 16.919 13.7224 16.5571 12.4112 15.3881C11.391 14.4784 10.7022 13.3551 10.502 13.0115C10.3018 12.6684 10.4806 12.4824 10.6527 12.3114C10.8069 12.1577 10.996 11.9107 11.1677 11.7104C11.3388 11.51 11.3959 11.367 11.5104 11.1381C11.6249 10.909 11.5676 10.7086 11.4819 10.537C11.3959 10.3653 10.7291 8.66813 10.4239 7.98962Z" fill="white" />
+                  </g>
+                  <defs>
+                    <linearGradient id="paint0_linear_632_3566" x1="1331.94" y1="2675.37" x2="1331.94" y2="0.479736" gradientUnits="userSpaceOnUse">
+                      <stop stop-color="#1FAF38" />
+                      <stop offset="1" stop-color="#60D669" />
+                    </linearGradient>
+                    <linearGradient id="paint1_linear_632_3566" x1="1379.23" y1="2770.81" x2="1379.23" y2="0" gradientUnits="userSpaceOnUse">
+                      <stop stop-color="#F9F9F9" />
+                      <stop offset="1" stop-color="white" />
+                    </linearGradient>
+                    <clipPath id="clip0_632_3566">
+                      <rect width="27.5978" height="27.8" fill="white" />
+                    </clipPath>
+                  </defs>
+                </svg>
+                <b>Abrir Whatsapp</b>
+              </Link>
+              <button onClick={() => setModal2(false)} className="mt-2 py-2 px-5 rounded-lg bg-red-500 text-white cursor-pointer mx-auto block">Cerrar</button>
+            </div>
+
+          </div>
+        </div>
+      )
+      }
+      {
+        modal && (
+          <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+            <div className="bg-white w-full max-w-md rounded-2xl overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-200">
+              <div className="p-6">
+                <h3 className="text-xl font-bold text-gray-900 text-center mb-2">¿Estas seguro de querer rechazar esta quinta?</h3>
+              </div>
+
+              <div className="bg-gray-50 px-6 py-4 flex justify-end gap-3">
+                <button
+                  className="px-4 py-2 text-sm font-bold text-gray-500 hover:text-gray-700 transition-colors cursor-pointer"
+                  onClick={() => {
+                    setModal(false);
+                    setReason("");
+                  }}
+                >
+                  CANCELAR
+                </button>
+                <button
+                  className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-xl text-sm font-bold transition-all shadow-lg shadow-red-100 active:scale-95  cursor-pointer"
+                  onClick={() => {
+                    handleRejectQuinta(quinta.id.toString());
+                    setModal(false);
+                    setModal2(true)
+                  }}
+                >
+                  RECHAZAR PUBLICACIÓN
+                </button>
+              </div>
+            </div>
+          </div>
+        )
+      }
+
       <div className="flex">
         <img
           src={quinta.main_image}
-          width={200}
-          height={500}
+          className="w-48 object-cover"
           alt="Quintas activas"
         />
         <ul className="flex flex-col justify-between px-2 py-3">
-          <li>{quinta.title}</li>
-          <li>{quinta.owner_id}</li>
-          <li>{quinta.address}</li>
-          <li>${quinta.price}</li>
+          <li>Titulo: {quinta.title}</li>
+          <li>Ciudad: {quinta.city}</li>
+          <li>Direccion: {quinta.address}</li>
+          <li>Precio: {quinta.price.toLocaleString('es-AR', { style: 'currency', currency: 'ARS', minimumFractionDigits: 0, maximumFractionDigits: 2 })}</li>
         </ul>
       </div>
       <ul className="flex flex-col gap-3 justify-between items-end py-3">
-        <button className="flex hover:underline cursor-pointer items-center gap-1">
-          <p>MD</p>
+        <Link target="_blank" href={`https://wa.me/${phone}?text=Hola! Te hablamos de parte de Zona Quintas. Te contactamos para avisarte que tu quinta no ha sido aprobada.`} className="flex hover:underline cursor-pointer items-center gap-1">
+          <p>CONTACTARSE</p>
           <svg
             width="32"
             height="32"
@@ -33,8 +152,8 @@ export default function DashboardCard({ quinta }: { quinta: Quintas }) {
               fill="black"
             />
           </svg>
-        </button>
-        <button className="flex hover:underline cursor-pointer items-center gap-1">
+        </Link>
+        <button onClick={() => quintaAccepted(quinta.id.toString())} className="flex hover:underline cursor-pointer items-center gap-1">
           <p>ACEPTAR</p>
           <svg
             width="32"
@@ -53,7 +172,7 @@ export default function DashboardCard({ quinta }: { quinta: Quintas }) {
             />
           </svg>
         </button>
-        <button className="flex hover:underline cursor-pointer items-center gap-1">
+        <button disabled={modal} onClick={() => setModal(true)} className="flex hover:underline cursor-pointer items-center gap-1">
           <p>RECHAZAR</p>
           <svg
             width="32"
@@ -89,6 +208,6 @@ export default function DashboardCard({ quinta }: { quinta: Quintas }) {
           </svg>
         </Link>
       </ul>
-    </div>
+    </div >
   );
 }

@@ -37,4 +37,14 @@ export const BookingsServices = {
     );
     return r.data;
   },
+
+  getBookingsFinished: async () => {
+    const r = await apiClient.get(`/getBookingsFinished`);
+    return r.data;
+  },
+
+  getBookingsInDate: async () => {
+    const r = await apiClient.get(`/getBookingsInDate`);
+    return r.data;
+  },
 }

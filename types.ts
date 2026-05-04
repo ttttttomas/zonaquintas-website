@@ -9,6 +9,7 @@ export type Quintas = {
   bedrooms: number;
   bathrooms: number;
   environments: number;
+  status: 'active' | 'pending' | 'rejected' | 'cancelled';
   beds: number;
   price: number;
   images: string[]; // TABLA INTERMEDIA
@@ -102,6 +103,7 @@ export type Booking = {
   message: string;
   currency_price: "ARS" | "USD";
   amount: number;
+  payment_type: "deposit" | "balance";
   status: "pending" | "finished" | "rejected" | "cancelled" | "accepted" | "paid";
   payment_expire?: string;
   created_at?: string;

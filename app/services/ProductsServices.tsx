@@ -54,4 +54,13 @@ export const ProductsServices = {
     }
     return null;
   },
+
+  changeStatusQuinta: async (id: string, status: "active" | "pending" | "rejected" | "cancelled") => {
+    const response = await apiClient.patch(`/quintas/${id}/status`, { status });
+
+    if (response.status === 200) {
+      return response.data;
+    }
+    return null;
+  },
 };

@@ -3,9 +3,11 @@ import { useForm } from "react-hook-form";
 import { AuthServices } from "@/app/services/AuthServices";
 import toast, { Toaster } from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import { useUser } from "../../context/UserContext";
 
 export default function LoginPage() {
   const router = useRouter();
+  const { refetchUser } = useUser();
   const { register, handleSubmit } = useForm();
   const onSubmit = handleSubmit(async (data) => {
     try {
@@ -15,6 +17,7 @@ export default function LoginPage() {
           toast.success(response.data.message, { duration: 2000 });
           setTimeout(resolve, 2000);
         });
+        await refetchUser();
         router.push("/");
       }
     } catch (error: any) {

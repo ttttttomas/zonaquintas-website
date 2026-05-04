@@ -36,7 +36,7 @@ type Props = {
   initialZoom?: number;
 };
 
-export default function PlacesWithMap({
+export default function PlacesAutocomplete({
   apiKey,
   onLocation,
   initialCenter = { lat: -38.4161, lng: -63.6167 }, // AR

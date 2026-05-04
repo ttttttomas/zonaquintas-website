@@ -1,11 +1,12 @@
 "use client";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import DatePicker from "react-datepicker";
 import Lupa from "../icons/Lupa";
 import { Suspense, useState, useEffect, useRef } from "react";
 import "react-datepicker/dist/react-datepicker.css";
 import { useFilters } from "@/app/context/ContextFilters";
 import { ProductsServices } from "@/app/services/ProductsServices";
+import FormSkeleton from "./FormSkeleton";
 
 interface CityAddress {
   address: string;
@@ -32,6 +33,24 @@ export default function Form() {
   const cityRef = useRef<HTMLDivElement>(null);
   const guestsRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  // Sincronizar estado local con el contexto de filtros al montar o cambiar filtros
+  useEffect(() => {
+    if (filters.place) {
+      setSelectedCity(filters.place);
+      setCitySearch(filters.place);
+    }
+    if (filters.guests) {
+      setGuests(filters.guests);
+    }
+    if (filters.startDate) {
+      setStartDate(new Date(filters.startDate));
+    }
+    if (filters.endDate) {
+      setEndDate(new Date(filters.endDate));
+    }
+  }, [filters]);
 
   // Cerrar dropdowns al hacer click fuera
   useEffect(() => {
@@ -112,7 +131,7 @@ export default function Form() {
   };
 
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={<FormSkeleton />}>
       <form
         onSubmit={handleSubmit}
         className="flex xl:pl-20 md:flex-row flex-col justify-center items-center gap-5 md:gap-8 mb-5 md:mb-10"

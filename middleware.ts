@@ -5,7 +5,13 @@ const protectedRoutes = [
   "/my-account",
   "/reservations",
   "/publications",
-  // "/publicar-quinta/paso-1",
+  "/dashboard",
+  "/favorites",
+  "/wallet",
+  "/publicar-quinta/paso-1",
+  "/publicar-quinta/paso-2",
+  "/publicar-quinta/paso-3",
+  "/publicar-quinta/paso-4",
 ];
 
 export function middleware(request: NextRequest) {
@@ -32,9 +38,9 @@ export const config = {
     "/my-account/:path*",
     "/reservations/:path*",
     "/publications/:path*",
-    "/publicar-quinta/paso-1/:path*",
-    "/publicar-quinta/paso-2/:path*",
-    "/publicar-quinta/paso-3/:path*",
-    "/publicar-quinta/paso-4/:path*",
+    "/dashboard/:path*",
+    "/favorites/:path*",
+    "/wallet/:path*",
+    "/publicar-quinta/:path*",
   ],
 };

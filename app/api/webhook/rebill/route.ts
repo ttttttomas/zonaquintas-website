@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
       });
 
       // 3. Mail confirmación seña
-      await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/emails/deposit-confirmed`, {
+      await fetch(`${API_URL}/api/emails/deposit-confirmed`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ booking_id })
@@ -62,7 +62,7 @@ export async function POST(req: NextRequest) {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          status: 'paid',
+          status: 'finished',
           rebill_transaction_id: payment.id,
           paid_at: new Date().toISOString(),
         })
@@ -76,7 +76,7 @@ export async function POST(req: NextRequest) {
       });
 
       // 3. Mail confirmación final
-      await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/emails/balance-confirmed`, {
+      await fetch(`${API_URL}/api/emails/balance-confirmed`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ booking_id })

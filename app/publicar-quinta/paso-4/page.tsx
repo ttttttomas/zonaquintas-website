@@ -60,10 +60,18 @@ export default function Paso4Page() {
   console.log(user?.id);
   // Previews de las imágenes seleccionadas
   const imagePreviews = useMemo(
-    () => form.images.map((file) => URL.createObjectURL(file)),
+    () => form.images.map((file) => URL.createObjectURL(file as any)),
     [form.images],
   );
-
+  console.log(form);
+  const charBooleans: Record<string, boolean> = {};
+  for (const key of Object.values(CHAR_TO_KEY)) {
+    charBooleans[key] = false;
+  }
+  for (const charName of form.characteristics) {
+    const key = CHAR_TO_KEY[charName];
+    if (key) charBooleans[key] = true;
+  }
   const handleSubmit = async () => {
     try {
       setSubmitting(true);
@@ -87,7 +95,7 @@ export default function Paso4Page() {
         description: form.description,
         address: form.address,
         latitude: form.latitude,
-        length: form.longitude,
+        length: form.length,
         city: form.city,
         guests: form.guests,
         bedrooms: form.bedrooms,
@@ -98,6 +106,8 @@ export default function Paso4Page() {
         currency_price: form.currency_price,
         owner_id: ownerId,
         ...charBooleans,
+        status: form.status,
+        payment_type: form.payment_type,
       };
 
       // Construir FormData como lo espera la API:
@@ -123,13 +133,24 @@ export default function Paso4Page() {
     } catch (err: any) {
       setError(
         err?.response?.data?.detail ??
-          err?.response?.data?.message ??
-          "Error al publicar la quinta",
+        err?.response?.data?.message ??
+        "Error al publicar la quinta",
       );
     } finally {
       setSubmitting(false);
     }
   };
+
+  if (submitting) {
+    return (
+      <main className="flex items-center justify-center min-h-[60vh]">
+        <div className="animate-spin rounded-full flex items-center justify-center flex-col gap-2 border-4 border-primaryDark border-t-transparent">
+          <img src="logo.png" width={80} height={80} alt="" />
+          <p className="text-lg text-center font-semibold">Publicando...</p>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="flex flex-col relative items-center pb-20 justify-center">
@@ -238,22 +259,6 @@ export default function Paso4Page() {
                 : "—"}
             </b>
           </li>
-          {form.price_quincena > 0 && (
-            <li>
-              Precio por quincena:{" "}
-              <b className="italic">
-                {form.currency_quincena} {form.price_quincena.toLocaleString()}
-              </b>
-            </li>
-          )}
-          {form.price_mes > 0 && (
-            <li>
-              Precio por mes:{" "}
-              <b className="italic">
-                {form.currency_mes} {form.price_mes.toLocaleString()}
-              </b>
-            </li>
-          )}
         </ul>
       </section>
 

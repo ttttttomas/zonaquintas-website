@@ -74,7 +74,7 @@ export async function createPaymentLinkRebill(data: {
       ],
       isSingleUse: true, // 👈 importante si querés que se use una sola vez
       redirectUrls: {
-        approved: `{https://www.zonaquintas.com/pay_ticket_rebill_success?id=${data.ownerId}}`,
+        approved: `https://www.zonaquintas.com/pay_ticket_rebill_success?id=${data.ownerId}`,
         rejected: "https://www.zonaquintas.com/pay_ticket_rebill_rejected",
         pending: "https://www.zonaquintas.com/pay_ticket_rebill_pending",
         // approved: "http://localhost:3000/pay_ticket_rebill_success",

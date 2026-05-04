@@ -5,6 +5,7 @@ import "react-datepicker/dist/react-datepicker.css";
 
 export default function Paso3Page() {
   const { form, updateForm } = useQuintaForm();
+  console.log(form)
 
   return (
     <main className="flex md:flex-row flex-col mb-10 md:mb-0 gap-10 md:gap-0 md:h-[50vh] items-center justify-between mx-10 md:mx-20">
@@ -28,49 +29,6 @@ export default function Paso3Page() {
                   currency_price: e.target.value as "ARS" | "USD",
                 })
               }>
-              <option value="USD">USD</option>
-              <option value="ARS">ARS</option>
-            </select>
-          </div>
-          <div className="w-full flex bg-white rounded-lg">
-            <input
-              placeholder="Precio por quincena (opcional)"
-              className="p-2 flex-1"
-              type="number"
-              value={form.price_quincena || ""}
-              onChange={(e) =>
-                updateForm({ price_quincena: Number(e.target.value) })
-              }
-            />
-            <select
-              value={form.currency_quincena}
-              onChange={(e) =>
-                updateForm({
-                  currency_quincena: e.target.value as "ARS" | "USD",
-                })
-              }>
-              <option value="USD">USD</option>
-              <option value="ARS">ARS</option>
-            </select>
-          </div>
-          <div className="w-full flex bg-white rounded-lg">
-            <input
-              placeholder="Precio por mes (opcional)"
-              className="p-2 flex-1"
-              type="number"
-              value={form.price_mes || ""}
-              onChange={(e) =>
-                updateForm({ price_mes: Number(e.target.value) })
-              }
-            />
-            <select
-              value={form.currency_mes}
-              onChange={(e) =>
-                updateForm({
-                  currency_mes: e.target.value as "ARS" | "USD",
-                })
-              }>
-              <option value="USD">USD</option>
               <option value="ARS">ARS</option>
             </select>
           </div>

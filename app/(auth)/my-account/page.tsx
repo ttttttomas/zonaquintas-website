@@ -50,21 +50,22 @@ export default function MyAccountPage() {
   };
 
   const updateUser = async (e: React.FormEvent<HTMLFormElement>) => {
-  e.preventDefault();
-  setLoadingUser(true);
-  try {
-    const res =await AuthServices.updateUser(user?.id, 
-    {...formData,
-      languages: selected
+    e.preventDefault();
+    setLoadingUser(true);
+    try {
+      const res = await AuthServices.updateUser(user?.id,
+        {
+          ...formData,
+          languages: selected
+        }
+      );
+      toast.success(res?.data?.message);
+    } catch (error: any) {
+      toast.error(error?.response?.data?.detail);
+    } finally {
+      setLoadingUser(false);
     }
-    );
-    toast.success(res?.data?.message);
-  } catch (error: any) {
-    toast.error(error?.response?.data?.detail);
-  } finally {
-    setLoadingUser(false);
-  }
-};
+  };
 
   if (loading) {
     return (
@@ -175,17 +176,20 @@ export default function MyAccountPage() {
         </button>
       </form>
       <div className="flex flex-col items-center justify-between gap-60">
-        <Link
-          href="/reservations"
-          className="bg-primaryDark text-white rounded-full cursor-pointer size-42 text-center pt-16 font-bold text-2xl"
-        >
-          Mis reservas
-        </Link>
+
+        <div className="w-full md:w-64 shrink-0">
+          <Link
+            href="/reservations"
+            className="block bg-white border-2 border-primaryDark text-primaryDark hover:bg-primaryDark hover:text-white transition-all rounded-2xl p-8 text-center shadow-lg shadow-green-100 group"
+          >
+            <p className="font-bold text-2xl group-hover:scale-110 transition-transform">Mis reservas</p>
+          </Link>
+        </div>
         <Link
           href="/publications"
-          className="bg-primaryDark text-white rounded-2xl py-5 px-10 cursor-pointer text-nowrap text-center font-bold text-2xl"
+          className="block bg-white border-2 border-primaryDark text-primaryDark hover:bg-primaryDark hover:text-white transition-all rounded-2xl p-8 text-center shadow-lg shadow-green-100 group"
         >
-          Mis publicaciones
+          <p className="font-bold text-2xl group-hover:scale-110 transition-transform">Mis publicaciones</p>
         </Link>
       </div>
     </main>

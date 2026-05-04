@@ -20,6 +20,7 @@ export default function Footer() {
           <div className="flex md:flex-col text-sm md:text-md underline items-start justify-between w-full flex-row">
             <Link href="/terms">Términos y condiciones</Link>
             <Link href="/politics">Políticas de privacidad</Link>
+            <Link href="/cancelation">Política de cancelación y reembolso del huésped</Link>
           </div>
         </div>
         <div className="flex justify-center gap-10 items-center">

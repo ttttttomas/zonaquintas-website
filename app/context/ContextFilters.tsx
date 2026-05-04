@@ -14,6 +14,8 @@ interface Filters {
   dates: string | null;
   guests: number | null;
   place: string | null;
+  startDate: string | null;
+  endDate: string | null;
   priceRange: [number, number];
   // Booleanos — mismos nombres que el tipo Quintas (null = sin filtrar, true = requerido)
   // Habitaciones
@@ -68,6 +70,8 @@ const defaultFilters: Filters = {
   dates: null,
   guests: null,
   place: null,
+  startDate: null,
+  endDate: null,
   // booleanos — null = sin filtrar
   sabanas: null,
   mantas: null,

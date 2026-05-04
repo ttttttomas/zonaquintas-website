@@ -6,10 +6,10 @@ import { AuthServices } from "../services/AuthServices";
 import { Users } from "@/types";
 
 function SuccessContent() {
-    const searchParams = useSearchParams();
-    const id = searchParams.get("id") ?? "";
-    const [owner, setOwner] = useState<Users | null>(null);
-    const [loading, setLoading] = useState(true);
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id") ?? "";
+  const [owner, setOwner] = useState<Users | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const loadOwner = async () => {
@@ -23,7 +23,9 @@ function SuccessContent() {
   if (loading) {
     return (
       <main className="flex items-center justify-center min-h-[60vh]">
-        <div className="animate-spin rounded-full h-10 w-10 border-4 border-primaryDark border-t-transparent" />
+        <div className="animate-spin rounded-full border-4 border-primaryDark border-t-transparent">
+          <img src="logo.png" width={80} height={80} alt="" />
+        </div>
       </main>
     );
   }
@@ -68,7 +70,9 @@ function SuccessContent() {
 
 const Spinner = () => (
   <main className="flex items-center justify-center min-h-[60vh]">
-    <div className="animate-spin rounded-full h-10 w-10 border-4 border-primaryDark border-t-transparent" />
+    <div className="animate-spin rounded-full border-4 border-primaryDark border-t-transparent">
+      <img src="logo.png" width={80} height={80} alt="" />
+    </div>
   </main>
 );
 
