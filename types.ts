@@ -83,6 +83,10 @@ export type Users = {
   languages: string[]; // TABLA INTERMEDIA
   opinions: string[]; // TABLA INTERMEDIA
   picture: string[]; // FOTO DE PERFIL DEL WACHO
+  rebill_customer_id: string | null;
+  rebill_subscription_id: string | null;
+  membership_status: "active" | "inactive" | "cancelled" | "failed" | "pending";
+  membership_expires_at: string | null;
 };
 
 export type Search = {

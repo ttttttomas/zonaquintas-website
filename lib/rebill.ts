@@ -7,32 +7,6 @@ const REBILL_API_KEY = "sk_2ca4dc4cdece4f178010dcf0f7b6d0fe";
 const headers = {
   "x-api-key": REBILL_API_KEY,
   "Content-Type": "application/json",
-};
-
-// Crea o recupera un cliente en Rebill
-export async function crearClienteRebill(data: {
-  email: string;
-  firstName: string;
-  lastName: string;
-  phone?: string;
-}) {
-  const res = await fetch(`${REBILL_API_URL}/customers`, {
-    method: "POST",
-    headers,
-    body: JSON.stringify({
-      email: data.email,
-      firstName: data.firstName,
-      lastName: data.lastName,
-      phone: data.phone ?? "",
-    }),
-  });
-
-  if (!res.ok) {
-    const err = await res.json();
-    throw new Error(`Rebill crearCliente error: ${JSON.stringify(err)}`);
-  }
-
-  return res.json();
 }
 
 // Crea un payment link para una reserva
@@ -92,6 +66,58 @@ export async function createPaymentLinkRebill(data: {
   if (!res.ok) {
     const err = await res.json();
     throw new Error(`Rebill crearPaymentLink error: ${JSON.stringify(err)}`);
+  }
+
+  return res.json();
+}
+
+// Crea un payment link para una suscripción de membresía
+export async function createSubscriptionLinkRebill(data: {
+  amount: number; // en centavos o valor nominal según configuración de Rebill
+  currency: string;
+  userId: string;
+  email: string;
+}) {
+  const res = await fetch(`${REBILL_API_URL}/payment-links`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify({
+      title: [
+        {
+          text: "Suscripción Membresía Premium - ZonaQuintas",
+          language: "es",
+        },
+      ],
+      paymentMethods: [
+        {
+          methods: ["card"],
+          currency: data.currency,
+        },
+      ],
+      prices: [
+        {
+          amount: data.amount,
+          currency: data.currency,
+          isDefault: true,
+        },
+      ],
+      isSingleUse: false, // Las suscripciones suelen permitir múltiples usos o son reutilizables
+      redirectUrls: {
+        approved: `https://www.zonaquintas.com/membership_success?id=${data.userId}`,
+        rejected: "https://www.zonaquintas.com/membership_rejected",
+        pending: "https://www.zonaquintas.com/membership_pending",
+      },
+      metadata: {
+        user_id: data.userId,
+        payment_type: "membership",
+        plan: "premium",
+      },
+    }),
+  });
+
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(`Rebill crearSubscriptionLink error: ${JSON.stringify(err)}`);
   }
 
   return res.json();

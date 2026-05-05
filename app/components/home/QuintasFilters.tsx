@@ -9,12 +9,12 @@ export default function QuintasFilters() {
   const [quintas, setQuintas] = useState<Quintas[]>([]);
   const [loading, setLoading] = useState(true);
   const { filtersQuintas } = useFilters();
+
   useEffect(() => {
     const fetchQuintas = async () => {
       try {
         const res = await ProductsServices.getQuintas();
-        const dataFiltered = filtersQuintas(res);
-        setQuintas(dataFiltered);
+        setQuintas(res);
         setLoading(false);
       } catch (error) {
         console.error("Error al cargar quintas:", error);
@@ -24,7 +24,7 @@ export default function QuintasFilters() {
     fetchQuintas();
   }, []);
 
-
+  const dataFiltered = useMemo(() => filtersQuintas(quintas), [quintas, filtersQuintas]);
 
   if (loading) {
     return (
@@ -38,9 +38,12 @@ export default function QuintasFilters() {
 
   return (
     <section className="flex flex-wrap lg:gap-x-16 gap-x-10 justify-center">
-      {quintas?.map((product: Quintas) => (
+      {dataFiltered?.map((product: Quintas) => (
         <QuintaCard key={product.id} product={product} />
       ))}
+      {dataFiltered?.length === 0 && (
+        <p className="text-gray-400 py-10">No hay quintas que coincidan con los filtros</p>
+      )}
     </section>
   );
 }
