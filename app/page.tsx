@@ -14,7 +14,7 @@ export default async function Home() {
       <SecondSeparator />
       <h2 className="block font-semibold py-1 text-2xl w-fit mx-auto px-10 rounded-xl text-center mt-5">Filtros</h2>
       <Filters />
-      <h1 className='text-2xl font-semibold mt-10 text-center'>Algunos destacados</h1>
+      <h1 className='text-2xl font-semibold mt-10 text-center'>Quintas destacadas</h1>
       <QuintasFilters />
     </main>
   );

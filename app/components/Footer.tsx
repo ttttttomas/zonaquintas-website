@@ -30,7 +30,7 @@ export default function Footer() {
             </p>
             <Link
               className="font-light  text-sm md:text-md text-black/60"
-              href="publicar-quinta">
+              href="/publicar-quinta">
               Publicá tu Quinta
             </Link>
           </ul>

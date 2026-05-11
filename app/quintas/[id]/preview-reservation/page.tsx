@@ -28,6 +28,7 @@ export default function PreviewReservationPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const id = params.id as string;
+  const [modal, setModal] = useState<boolean>(false);
 
   // Read booking data from query params (coming from BookingSection)
   const startDateParam = searchParams.get("startDate") ?? "";
@@ -73,16 +74,10 @@ export default function PreviewReservationPage() {
     return n > 0 ? n : 1;
   }, [startDateParam, endDateParam]);
 
-  // ¿El check-in es en 2 o más meses desde hoy? → ofrecer seña
+  // ¿La estadía es de 1 mes (30 noches) o más? → ofrecer seña
   const isLongStay = useMemo(() => {
-    if (!startDateParam) return false;
-    const checkIn = new Date(startDateParam);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const twoMonthsFromNow = new Date(today);
-    twoMonthsFromNow.setMonth(twoMonthsFromNow.getMonth() + 2);
-    return checkIn >= twoMonthsFromNow;
-  }, [startDateParam]);
+    return nights >= 30;
+  }, [nights]);
 
   // Si NO es estadía larga, forzar pago total
   useEffect(() => {
@@ -158,6 +153,10 @@ export default function PreviewReservationPage() {
     });
   };
 
+  const handleAlert = () => {
+    setModal(true);
+  }
+
   const handleConfirm = async () => {
     if (!bookingMessage) {
       alert("Por favor, agrega un mensaje para el anfitrión");
@@ -182,7 +181,7 @@ export default function PreviewReservationPage() {
     return (
       <main className="flex items-center justify-center min-h-[60vh]">
         <div className="animate-spin rounded-full border-4 border-primaryDark border-t-transparent">
-          <img src="logo.png" width={80} height={80} alt="" />
+          <img src="/logo.png" width={80} height={80} alt="" />
         </div>
       </main>
     );
@@ -192,7 +191,7 @@ export default function PreviewReservationPage() {
     return (
       <main className="flex items-center justify-center min-h-[60vh]">
         <div className="animate-spin rounded-full border-4 border-primaryDark border-t-transparent">
-          <img src="logo.png" width={80} height={80} alt="" />
+          <img src="/logo.png" width={80} height={80} alt="" />
         </div>
       </main>
     );
@@ -209,6 +208,19 @@ export default function PreviewReservationPage() {
 
   return (
     <main className="max-w-6xl mx-auto px-4 md:px-8 py-8">
+      {modal &&
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="bg-white w-full max-w-md rounded-2xl overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-200">
+            <div className="p-6">
+              <h3 className="text-2xl font-bold text-center text-gray-900 mb-2">Quinta de Prueba</h3>
+              <p className="text-md text-center text-gray-500 mb-4">Esto es una quinta de prueba a modo ilustrativo, no se pueden generar reservas reales.</p>
+
+
+              <button onClick={() => setModal(false)} className="mt-2 py-2 px-5 rounded-lg bg-red-500 text-white cursor-pointer mx-auto block">Cerrar</button>
+            </div>
+
+          </div>
+        </div>}
       {/* Back + Title */}
       <div className="flex items-center gap-3 mb-6">
         <button
@@ -331,17 +343,17 @@ export default function PreviewReservationPage() {
           <hr className="border-gray-200" />
 
           {/* Cancellation Policy */}
-          <div className="">
-            <h2 className="font-semibold mb-2">Política de cancelación</h2>
+          <div className="flex flex-col gap-3">
+            <h2 className="font-semibold">Política de cancelación</h2>
             <p className="text-sm flex items-center gap-2 text-gray-700">
-              Esta reserva no es reembolsable.
-              <Link
-                href="/terms"
-                className="font-semibold underline hover:text-primaryDark"
-              >
-                Mas información
-              </Link>
+              Las cancelaciones se regirán por las Políticas de Cancelación y Reembolso vigentes en la plataforma.
             </p>
+            <Link
+              href="/terms"
+              className="font-semibold text-sm underline hover:text-primaryDark"
+            >
+              Mas información
+            </Link>
           </div>
 
           <hr className="border-gray-200" />
@@ -436,13 +448,21 @@ export default function PreviewReservationPage() {
             favor contáctanos a través de nuestro centro de Soporte.
           </p>
           {/* Submit */}
-          <button
-            onClick={handleConfirm}
-            disabled={submitting}
-            className="w-full md:w-auto bg-primaryDark hover:bg-green-700 text-white font-bold py-3 px-16 rounded-full text-lg transition cursor-pointer disabled:opacity-50"
-          >
-            {submitting ? "Procesando..." : "Confirmar reserva"}
-          </button>
+          {quinta.status != "prueba" ?
+            <button
+              onClick={handleConfirm}
+              disabled={submitting}
+              className="w-full md:w-auto bg-primaryDark hover:bg-green-700 text-white font-bold py-3 px-16 rounded-full text-lg transition cursor-pointer disabled:opacity-50"
+            >
+              {submitting ? "Procesando..." : "Confirmar reserva"}
+            </button> :
+            <button
+              onClick={handleAlert}
+              disabled={submitting}
+              className="w-full md:w-auto bg-primaryDark hover:bg-green-700 text-white font-bold py-3 px-16 rounded-full text-lg transition cursor-pointer disabled:opacity-50"
+            >
+              Confirmar Reserva
+            </button>}
         </div>
 
         {/* ── RIGHT COLUMN — Quinta Summary Card ── */}

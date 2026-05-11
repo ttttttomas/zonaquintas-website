@@ -9,7 +9,7 @@ export type Quintas = {
   bedrooms: number;
   bathrooms: number;
   environments: number;
-  status: 'active' | 'pending' | 'rejected' | 'cancelled';
+  status: 'active' | 'pending' | 'rejected' | 'cancelled' | "prueba";
   beds: number;
   price: number;
   images: string[]; // TABLA INTERMEDIA

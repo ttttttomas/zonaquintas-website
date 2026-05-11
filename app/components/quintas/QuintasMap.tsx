@@ -43,6 +43,8 @@ export default function QuintasMap({
         apiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
         version: 'weekly',
         libraries: ['marker'],
+        language: 'es',
+        region: 'AR',
       }),
     []
   );

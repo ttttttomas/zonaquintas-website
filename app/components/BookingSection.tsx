@@ -103,11 +103,11 @@ export default function BookingSection({
           </div>
           <div className="flex justify-between">
             <span>Costo de servicio</span>
-            <span className="text-black font-semibold">{costOfService}</span>
+            <span className="text-black font-semibold">$ {costOfService}</span>
           </div>
           <div className="flex justify-between font-semibold py-5 border-t border-gray-400">
             <span>Total</span>
-            <span className="text-black">${totalPrice}</span>
+            <span className="text-black">{totalPrice}</span>
           </div>
         </div>
 

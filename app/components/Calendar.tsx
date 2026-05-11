@@ -101,11 +101,11 @@ function MonthGrid({
           if (isDisabled) {
             cellCls += " text-gray-300 cursor-not-allowed";
           } else if (isSelected) {
-            cellCls += " bg-gray-900 text-white font-semibold cursor-pointer";
+            cellCls += " bg-primaryDark text-white font-semibold cursor-pointer";
           } else if (isGhost) {
-            cellCls += " bg-gray-900/20 text-gray-500 font-medium cursor-default";
+            cellCls += " bg-primaryDark/20 text-gray-500 font-medium cursor-default";
           } else if (inRange) {
-            cellCls += " bg-gray-100 text-gray-800 rounded-none cursor-pointer";
+            cellCls += " bg-black/20 text-gray-800 rounded-full cursor-pointer";
           } else {
             cellCls += " text-gray-800 hover:bg-gray-100 cursor-pointer";
           }

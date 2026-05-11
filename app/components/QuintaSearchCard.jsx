@@ -20,7 +20,7 @@ export default function QuintaSearchCard({ product }) {
   });
 
   const costOfService = () => {
-    const res = product.price * 0.05;
+    const res = product.price * 0.06;
     const formated = res.toLocaleString("es-AR", {
       style: "currency",
       currency: product.currency_price,
@@ -44,15 +44,15 @@ export default function QuintaSearchCard({ product }) {
             alt={product.title}
             className="w-60 h-full p-2 object-cover rounded-l-2xl"
           />
-          <div
+          {/* <div
             onClick={handleClick}
             className="absolute cursor-pointer hover:scale-110 transition-all top-3 left-3 rounded-full p-1"
           >
             {isFavorite ? <HeartGreen /> : <Heart />}
-          </div>
+          </div> */}
         </div>
 
-        <div className="md:flex grid grid-cols-2 gap-2 md:gap-0 grid-rows-2 place-items-center flex-col justify-between pl-1 py-2">
+        <div className="md:flex grid grid-cols-2 gap-2 md:gap-1 grid-rows-2 place-items-center flex-col justify-between pl-1 py-2">
           {product.images.slice(0, 4).map((_, i) => (
             <img
               key={i}
@@ -75,7 +75,7 @@ export default function QuintaSearchCard({ product }) {
           </p>
 
           {/* Opiniones */}
-          <div className="flex justify-center md:justify-start items-center text-sm my-2 gap-1">
+          {/* <div className="flex justify-center md:justify-start items-center text-sm my-2 gap-1">
             <span>4,5</span>
             <div className="flex text-yellow-500">
               {[...Array(5)].map((_, i) => (
@@ -86,15 +86,15 @@ export default function QuintaSearchCard({ product }) {
               ))}
             </div>
             <span className="text-gray-400">| 72 opiniones</span>
-          </div>
-          <ul className="flex md:grid grid-cols-2 place-items-center py-2 flex-row md:flex-col gap-2 text-sm justify-between">
+          </div> */}
+          <ul className="flex md:grid grid-cols-2 place-items-center py-2 flex-row md:flex-col gap-2 mt-3 text-sm justify-between">
             <li className="flex items-center gap-2">
               <Bath />
               {product.bathrooms}
             </li>
             <li className="flex items-center gap-2">
               <Amb />
-              {product.ambients}
+              {product.environments}
             </li>
             <li className="flex items-center gap-2">
               <Bed />
@@ -108,7 +108,7 @@ export default function QuintaSearchCard({ product }) {
         </div>
         <Separator color="bg-gray-400" />
         {/* Precio */}
-        <div className="mt-4 flex items-center justify-between md:gap-10">
+        <div className="mt-2 flex items-center justify-between md:gap-10">
           <div className="flex flex-col items-start justify-center">
             <p className="text-green-600 text-3xl font-semibold">
               {formatedPrice}

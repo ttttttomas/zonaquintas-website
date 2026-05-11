@@ -60,6 +60,7 @@ export default function quintaIdPage({ params }: quintaIdPageProps) {
   const priceNum = quinta?.price ?? 0;
   const serviceCostNum = priceNum * 0.06;
   const totalNum = priceNum + serviceCostNum;
+  const languagesMayus = owner?.languages.map((lang) => lang.charAt(0).toUpperCase() + lang.slice(1));
 
   const formatCurrency = (amount: number) => {
     return amount.toLocaleString("es-AR", {
@@ -77,11 +78,13 @@ export default function quintaIdPage({ params }: quintaIdPageProps) {
   const handleShare = () => {
     navigator.clipboard.writeText(window.location.href);
   };
+
+
   if (loading) {
     return (
       <main className="flex items-center justify-center min-h-[60vh]">
         <div className="animate-spin rounded-full border-4 border-primaryDark border-t-transparent">
-          <img src="logo.png" width={80} height={80} alt="" />
+          <img src="/logo.png" width={80} height={80} alt="" />
         </div>
       </main>
     );
@@ -100,7 +103,7 @@ export default function quintaIdPage({ params }: quintaIdPageProps) {
       <section className="px-4 md:px-10 lg:mx-20 mb-10" id="hero">
         <div className="flex flex-col md:flex-row justify-between gap-2">
           <h1 className="font-semibold text-xl md:text-2xl">{quinta?.title}</h1>
-          <ul className="flex gap-5 items-center">
+          {/* <ul className="flex gap-5 items-center">
             <button
               onClick={handleShare}
               className="flex items-center cursor-pointer gap-3 font-medium text-sm md:text-base">
@@ -121,7 +124,7 @@ export default function quintaIdPage({ params }: quintaIdPageProps) {
               <p>Agregar a favoritos</p>
               <Heart className={"w-5 cursor-pointer"} />
             </li>
-          </ul>
+          </ul> */}
         </div>
         {quinta && (
           <ImageGallery
@@ -142,7 +145,7 @@ export default function quintaIdPage({ params }: quintaIdPageProps) {
       <BookingSection
         quinta={quinta!}
         formatedPrice={formatedPrice}
-        costOfService={String(serviceCostNum)}
+        costOfService={String(serviceCostNum.toFixed(2))}
         totalPrice={totalPrice}
         maxGuests={quinta?.guests || 0}>
         {/* Calificaciones y anfitrión */}
@@ -354,7 +357,7 @@ export default function quintaIdPage({ params }: quintaIdPageProps) {
 
       {/* Información del anfitrión */}
       <section
-        className="px-4 md:px-10 lg:mx-20 pt-10 space-y-6"
+        className="px-4 md:px-10 lg:mx-20 pt-10 mb-5 space-y-6"
         id="owner_info">
         <h4 className="font-semibold text-center md:text-start">
           Información del anfitrión
@@ -368,10 +371,6 @@ export default function quintaIdPage({ params }: quintaIdPageProps) {
                 className="w-24 h-24 rounded-full object-cover mx-auto"
               />
               <p className="font-semibold">Anfitrión: {owner?.name}</p>
-              <div className="flex items-center space-x-2">
-                <MapPin className="w-4 h-4" />
-                <p>Vive en {owner?.owner_location}</p>
-              </div>
             </div>
             {owner?.opinions && owner.opinions.length > 0 && (
               <div className="flex flex-col justify-between gap-10 text-center">
@@ -415,12 +414,12 @@ export default function quintaIdPage({ params }: quintaIdPageProps) {
                   Este es el inmueble de {owner?.name}
                 </h3>
                 <p>
-                  {owner?.name} es un nuevo anfitrión en Zonaquintas. Estamos
+                  {owner?.name} es un nuevo anfitrión en ZonaQuintas. Estamos
                   seguros de que hará todo lo posible para que tengas una
                   estadía inolvidable en su propiedad.
                 </p>
                 <b className="text-primaryDark underline">
-                  En Zonaquintas nos encargamos de verificar la identidad del
+                  En ZonaQuintas nos encargamos de verificar la identidad del
                   anfitrión y de que su propiedad cumpla con nuestros estándares
                   de calidad.
                 </b>
@@ -441,11 +440,11 @@ export default function quintaIdPage({ params }: quintaIdPageProps) {
 
         {/* Idiomas y ubicación */}
         <div className="flex flex-col md:flex-row gap-8 md:gap-16 lg:gap-32 mt-8">
-          <div className="flex flex-col max-w-xl items-start gap-4 text-base md:text-xl text-black pt-4">
+          <div className="flex flex-col max-w-xl items-start gap-8 text-base md:text-xl text-black pt-4">
             {owner?.languages && owner.languages.length > 0 && (
               <div className="flex items-center space-x-2">
-                <Globe className="w-4 h-4" />
-                <p>Se comunica en {owner.languages.join(", ")}</p>
+                <Globe className="w-10 h-10" />
+                <p>Se comunica en {languagesMayus?.join(", ")}.</p>
               </div>
             )}
           </div>
@@ -464,7 +463,7 @@ export default function quintaIdPage({ params }: quintaIdPageProps) {
           <div className="space-y-2">
             <h3 className="font-semibold">Política de cancelación</h3>
             <ul className="space-y-1">
-              <li>Esta reserva no es reembolsable.</li>
+              <li>Las cancelaciones se regirán por las Políticas de Cancelación y Reembolso vigentes en la plataforma.</li>
               <li>
                 Consultá la políticas completas para obtener más información.
               </li>
@@ -491,7 +490,7 @@ export default function quintaIdPage({ params }: quintaIdPageProps) {
 
             <p className="text-xs md:text-medium">
               Por seguridad, recomendamos siempre usar la página oficial de
-              Zonaquintas a la hora de transferir dinero y comunicarte con los
+              ZonaQuintas a la hora de transferir dinero y comunicarte con los
               anfitriones.
             </p>
           </div>
