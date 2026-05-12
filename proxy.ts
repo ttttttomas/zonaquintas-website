@@ -14,7 +14,7 @@ const protectedRoutes = [
   "/publicar-quinta/paso-4",
 ];
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   const isProtected = protectedRoutes.some((route) =>
@@ -24,7 +24,7 @@ export function middleware(request: NextRequest) {
   if (isProtected) {
     const token = request.cookies.get("access_token");
 
-    if (!token) {
+    if (!token || !token.value) {
       const loginUrl = new URL("/login", request.url);
       return NextResponse.redirect(loginUrl);
     }

@@ -13,6 +13,12 @@ export default function LoginPage() {
     try {
       const response = await AuthServices.login(data.email, data.password);
       if (response?.status === 200) {
+        // Set cookie IMMEDIATELY for proxy/middleware access
+        const token = response.data.token || response.data.access_token;
+        if (token) {
+          document.cookie = `access_token=${token}; path=/; max-age=86400; SameSite=Lax; Secure`;
+        }
+
         await new Promise<void>((resolve) => {
           toast.success(response.data.message, { duration: 2000 });
           setTimeout(resolve, 2000);
