@@ -32,22 +32,6 @@ export default function Header() {
     setIsOpen2(!isOpen2);
   };
 
-  const logout = async () => {
-    try {
-      const response = await AuthServices.logout();
-      console.log(response);
-      setTimeout(() => {
-        window.location.href = "/";
-        toast.success(response.data.message);
-      }, 1000);
-    } catch (error: any) {
-      const message =
-        error?.response?.data?.message ||
-        "Error al iniciar sesión. Revise su conexión y/o credenciales.";
-      toast.error(message);
-    }
-  };
-
   const titlesMap: { [key: string]: React.ReactNode } = {
     "/": "Encontrá, reservá y disfrutá.",
     "/favorites": "Mis favoritos",
@@ -64,7 +48,106 @@ export default function Header() {
 
   const title = useMemo(() => titlesMap[path] || null, [path]);
 
-  // Skeleton component for the user section
+  const closeMenus = () => {
+    setIsOpen(false);
+    setIsOpen2(false);
+  };
+
+  const logout = async () => {
+    try {
+      const response = await AuthServices.logout();
+      closeMenus();
+      setTimeout(() => {
+        window.location.href = "/";
+        toast.success(response.data.message);
+      }, 1000);
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || "Error al cerrar sesión");
+    }
+  };
+
+  // Centralized Navigation Links
+  const navLinks = useMemo(() => {
+    const links: any[] = [];
+    if (!user) {
+      links.push({ label: "Iniciar sesión", href: "/login" });
+      links.push({ label: "Registrate", href: "/register" });
+    }
+    links.push({ label: "Publicá tu quinta", href: "/publicar-quinta" });
+
+    if (user) {
+      if (user.membership_status === "active") {
+        links.push({ label: "Mi membresía", href: "/my-membership" });
+      } else {
+        links.push({ label: "Membresía premium", href: "/membresia" });
+      }
+    }
+    links.push({ label: "Soporte", href: "/support" });
+
+    if (user) {
+      links.push({ type: "separator" });
+      links.push({ label: "Cerrar sesión", onClick: logout });
+      links.push({ type: "separator" });
+      if (user.role === "admin") {
+        links.push({ label: "Panel administrador", href: "/dashboard" });
+      }
+      links.push({ label: "Mis reservas", href: "/reservations" });
+      links.push({ label: "Mis publicaciones", href: "/publications" });
+      links.push({ label: "Wallet", href: "/wallet" });
+    }
+    return links;
+  }, [user]);
+
+  const UserAvatar = ({ size = "w-8" }: { size?: string }) => {
+    if (!user) return <User />;
+    const imgSrc = user.picture?.[0] || "/picture_user.jpg";
+    return (
+      <img
+        src={imgSrc}
+        alt="user profile"
+        className={`${size} aspect-square rounded-full object-cover`}
+      />
+    );
+  };
+
+  const NavMenu = ({ isOpenMenu, closeMenu, isMobile }: { isOpenMenu: boolean, closeMenu: () => void, isMobile: boolean }) => (
+    <ul
+      ref={contentRef as any}
+      style={{
+        maxHeight: maxHeight,
+        overflow: "hidden",
+        transition: "max-height 0.6s ease, opacity 0.6s ease, transform 0.6s ease",
+        opacity: isOpenMenu ? 1 : 0,
+        transform: isOpenMenu ? "translateY(0)" : "translateY(-20px)",
+        backgroundColor: "#2DB40A",
+        padding: isOpenMenu ? "1rem" : "0",
+        borderRadius: "0 0 10px 10px",
+        color: "white",
+        pointerEvents: isOpenMenu ? "auto" : "none",
+      }}
+      className={`text-white menu-container font-medium flex flex-col gap-2 absolute bg-primaryDark rounded-b-xl px-6 py-3 min-w-[200px] z-50 
+        ${isMobile ? "right-0 top-11" : "top-15 right-14"}`}
+    >
+      {navLinks.map((link, index) => {
+        if (link.type === "separator") {
+          return <Separator key={`sep-${index}`} color="bg-gray-200/30" />;
+        }
+        if (link.onClick) {
+          return (
+            <button key={index} className="cursor-pointer text-start w-full hover:opacity-80 transition-opacity" onClick={link.onClick}>
+              {link.label}
+            </button>
+          );
+        }
+        return (
+          <Link key={index} onClick={closeMenu} href={link.href} className="hover:opacity-80 transition-opacity">
+            {link.label}
+          </Link>
+        );
+      })}
+    </ul>
+  );
+
   const UserSectionSkeleton = () => (
     <div className="flex items-center gap-3 px-3 py-1 rounded-4xl bg-primaryDark/20 animate-pulse min-w-[140px] h-[38px]">
       <div className="w-5 h-1 bg-white/20 rounded-full" />
@@ -88,106 +171,14 @@ export default function Header() {
         ) : (
           <div className="bg-primaryDark flex md:hidden items-center gap-3 px-3 py-1 rounded-4xl justify-between relative">
             <Menu onClick={handleClick2} />
-            <button>
-              <Link
-                className="flex items-center gap-2 text-white justify-center"
-                href="/my-account"
-              >
-                {user ? (
-                  user.picture ? (
-                    <img
-                      src={user.picture[0]}
-                      alt="user profile"
-                      className="w-7 h-7 rounded-full object-cover"
-                    />
-                  ) : (
-                    <img
-                      src={"/picture_user.jpg"}
-                      alt="user profile"
-                      className="w-7 h-7 rounded-full object-cover"
-                    />
-                  )
-                ) : (
-                  <User />
-                )}
-              </Link>
-            </button>
-            {isOpen2 && (
-              <ul
-                ref={contentRef as any}
-                style={{
-                  maxHeight: maxHeight,
-                  overflow: "hidden",
-                  transition:
-                    "max-height 0.6s ease, opacity 0.6s ease, transform 0.6s ease",
-                  opacity: isOpen2 ? 1 : 0,
-                  transform: isOpen2 ? "translateY(0)" : "translateY(-20px)",
-                  backgroundColor: "#2DB40A",
-                  padding: "1rem",
-                  borderRadius: "0 0 10px 10px",
-                  color: "white",
-                }}
-                className={`text-white menu-container ${isOpen2 ? "open" : "closed"} font-medium flex flex-col gap-2 right-0 top-11 md:right-4 text-md absolute bg-primaryDark rounded-b-xl px-6 py-3 min-w-[200px] z-50`}
-              >
-                {!user && (
-                  <Link onClick={() => setIsOpen2(false)} href="/login">
-                    Iniciar sesión
-                  </Link>
-                )}
-                {!user && (
-                  <Link onClick={() => setIsOpen2(false)} href="/register">
-                    Registrate
-                  </Link>
-                )}
-
-                <Link onClick={() => setIsOpen2(false)} href="/publicar-quinta">
-                  Publicá tu quinta
-                </Link>
-                {user && user?.membership_status !== "active" ? (
-                  <Link onClick={() => setIsOpen2(false)} href="/membresia">
-                    Membresía premium
-                  </Link>
-                ) : (
-                  user?.membership_status === "active" && (
-                    <Link onClick={() => setIsOpen2(false)} href="/my-membership">
-                      Mi membresía
-                    </Link>
-                  )
-                )}
-                <Link onClick={() => setIsOpen2(false)} href="/support">
-                  Soporte
-                </Link>
-
-                {user && <Separator color="bg-gray-200" />}
-                {user && (
-                  <button className="cursor-pointer text-start" onClick={logout}>
-                    Cerrar sesión
-                  </button>
-                )}
-                <Separator color="bg-gray-200" />
-                {user?.role === "admin" && (
-                  <Link onClick={() => setIsOpen2(false)} href="/dashboard">
-                    Panel administador
-                  </Link>
-                )}
-                {user && (
-                  <>
-                    <Link onClick={() => setIsOpen2(false)} href="/reservations">
-                      Mis reservas
-                    </Link>
-                    <Link onClick={() => setIsOpen2(false)} href="/publications">
-                      Mis publicaciones
-                    </Link>
-                    <Link onClick={() => setIsOpen2(false)} href="/wallet">
-                      Wallet
-                    </Link>
-                  </>
-                )}
-              </ul>
-            )}
+            <Link className="flex items-center gap-2 text-white justify-center" href="/my-account">
+              <UserAvatar size="w-7" />
+            </Link>
+            <NavMenu isOpenMenu={isOpen2} closeMenu={closeMenus} isMobile={true} />
           </div>
         )}
       </section>
+
       <div className="font-semibold md:pr-26 text-wrap text-sm md:text-lg">
         {title}
       </div>
@@ -197,106 +188,16 @@ export default function Header() {
           <UserSectionSkeleton />
         </div>
       ) : (
-        <div className="bg-primaryDark md:flex hidden items-center gap-3 px-3 py-1 rounded-4xl justify-between">
+        <div className="bg-primaryDark md:flex hidden items-center gap-3 px-3 py-1 rounded-4xl justify-between relative">
           <Menu onClick={handleClick} />
-          <button>
-            <Link
-              className="flex items-center gap-2 text-white justify-center"
-              href={user ? "/my-account" : "/login"}
-            >
-              {/* SI HAY USUARIO, ACA VA EL NOMBRE ACTIVO  */}
-              {user && user.name}
-              {user ? (
-                user.picture ? (
-                  <img
-                    src={user.picture[0]}
-                    alt="user profile"
-                    className="w-8 rounded-full"
-                  />
-                ) : (
-                  <img
-                    src={"/picture_user.jpg"}
-                    alt="user profile"
-                    className="w-8 rounded-full"
-                  />
-                )
-              ) : (
-                <User />
-              )}
-            </Link>
-          </button>
-          {isOpen && (
-            <ul
-              ref={contentRef as any}
-              style={{
-                maxHeight: maxHeight,
-                overflow: "hidden",
-                transition:
-                  "max-height 0.1s ease, opacity 0.1s ease, transform 0.1s ease",
-                opacity: isOpen ? 1 : 0,
-                transform: isOpen ? "translateY(0)" : "translateY(-20px)",
-                backgroundColor: "#2DB40A",
-                padding: "1rem",
-                borderRadius: "0 0 10px 10px",
-                color: "white",
-              }}
-              className={`text-white menu-container ${isOpen ? "open" : "closed"} font-medium flex flex-col gap-2 top-36 right-32 md:top-15 md:right-14 text-md absolute bg-primaryDark rounded-b-xl px-6 py-3`}
-            >
-              {!user && (
-                <Link onClick={() => setIsOpen(false)} href="/login">
-                  Iniciar sesión
-                </Link>
-              )}
-              {!user && (
-                <Link onClick={() => setIsOpen(false)} href="/register">
-                  Registrate
-                </Link>
-              )}
-              <Link onClick={() => setIsOpen(false)} href="/publicar-quinta">
-                Publicá tu quinta
-              </Link>
-              {user && user?.membership_status !== "active" ? (
-                <Link onClick={() => setIsOpen(false)} href="/membresia">
-                  Membresía premium
-                </Link>
-              ) : (
-                user?.membership_status === "active" && (
-                  <Link onClick={() => setIsOpen(false)} href="/my-membership">
-                    Mi membresía
-                  </Link>
-                )
-              )}
-              <Link onClick={() => setIsOpen(false)} href="/support">
-                Soporte
-              </Link>
-
-              {user && <Separator color="bg-gray-200" />}
-              {user && (
-                <button className="cursor-pointer" onClick={logout}>
-                  Cerrar sesión
-                </button>
-              )}
-              <Separator color="bg-gray-200" />
-              {user?.role === "admin" && (
-                <Link onClick={() => setIsOpen(false)} href="/dashboard">
-                  Panel administador
-                </Link>
-              )}
-              {user && (
-                <>
-                  <Link onClick={() => setIsOpen(false)} href="/reservations">
-                    Mis reservas
-                  </Link>
-                  <Link onClick={() => setIsOpen(false)} href="/publications">
-                    Mis publicaciones
-                  </Link>
-                  <Link onClick={() => setIsOpen(false)} href="/wallet">
-                    Wallet
-                  </Link>
-                </>
-              )}
-            </ul>
-          )}
+          <Link
+            className="flex items-center gap-2 text-white justify-center"
+            href={user ? "/my-account" : "/login"}
+          >
+            {user && <button className="max-w-[120px] cursor-pointer truncate">{user.name}</button>}
+            <UserAvatar size="w-8" />
+          </Link>
+          <NavMenu isOpenMenu={isOpen} closeMenu={closeMenus} isMobile={false} />
         </div>
       )}
     </header>
