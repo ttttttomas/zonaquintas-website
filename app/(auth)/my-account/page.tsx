@@ -91,18 +91,10 @@ export default function MyAccountPage() {
   }
   return (
     <main className="flex flex-col md:flex-row w-full md:px-20 justify-between gap-10 md:gap-20 items-center md:items-start">
-      {!formData?.picture && (
+      {formData?.picture && (
         <img
           src="picture_user.jpg"
           alt="User profile"
-          className="w-32 md:w-[150px] rounded-xl"
-        />
-      )}
-      {formData?.picture && (
-        <img
-          src={formData?.picture[0]}
-          alt="formData profile"
-          onChange={handleChange}
           className="w-32 md:w-[150px] rounded-xl"
         />
       )}
