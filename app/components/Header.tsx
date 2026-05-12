@@ -202,7 +202,7 @@ export default function Header() {
           <button>
             <Link
               className="flex items-center gap-2 text-white justify-center"
-              href="/my-account"
+              href={user ? "/my-account" : "/login"}
             >
               {/* SI HAY USUARIO, ACA VA EL NOMBRE ACTIVO  */}
               {user && user.name}
