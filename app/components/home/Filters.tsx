@@ -39,9 +39,9 @@ export default function Filters() {
   };
 
   return (
-    <section className="grid grid-cols-2 relative md:flex flex-row mb-7 mt-3 w-max md:gap-32 md:text-md text-sm gap-5 mx-auto">
+    <section className="relative flex flex-col items-start md:flex-row mb-7 mt-3 w-max md:gap-32 md:text-md text-sm gap-5 mx-auto">
 
-      <div className="flex items-center px-3 rounded-xl gap-2">
+      <div className="flex items-center rounded-xl gap-2">
         <Bedroom />
         <p className="underline">Min: {filters.bedrooms}</p>
         <p>Habitaciones</p>
@@ -58,9 +58,8 @@ export default function Filters() {
                   })),
                   setOpen1(false)
                 )}
-                className={`cursor-pointer hover:scale-115 ${
-                  filters.bedrooms === num ? "font-semibold text-black" : ""
-                }`}>
+                className={`cursor-pointer hover:scale-115 ${filters.bedrooms === num ? "font-semibold text-black" : ""
+                  }`}>
                 {num}
               </li>
             ))}
@@ -84,9 +83,8 @@ export default function Filters() {
                   })),
                   setOpen2(false)
                 )}
-                className={`cursor-pointer hover:scale-115 ${
-                  filters.amb === num ? "font-semibold text-black" : ""
-                }`}>
+                className={`cursor-pointer hover:scale-115 ${filters.amb === num ? "font-semibold text-black" : ""
+                  }`}>
                 {num}
               </li>
             ))}
@@ -110,9 +108,8 @@ export default function Filters() {
                   })),
                   setOpen3(false)
                 )}
-                className={`cursor-pointer hover:scale-115 ${
-                  filters.bathrooms === num ? "font-semibold text-black" : ""
-                }`}>
+                className={`cursor-pointer hover:scale-115 ${filters.bathrooms === num ? "font-semibold text-black" : ""
+                  }`}>
                 {num}
               </li>
             ))}
@@ -121,7 +118,7 @@ export default function Filters() {
       </div>
       <div
         onClick={handleOpen4}
-        className="flex cursor-pointer hover:bg-black/10 p-2 transition-all rounded-lg items-center gap-2">
+        className="flex cursor-pointer hover:bg-black/10 py-2 transition-all rounded-lg items-center gap-2">
         <FiltersIcon />
         <p>Todos los filtros</p>
       </div>

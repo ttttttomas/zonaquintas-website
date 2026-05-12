@@ -7,7 +7,7 @@ import FormSkeleton from './components/home/FormSkeleton';
 
 export default async function Home() {
   return (
-    <main className='px-10'>
+    <main className='md:px-10'>
       <Suspense fallback={<FormSkeleton />}>
         <Form />
       </Suspense>

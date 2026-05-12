@@ -1,17 +1,33 @@
 "use client";
 import AddCharacteristics from "../../components/AddCharacteristics";
-import Link from "next/link";
 import { useQuintaForm } from "@/app/context/QuintaFormContext";
+
+import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 export default function Paso1Page() {
   const { form, updateForm } = useQuintaForm();
+  const router = useRouter();
+
+  const handleContinue = (e: React.FormEvent) => {
+    e.preventDefault();
+    const { ambients, bedrooms, beds, bathrooms, guests, m2, characteristics } = form;
+
+    if (!ambients || !bedrooms || !beds || !bathrooms || !guests || !m2 || !characteristics || !characteristics.length) {
+      toast.error("Por favor completa todos los campos obligatorios (*)");
+      return;
+    }
+
+    router.push("/publicar-quinta/paso-2");
+  };
+
   return (
-    <main className="flex md:flex-row flex-col mb-10 md:mb-0 gap-10 md:gap-0 md:h-[50vh] items-center justify-between mx-10 md:mx-20">
+    <main className="flex md:flex-row flex-col mb-10 md:mb-0 gap-10 md:gap-0 pb-10 items-center justify-between mx-10 md:mx-20">
       <section className="flex flex-col items-start justify-center w-full md:w-1/3">
         <h1 className="font-semibold text-xl mb-5">
           Empecemos con tu publicación
         </h1>
-        <form className="w-full flex flex-col gap-5 rounded-xl">
+        <form onSubmit={handleContinue} className="w-full flex flex-col gap-5 rounded-xl">
           <input
             placeholder="Cantidad de ambientes*"
             className="bg-white p-2 rounded-lg"
@@ -56,7 +72,7 @@ export default function Paso1Page() {
             }
           />
           <input
-            placeholder="Cantidad de m2"
+            placeholder="Cantidad de m2*"
             className="bg-white p-2 rounded-lg"
             type="number"
             value={form.m2 || ""}
@@ -67,11 +83,11 @@ export default function Paso1Page() {
             onChangeSelected: (chars: string[]) =>
               updateForm({ characteristics: chars }),
           })}
-          <Link
-            href={"/publicar-quinta/paso-2"}
+          <button
+            type="submit"
             className="bg-primaryDark text-center cursor-pointer text-white py-2 font-bold text-xl rounded-lg">
             Continuar
-          </Link>
+          </button>
         </form>
       </section>
       <img className="object-cover" src="/paso1.png" alt="paso 1" />

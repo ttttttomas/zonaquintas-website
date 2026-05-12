@@ -15,7 +15,7 @@ export const AuthServices = {
   register: async (data: any) => {
     const response = await apiClient.post(
       "/register",
-      data ,
+      data,
       {
         headers: { "Content-Type": "application/json" },
       },
@@ -33,9 +33,11 @@ export const AuthServices = {
   },
   updateUser: async (id: any, data: any) => {
     const response = await apiClient.put(`/user/${id}`,
-      data ,
+      data,
       {
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json"
+        },
       },
     );
     return response.data;
@@ -45,4 +47,3 @@ export const AuthServices = {
     return response.data;
   }
 };
-                

@@ -86,9 +86,32 @@ export default function Header() {
             <UserSectionSkeleton />
           </div>
         ) : (
-          <div className="bg-primaryDark flex md:hidden items-center gap-5 px-3 py-1 rounded-4xl justify-between">
+          <div className="bg-primaryDark flex md:hidden items-center gap-3 px-3 py-1 rounded-4xl justify-between relative">
             <Menu onClick={handleClick2} />
-            <User />
+            <button>
+              <Link
+                className="flex items-center gap-2 text-white justify-center"
+                href="/my-account"
+              >
+                {user ? (
+                  user.picture ? (
+                    <img
+                      src={user.picture[0]}
+                      alt="user profile"
+                      className="w-7 h-7 rounded-full object-cover"
+                    />
+                  ) : (
+                    <img
+                      src={"/picture_user.jpg"}
+                      alt="user profile"
+                      className="w-7 h-7 rounded-full object-cover"
+                    />
+                  )
+                ) : (
+                  <User />
+                )}
+              </Link>
+            </button>
             {isOpen2 && (
               <ul
                 ref={contentRef as any}
@@ -104,23 +127,62 @@ export default function Header() {
                   borderRadius: "0 0 10px 10px",
                   color: "white",
                 }}
-                className={`text-white menu-container ${isOpen2 ? "open" : "closed"} font-medium flex flex-col gap-2 right-0 top-16 md:right-4 text-md absolute bg-primaryDark rounded-b-xl px-6 py-3`}
+                className={`text-white menu-container ${isOpen2 ? "open" : "closed"} font-medium flex flex-col gap-2 right-0 top-11 md:right-4 text-md absolute bg-primaryDark rounded-b-xl px-6 py-3 min-w-[200px] z-50`}
               >
-                <Link onClick={() => setIsOpen2(false)} href="/login">
-                  Iniciar sesión
-                </Link>
+                {!user && (
+                  <Link onClick={() => setIsOpen2(false)} href="/login">
+                    Iniciar sesión
+                  </Link>
+                )}
+                {!user && (
+                  <Link onClick={() => setIsOpen2(false)} href="/register">
+                    Registrate
+                  </Link>
+                )}
 
-                <Link onClick={() => setIsOpen2(false)} href="/register">
-                  Registrate
-                </Link>
-
-                <Separator color="bg-gray-200" />
-                <Link onClick={() => setIsOpen2(false)} href="/">
+                <Link onClick={() => setIsOpen2(false)} href="/publicar-quinta">
                   Publicá tu quinta
                 </Link>
+                {user && user?.membership_status !== "active" ? (
+                  <Link onClick={() => setIsOpen2(false)} href="/membresia">
+                    Membresía premium
+                  </Link>
+                ) : (
+                  user?.membership_status === "active" && (
+                    <Link onClick={() => setIsOpen2(false)} href="/my-membership">
+                      Mi membresía
+                    </Link>
+                  )
+                )}
                 <Link onClick={() => setIsOpen2(false)} href="/support">
                   Soporte
                 </Link>
+
+                {user && <Separator color="bg-gray-200" />}
+                {user && (
+                  <button className="cursor-pointer text-start" onClick={logout}>
+                    Cerrar sesión
+                  </button>
+                )}
+                <Separator color="bg-gray-200" />
+                {user?.role === "admin" && (
+                  <Link onClick={() => setIsOpen2(false)} href="/dashboard">
+                    Panel administador
+                  </Link>
+                )}
+                {user && (
+                  <>
+                    <Link onClick={() => setIsOpen2(false)} href="/reservations">
+                      Mis reservas
+                    </Link>
+                    <Link onClick={() => setIsOpen2(false)} href="/publications">
+                      Mis publicaciones
+                    </Link>
+                    <Link onClick={() => setIsOpen2(false)} href="/wallet">
+                      Wallet
+                    </Link>
+                  </>
+                )}
               </ul>
             )}
           </div>

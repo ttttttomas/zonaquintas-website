@@ -1,10 +1,40 @@
 "use client";
 import PlacesAutocomplete from "@/app/components/PlacesAutocomplete";
-import Link from "next/link";
 import { useQuintaForm } from "@/app/context/QuintaFormContext";
+
+import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 export default function Paso2Page() {
   const { form, updateForm } = useQuintaForm();
+  const router = useRouter();
+
+  const handleContinue = (e: React.FormEvent) => {
+    e.preventDefault();
+    const { title, description, main_image, images, address, city } = form;
+
+    if (!title || !description) {
+      toast.error("Por favor completa el título y la descripción");
+      return;
+    }
+
+    if (!main_image) {
+      toast.error("Por favor selecciona una foto principal");
+      return;
+    }
+
+    if (images.length < 5) {
+      toast.error("Debes subir al menos 5 imágenes adicionales");
+      return;
+    }
+
+    if (!address) {
+      toast.error("Por favor ubica la quinta en el mapa");
+      return;
+    }
+
+    router.push("/publicar-quinta/paso-3");
+  };
 
   return (
     <main className="flex md:flex-row flex-col mb-10 md:mb-0 gap-10 md:gap-0 items-center justify-between mx-10 md:mx-20">
@@ -12,7 +42,7 @@ export default function Paso2Page() {
         <h1 className="font-semibold text-xl mb-5">
           Sigamos con los pasos finales
         </h1>
-        <form className="w-full flex flex-col gap-5 rounded-xl">
+        <form onSubmit={handleContinue} className="w-full flex flex-col gap-5 rounded-xl">
           <input
             placeholder="Agrega un título*"
             className="bg-white p-2 rounded-lg"
@@ -88,11 +118,11 @@ export default function Paso2Page() {
             </p>
           )}
 
-          <Link
-            href={"/publicar-quinta/paso-3"}
+          <button
+            type="submit"
             className="bg-primaryDark text-center cursor-pointer text-white py-2 font-bold text-xl rounded-lg">
             Continuar
-          </Link>
+          </button>
         </form>
       </section>
       <img className="object-cover" src="/paso2.png" alt="paso 2" />

@@ -82,7 +82,7 @@ export type Users = {
   password: string;
   languages: string[]; // TABLA INTERMEDIA
   opinions: string[]; // TABLA INTERMEDIA
-  picture: string[]; // FOTO DE PERFIL DEL WACHO
+  picture: string[]; // FOTO DE PERFIL
   rebill_customer_id: string | null;
   rebill_subscription_id: string | null;
   membership_status: "active" | "inactive" | "cancelled" | "failed" | "pending";

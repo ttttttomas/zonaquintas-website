@@ -28,7 +28,7 @@ export default function MyAccountPage() {
         average_opinions: user?.average_opinions || 0,
         languages: user?.languages || [],
         opinions: user?.opinions || [],
-        pictures: user?.picture || [],
+        picture: user?.picture || [],
       });
     }
   }, [user]);
@@ -89,8 +89,6 @@ export default function MyAccountPage() {
       </main>
     );
   }
-
-  console.log(selected)
   return (
     <main className="flex flex-col md:flex-row w-full md:px-20 justify-between gap-10 md:gap-20 items-center md:items-start">
       {!formData?.picture && (

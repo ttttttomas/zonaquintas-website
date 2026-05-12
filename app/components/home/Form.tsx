@@ -137,7 +137,7 @@ export default function Form() {
         className="flex xl:pl-20 md:flex-row flex-col justify-center items-center gap-5 md:gap-8 mb-5 md:mb-10"
       >
         <section
-          className={`flex divide-x divide-gray-200 md:flex-row flex-col border border-black/20 cursor-pointer bg-white rounded-full shadow-md hover:shadow-lg transition-shadow`}
+          className={`md:flex rounded-2xl divide-x divide-gray-200 flex-row border border-black/20 cursor-pointer bg-white md:rounded-full shadow-md hover:shadow-lg transition-shadow`}
         >
           {/* ── CIUDAD ─────────────────────────────────────────── */}
           <div ref={cityRef} className="relative">
@@ -148,14 +148,14 @@ export default function Form() {
                   setCitySearch(selectedCity || "");
                 }
               }}
-              className={`hover:bg-black/5 w-[220px] rounded-l-full flex flex-col px-6 py-4 transition-all ${cityDropdownOpen ? "bg-black/5" : ""
+              className={`hover:bg-black/5 w-[220px] rounded-l-full flex md:items-start items-center flex-col px-6 py-4 transition-all ${cityDropdownOpen ? "bg-black/5" : ""
                 }`}
             >
               <span className="text-[11px] font-semibold text-gray-700 uppercase tracking-wide">
                 Lugar
               </span>
               {selectedCity ? (
-                <div className="flex items-center justify-between gap-1">
+                <div className="flex items-center justify-between w-full gap-1">
                   <span className="text-sm font-semibold text-gray-900 truncate">
                     {selectedCity}
                   </span>
@@ -177,7 +177,7 @@ export default function Form() {
 
             {/* Dropdown de ciudades */}
             {cityDropdownOpen && (
-              <div className="absolute top-[calc(100%+12px)] left-0 z-50 w-[320px] bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+              <div className="absolute top-[calc(100%+12px)] md:left-0 -left-13 z-50 w-[320px] bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
                 {/* Campo de búsqueda */}
                 <div className="px-4 pt-4 pb-2">
                   <div className="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 focus-within:border-gray-400 transition-colors">
@@ -269,7 +269,7 @@ export default function Form() {
             withPortal
             name="startDate"
             customInput={
-              <div className="flex flex-col px-6 py-4 w-[160px] hover:bg-black/5 transition-all cursor-pointer">
+              <div className="flex flex-col md:items-start items-center w-full px-6 py-4 md:w-[160px] hover:bg-black/5 transition-all cursor-pointer">
                 <span className="text-[11px] font-semibold text-gray-700 uppercase tracking-wide">
                   Check-in
                 </span>
@@ -290,7 +290,7 @@ export default function Form() {
             withPortal
             name="endDate"
             customInput={
-              <div className="flex flex-col px-6 py-4 w-[160px] hover:bg-black/5 transition-all cursor-pointer">
+              <div className="flex flex-col md:items-start items-center w-full px-6 py-4 md:w-[160px] hover:bg-black/5 transition-all cursor-pointer">
                 <span className="text-[11px] font-semibold text-gray-700 uppercase tracking-wide">
                   Check-out
                 </span>
@@ -305,7 +305,7 @@ export default function Form() {
           <div ref={guestsRef} className="relative">
             <div
               onClick={() => setViewGuests((prev) => !prev)}
-              className={`hover:bg-black/5 w-[170px] rounded-r-full flex flex-col px-6 py-4 transition-all ${viewGuests ? "bg-black/5" : ""
+              className={`hover:bg-black/5  items-center py-4 md:w-[170px] rounded-r-full flex flex-col transition-all ${viewGuests ? "bg-black/5" : ""
                 }`}
             >
               <span className="text-[11px] font-semibold text-gray-700 uppercase tracking-wide">
