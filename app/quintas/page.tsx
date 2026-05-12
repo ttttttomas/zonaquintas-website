@@ -90,7 +90,7 @@ function QuintasContent() {
   // }
 
   return (
-    <main className="p-4 md:pt-0 pt-32">
+    <main className="">
       <Form />
       <Separator color="bg-gray-200" />
 
