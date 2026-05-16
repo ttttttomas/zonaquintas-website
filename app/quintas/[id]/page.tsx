@@ -366,7 +366,7 @@ export default function quintaIdPage({ params }: quintaIdPageProps) {
           <div className="bg-white flex max-w-xl rounded-xl shadow-sm py-6 px-6 md:px-12 gap-6 md:gap-10 text-sm text-center">
             <div className="flex flex-col gap-3 mx-auto justify-center items-center">
               <img
-                src={owner?.picture?.[0] || "https://www.svgrepo.com/show/384674/account-avatar-profile-user-11.svg"}
+                src={owner?.pictures[0]?.url || "https://www.svgrepo.com/show/384674/account-avatar-profile-user-11.svg"}
                 alt="Avatar"
                 className="w-24 h-24 rounded-full object-cover mx-auto"
               />
