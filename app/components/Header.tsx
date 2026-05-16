@@ -147,7 +147,7 @@ export default function Header() {
         <NavMenu isOpenMenu={isOpen} closeMenu={closeMenus} isMobile={false} /> */}
       <ul className="flex gap-5 items-center md:my-0 my-2">
         <li className="text-gray-900 cursor-pointer">
-          <DropdownMenu modal={false}>
+          {user ? <DropdownMenu modal={false}>
             <DropdownMenuTrigger className="text-gray-900 cursor-pointer outline-none flex items-center gap-1 hover:opacity-80 transition-opacity font-medium text-md">
               Mi Cuenta <span className="text-[10px]">▼</span>
             </DropdownMenuTrigger>
@@ -172,7 +172,7 @@ export default function Header() {
                 );
               })}
             </DropdownMenuContent>
-          </DropdownMenu>
+          </DropdownMenu> : <Link href="/membresia">Membresia Premium</Link>}
         </li>
         <li className="text-gray-900 cursor-pointer hover:opacity-80 transition-opacity font-medium text-md">
           <Link href="/publicar-quinta">Publica tu Quinta</Link>
@@ -201,9 +201,9 @@ export default function Header() {
               <UserAvatar size="w-8" />
             </div>
             :
-            <div className="flex items-center gap-2 text-black justify-center">
-              <Link href="/login"><p className="cursor-pointer truncate">Inicia sesión</p></Link>
-              <Link href="/register"><p className="cursor-pointer truncate">Registrate</p></Link>
+            <div className="flex items-center gap-2 text-black divide-x divide-gray-400 justify-center">
+              <Link href="/login"><p className="cursor-pointer truncate pr-2">Inicia sesión</p></Link>
+              <Link href="/register"><p className="cursor-pointer truncate pl-2">Registrate</p></Link>
             </div>}
         </div>
       )}

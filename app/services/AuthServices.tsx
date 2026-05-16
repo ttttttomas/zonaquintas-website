@@ -45,5 +45,19 @@ export const AuthServices = {
   logout: async () => {
     const response = await apiClient.post("/logout");
     return response.data;
-  }
+  },
+  updatePicture: async (id: any, data: any) => {
+    const response = await apiClient.put(`/users/${id}/images`, data,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data"
+        },
+      },
+    );
+    return response.data;
+  },
+  deletePicture: async (userId: any, imageId: any) => {
+    const response = await apiClient.delete(`/users/${userId}/images/${imageId}`);
+    return response.data;
+  },
 };

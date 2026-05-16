@@ -1,18 +1,19 @@
 "use client";
 import Link from "next/link";
 import { useUser } from "@/app/context/UserContext";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
 import { AuthServices } from "@/app/services/AuthServices";
 import AddLanguage from "@/app/components/AddLanguage";
 
 export default function MyAccountPage() {
-  const { user, loading, error } = useUser();
+  const { user, loading, error, refetchUser } = useUser();
   const [selected, setSelected] = useState<string[]>([]);
   const [loadingUser, setLoadingUser] = useState<boolean>(false);
   const [formData, setFormData] = useState<any>({});
+  const fileInputRef = useRef<HTMLInputElement>(null);
   // Cuando cargas el usuario, setea formData
-  useMemo(() => {
+  useEffect(() => {
     if (user) {
       setSelected(user?.languages || []);
       setFormData({
@@ -28,7 +29,7 @@ export default function MyAccountPage() {
         average_opinions: user?.average_opinions || 0,
         languages: user?.languages || [],
         opinions: user?.opinions || [],
-        picture: user?.picture || [],
+        picture: user?.pictures?.[0] || null,
       });
     }
   }, [user]);
@@ -89,15 +90,86 @@ export default function MyAccountPage() {
       </main>
     );
   }
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const formDataToUpload = new FormData();
+    formDataToUpload.append("images", file);
+
+    try {
+      setLoadingUser(true);
+      const res = await AuthServices.updatePicture(user?.id, formDataToUpload);
+      console.log("Update picture response:", res);
+      toast.success("Foto de perfil actualizada correctamente");
+      await refetchUser();
+    } catch (error: any) {
+      toast.error(error?.response?.data?.detail || "Error al actualizar la foto");
+    } finally {
+      setLoadingUser(false);
+    }
+  };
+
+  const handleDeleteImage = async () => {
+    if (!formData?.picture?.id) return;
+    try {
+      setLoadingUser(true);
+      await AuthServices.deletePicture(user?.id, formData.picture.id);
+      toast.success("Foto de perfil eliminada correctamente");
+      await refetchUser();
+    } catch (error: any) {
+      toast.error(error?.response?.data?.detail || "Error al eliminar la foto");
+    } finally {
+      setLoadingUser(false);
+    }
+  };
+
+  console.log(formData?.picture)
   return (
     <main className="flex flex-col md:flex-row w-full md:px-20 justify-between gap-10 md:gap-20 items-center md:items-start">
-      {formData?.picture && (
-        <img
-          src="picture_user.jpg"
-          alt="User profile"
-          className="w-32 md:w-[150px] rounded-xl"
+      <div className="flex flex-col justify-center items-center gap-5">
+        <input
+          type="file"
+          ref={fileInputRef}
+          onChange={handleFileChange}
+          className="hidden"
+          accept="image/*"
         />
-      )}
+        {formData?.picture?.url ? (
+          <>
+            <img
+              src={formData?.picture?.url}
+              alt="User profile"
+              className="w-32 md:w-[150px] rounded-xl"
+            />
+            <button
+              onClick={handleDeleteImage}
+              disabled={loadingUser}
+              className="bg-red-500 px-5 mt-5 py-2 text-white md:w-auto w-full font-semibold rounded-md cursor-pointer hover:bg-red-600 transition-colors"
+              type="button"
+            >
+              Eliminar foto de perfil
+            </button>
+          </>
+        ) : (
+          <>
+            <img
+              src="/picture_user.jpg"
+              alt="User profile"
+              className="w-32 md:w-[150px] rounded-xl"
+            />
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              disabled={loadingUser}
+              className="bg-primaryDark px-5 mt-5 py-2 text-white md:w-auto w-full font-semibold rounded-md cursor-pointer"
+              type="button"
+            >
+              Modificar foto de perfil
+            </button>
+          </>
+        )}
+      </div>
       <form
         onSubmit={updateUser}
         className="flex flex-col md:mx-0 mx-10 bg-white w-full max-w-5xl px-5 xl:px-20 gap-2 shadow-lg py-10 shadow-black/20 flex-1 text-black"

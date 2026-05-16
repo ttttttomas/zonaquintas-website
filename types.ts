@@ -66,6 +66,11 @@ export type Quintas = {
 
 };
 
+type Picture = {
+  id: string;
+  url: string;
+}
+
 export type Users = {
   id: string;
   name: string;
@@ -82,7 +87,7 @@ export type Users = {
   password: string;
   languages: string[]; // TABLA INTERMEDIA
   opinions: string[]; // TABLA INTERMEDIA
-  picture: string[]; // FOTO DE PERFIL
+  pictures: Picture[]; // FOTO DE PERFIL
   rebill_customer_id: string | null;
   rebill_subscription_id: string | null;
   membership_status: "active" | "inactive" | "cancelled" | "failed" | "pending";
