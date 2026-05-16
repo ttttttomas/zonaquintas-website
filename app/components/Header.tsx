@@ -107,7 +107,7 @@ export default function Header() {
 
   const UserAvatar = ({ size = "w-8" }: { size?: string }) => {
     if (!user) return <User />;
-    const imgSrc = user.picture?.[0] || "/picture_user.jpg";
+    const imgSrc = user?.pictures[0]?.url || "/picture_user.jpg";
     return (
       <img
         src={imgSrc}
