@@ -1,8 +1,7 @@
 import { PriceInput } from "@/types";
 
 const REBILL_API_URL = "https://api.rebill.com/v3";
-// const REBILL_API_KEY = process.env.REBILL_API_KEY!;
-const REBILL_API_KEY = "sk_2ca4dc4cdece4f178010dcf0f7b6d0fe";
+const REBILL_API_KEY = process.env.REBILL_API_KEY!;
 
 const headers = {
   "x-api-key": REBILL_API_KEY,

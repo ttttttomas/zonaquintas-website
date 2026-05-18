@@ -1,11 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 
 const REBILL_API_URL = "https://api.rebill.com/v3";
-const REBILL_API_KEY = "sk_2ca4dc4cdece4f178010dcf0f7b6d0fe";
+const REBILL_API_KEY = process.env.REBILL_API_KEY!;
 const REBILL_PLAN_ID = process.env.REBILL_PLAN_ID;
 const FASTAPI_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
-const INTERNAL_SECRET = process.env.INTERNAL_SECRET!;
-const url = "https://imido-curliest-cole.ngrok-free.dev"
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3000";
 
 export async function POST(req: NextRequest) {
     try {
@@ -41,9 +40,9 @@ export async function POST(req: NextRequest) {
                 ],
                 isSingleUse: true,
                 redirectUrls: {
-                    approved: `${url}/membership/success`,
-                    rejected: `${url}/membership/failed`,
-                    pending: `${url}/membership/pending`,
+                    approved: `${BASE_URL}/membership/success`,
+                    rejected: `${BASE_URL}/membership/failed`,
+                    pending: `${BASE_URL}/membership/pending`,
                 },
                 metadata: {
                     user_id: userId,

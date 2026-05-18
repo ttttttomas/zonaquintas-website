@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 const REBILL_API_URL = "https://api.rebill.com/v3";
-const REBILL_API_KEY = "sk_2ca4dc4cdece4f178010dcf0f7b6d0fe";
+const REBILL_API_KEY = process.env.REBILL_API_KEY!;
 const FASTAPI_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
 export async function POST(req: NextRequest) {
