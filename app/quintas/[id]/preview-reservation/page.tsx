@@ -305,7 +305,7 @@ export default function PreviewReservationPage() {
                     <p className="font-semibold text-sm">Pago total</p>
                     <p className="text-xs text-gray-500 mt-0.5">
                       Pagás el total ahora:{" "}
-                      <span className="font-semibold text-gray-700">{formatCurrency(total)}</span>
+                      <span className="font-semibold text-gray-700">{formatCurrency(subtotal)}</span>
                     </p>
                   </div>
                 </label>
@@ -330,7 +330,7 @@ export default function PreviewReservationPage() {
                     <p className="text-xs text-gray-500 mt-0.5">
                       Pagás el 50% ahora:{" "}
                       <span className="font-semibold text-gray-700">
-                        {formatCurrency(Math.round(subtotal * 0.5) + serviceCost)}
+                        {formatCurrency(Math.round(subtotal * 0.5))}
                       </span>
                       {" "}y el resto antes del check-in.
                     </p>
@@ -506,9 +506,9 @@ export default function PreviewReservationPage() {
                 <span className="font-medium">{formatCurrency(subtotal)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600">Costo de servicio</span>
+                {/* <span className="text-gray-600">Costo de servicio</span> */}
                 <span className="font-medium">
-                  {formatCurrency(serviceCost)}
+                  {/* {formatCurrency(serviceCost)} */}
                 </span>
               </div>
 
@@ -520,17 +520,17 @@ export default function PreviewReservationPage() {
                   <div className="flex justify-between text-sm">
                     <p className="text-gray-600">Pagarás de seña (50%):</p>
                     <span className="font-semibold">
-                      {formatCurrency(Math.round(subtotal * 0.5) + serviceCost)}
+                      {formatCurrency(Math.round(subtotal * 0.5))}
                     </span>
                   </div>
                   <div className="flex justify-between text-sm text-gray-400">
                     <p>Saldo restante:</p>
-                    <span>{formatCurrency(Math.round(subtotal * 0.5))}</span>
+                    <span>{formatCurrency(subtotal - Math.round(subtotal * 0.5))}</span>
                   </div>
                   <hr className="border-gray-100 my-1" />
                   <div className="flex justify-between text-sm font-bold">
                     <p>Total de la reserva:</p>
-                    <span>{formatCurrency(total)}</span>
+                    <span>{formatCurrency(subtotal)}</span>
                   </div>
                 </>
               ) : (
@@ -538,7 +538,7 @@ export default function PreviewReservationPage() {
                   <p className="text-center text-sm font-bold mb-1">Pago total</p>
                   <div className="flex justify-between text-sm font-bold">
                     <p>Total de la reserva:</p>
-                    <span>{formatCurrency(total)}</span>
+                    <span>{formatCurrency(subtotal)}</span>
                   </div>
                 </>
               )}

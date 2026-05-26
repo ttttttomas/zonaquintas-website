@@ -84,10 +84,10 @@ export default function Header() {
     if (user) {
       if (user.membership_status === "active") {
         links.push({ label: "Mis Datos", href: "/my-account" });
-        links.push({ label: "Mi Membresía", href: "/my-membership" });
+        // links.push({ label: "Mi Membresía", href: "/my-membership" });
       } else {
         links.push({ label: "Mis Datos", href: "/my-account" });
-        links.push({ label: "Membresía Premium", href: "/membresia" });
+        // links.push({ label: "Membresía Premium", href: "/membresia" });
       }
     }
 
@@ -147,9 +147,9 @@ export default function Header() {
         <NavMenu isOpenMenu={isOpen} closeMenu={closeMenus} isMobile={false} /> */}
       <ul className="flex gap-5 items-center md:my-0 my-2">
         <li className="text-gray-900 cursor-pointer">
-          {user ? <DropdownMenu modal={false}>
-            <DropdownMenuTrigger className="text-gray-900 cursor-pointer outline-none flex items-center gap-1 hover:opacity-80 transition-opacity font-medium text-md">
-              Mi Cuenta <span className="text-[10px]">▼</span>
+          {<DropdownMenu modal={false}>
+            <DropdownMenuTrigger className="text-gray-900 md:hidden cursor-pointer outline-none flex items-center gap-1 hover:opacity-80 transition-opacity font-medium text-md">
+              Mi Cuenta <span className="text-[10px] ">▼</span>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" className="w-46 mt-2 bg-white shadow-lg border border-gray-100">
               {navLinks.map((link, index) => {
@@ -172,7 +172,7 @@ export default function Header() {
                 );
               })}
             </DropdownMenuContent>
-          </DropdownMenu> : <Link href="/membresia">Membresia Premium</Link>}
+          </DropdownMenu>}
         </li>
         <li className="text-gray-900 cursor-pointer hover:opacity-80 transition-opacity font-medium text-md">
           <Link href="/publicar-quinta">Publica tu Quinta</Link>

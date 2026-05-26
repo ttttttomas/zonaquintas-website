@@ -336,45 +336,45 @@ export default function FiltrosInmuebles({
   const featureList = useMemo(
     () => [
       // Habitaciones
-      { key: "sabanas",        label: "Sábanas",              icon: <IconSheets   className="h-5 w-5" /> },
-      { key: "mantas",         label: "Mantas",               icon: <IconBlanket  className="h-5 w-5" /> },
-      { key: "almohadas",      label: "Almohadas",            icon: <IconBedding  className="h-5 w-5" /> },
+      { key: "sabanas", label: "Sábanas", icon: <IconSheets className="h-5 w-5" /> },
+      { key: "mantas", label: "Mantas", icon: <IconBlanket className="h-5 w-5" /> },
+      { key: "almohadas", label: "Almohadas", icon: <IconBedding className="h-5 w-5" /> },
       // Limpieza personal
-      { key: "toilettes",      label: "Toilettes",            icon: <IconToilet   className="h-5 w-5" /> },
-      { key: "shampoo",        label: "Shampoo",              icon: <IconSettings className="h-5 w-5" /> },
-      { key: "toallas",        label: "Toallas",              icon: <IconTowel    className="h-5 w-5" /> },
-      { key: "secador_pelo",   label: "Secador de pelo",      icon: <IconDryer    className="h-5 w-5" /> },
+      { key: "toilettes", label: "Toilettes", icon: <IconToilet className="h-5 w-5" /> },
+      { key: "shampoo", label: "Shampoo", icon: <IconSettings className="h-5 w-5" /> },
+      { key: "toallas", label: "Toallas", icon: <IconTowel className="h-5 w-5" /> },
+      { key: "secador_pelo", label: "Secador de pelo", icon: <IconDryer className="h-5 w-5" /> },
       // Limpieza general
-      { key: "lavarropas",     label: "Lavarropas",           icon: <IconWasher   className="h-5 w-5" /> },
-      { key: "cambio_toallas", label: "Cambio de toallas",    icon: <IconBroom    className="h-5 w-5" /> },
+      { key: "lavarropas", label: "Lavarropas", icon: <IconWasher className="h-5 w-5" /> },
+      { key: "cambio_toallas", label: "Cambio de toallas", icon: <IconBroom className="h-5 w-5" /> },
       // Cocina
       { key: "utensillos_cocina", label: "Utensillos de cocina", icon: <IconUtensils className="h-5 w-5" /> },
-      { key: "vajilla",        label: "Vajilla",              icon: <IconDishes   className="h-5 w-5" /> },
-      { key: "freezer",        label: "Heladera / Freezer",   icon: <IconFreezer  className="h-5 w-5" /> },
+      { key: "vajilla", label: "Vajilla", icon: <IconDishes className="h-5 w-5" /> },
+      { key: "freezer", label: "Heladera / Freezer", icon: <IconFreezer className="h-5 w-5" /> },
       // Entretenimiento
-      { key: "televisor",      label: "Televisor",            icon: <IconTv       className="h-5 w-5" /> },
-      { key: "radio",          label: "Radio",                icon: <IconChip     className="h-5 w-5" /> },
-      { key: "tv",             label: "Smart TV",             icon: <IconTv       className="h-5 w-5" /> },
-      { key: "cable",          label: "TV por Cable",         icon: <IconCable    className="h-5 w-5" /> },
-      { key: "internet",       label: "WiFi / Internet",      icon: <IconWifi     className="h-5 w-5" /> },
-      { key: "jacuzzi",        label: "Jacuzzi",              icon: <IconJacuzzi  className="h-5 w-5" /> },
-      { key: "playroom",       label: "Sala de Juegos",       icon: <IconGame     className="h-5 w-5" /> },
-      { key: "sofas",          label: "Sofás",                icon: <IconSofa     className="h-5 w-5" /> },
+      { key: "televisor", label: "Televisor", icon: <IconTv className="h-5 w-5" /> },
+      { key: "radio", label: "Radio", icon: <IconChip className="h-5 w-5" /> },
+      { key: "tv", label: "Smart TV", icon: <IconTv className="h-5 w-5" /> },
+      { key: "cable", label: "TV por Cable", icon: <IconCable className="h-5 w-5" /> },
+      { key: "internet", label: "WiFi / Internet", icon: <IconWifi className="h-5 w-5" /> },
+      { key: "jacuzzi", label: "Jacuzzi", icon: <IconJacuzzi className="h-5 w-5" /> },
+      { key: "playroom", label: "Sala de Juegos", icon: <IconGame className="h-5 w-5" /> },
+      { key: "sofas", label: "Sofás", icon: <IconSofa className="h-5 w-5" /> },
       // Estacionamiento
       { key: "estacionamiento_techado", label: "Estacionamiento techado", icon: <IconParking className="h-5 w-5" /> },
       // Otras características
-      { key: "parrilla",           label: "Parrilla",              icon: <IconGrill     className="h-5 w-5" /> },
-      { key: "estufa_gas",         label: "Estufa a gas",          icon: <IconFireplace className="h-5 w-5" /> },
-      { key: "hogar",              label: "Hogar / Chimenea",      icon: <IconFireplace className="h-5 w-5" /> },
-      { key: "hamacas_paraguayas", label: "Hamacas paraguayas",    icon: <IconSofa      className="h-5 w-5" /> },
-      { key: "arboleda",           label: "Arboleda con sombra",   icon: <IconChip      className="h-5 w-5" /> },
-      { key: "cancha_futbol",      label: "Cancha de fútbol",      icon: <IconSoccer    className="h-5 w-5" /> },
-      { key: "piscina",            label: "Piscina",               icon: <IconPool      className="h-5 w-5" /> },
-      { key: "cancha_basquet",     label: "Cancha de básquet",     icon: <IconChip      className="h-5 w-5" /> },
-      { key: "cancha_tenis",       label: "Cancha de tenis",       icon: <IconTennis    className="h-5 w-5" /> },
-      { key: "cancha_padel",       label: "Cancha de pádel",       icon: <IconTennis    className="h-5 w-5" /> },
-      { key: "hamacas",            label: "Hamacas",               icon: <IconSofa      className="h-5 w-5" /> },
-      { key: "parlantes",          label: "Parlantes",             icon: <IconChip      className="h-5 w-5" /> },
+      { key: "parrilla", label: "Parrilla", icon: <IconGrill className="h-5 w-5" /> },
+      { key: "estufa_gas", label: "Estufa a gas", icon: <IconFireplace className="h-5 w-5" /> },
+      { key: "hogar", label: "Hogar / Chimenea", icon: <IconFireplace className="h-5 w-5" /> },
+      { key: "hamacas_paraguayas", label: "Hamacas paraguayas", icon: <IconSofa className="h-5 w-5" /> },
+      { key: "arboleda", label: "Arboleda con sombra", icon: <IconChip className="h-5 w-5" /> },
+      { key: "cancha_futbol", label: "Cancha de fútbol", icon: <IconSoccer className="h-5 w-5" /> },
+      { key: "piscina", label: "Piscina", icon: <IconPool className="h-5 w-5" /> },
+      { key: "cancha_basquet", label: "Cancha de básquet", icon: <IconChip className="h-5 w-5" /> },
+      { key: "cancha_tenis", label: "Cancha de tenis", icon: <IconTennis className="h-5 w-5" /> },
+      { key: "cancha_padel", label: "Cancha de pádel", icon: <IconTennis className="h-5 w-5" /> },
+      { key: "hamacas", label: "Hamacas", icon: <IconSofa className="h-5 w-5" /> },
+      { key: "parlantes", label: "Parlantes", icon: <IconChip className="h-5 w-5" /> },
     ],
     []
   );
@@ -388,11 +388,11 @@ export default function FiltrosInmuebles({
 
   return (
     <section className="fixed top-0 rounded-2xl z-10 scrollbar-hide inset-0 left-0 overflow-y-scroll md:m-30 m-5 bg-[#2B2B2B] py-10 text-white">
-      <div className="fixed -z-20 top-0 inset-0 bg-black/70"></div>
+      <div className="fxed -z-20 top-0 inset-0 bg-black/70"></div>
       <h2 className="text-2xl text-center font-bold">Todos los Filtros</h2>
 
       {/* Rango de precio */}
-      <div className="mt-10 mx-auto px-20 w-full">
+      <div className="mt-10 mx-auto md:px-20 px-5 w-full">
         <div className="mb-3 flex justify-between text-xs text-neutral-300">
           <span>Mínimo {fmt(priceRange[0])}</span>
           <span>Máximo {fmt(priceRange[1])}</span>
@@ -420,7 +420,7 @@ export default function FiltrosInmuebles({
         <h3 className="text-center text-lg mb-20 font-semibold md:col-span-2">
           Características básicas
         </h3>
-        <div className="flex w-full gap-20 md:justify-center items-center">
+        <div className="flex w-full md:gap-20 gap-5 md:justify-center items-center">
           <div className="flex w-full flex-col gap-14">
             <div className="flex items-center gap-3 text-neutral-200">
               <IconBed className="h-6 w-6" />

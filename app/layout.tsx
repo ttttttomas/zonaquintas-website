@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   title: "ZonaQuintas | El lugar para disfrutar tus fines de semana",
   description: "Encontrá y reservá la quinta perfecta para tus vacaciones, fines de semana y escapadas. Alquiler de quintas con piscina, áreas verdes y todas las comodidades. ¡Reservá ahora tu próxima aventura!",
   keywords:
-    "ZonaQuintas, finde semana, vacaciones, viajes, hotel, apartamento, alquiler, reservas",
+    "ZonaQuintas, finde semana, quintas, alquiler de quintas, vacaciones, viajes, hotel, apartamento, alquiler, reservas",
   icons: {
     icon: "/logo.png",
     shortcut: "/logo.png",

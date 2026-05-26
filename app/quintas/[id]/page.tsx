@@ -185,6 +185,7 @@ export default function quintaIdPage({ params }: quintaIdPageProps) {
               ✨ Nuevo en Zonaquintas
             </div>
           )}
+          {/* <p>PRECIO: {formatedPrice}</p> */}
           <div className="flex items-center space-x-2">
             <img
               src="/avatar.png"
