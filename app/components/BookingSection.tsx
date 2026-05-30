@@ -11,6 +11,7 @@ type Props = {
   totalPrice: string;
   quinta: Quintas;
   maxGuests: number;
+  ratingContent?: React.ReactNode; // calificaciones
   children: React.ReactNode; // servicios, descripción, etc. del server component
 };
 
@@ -29,6 +30,7 @@ export default function BookingSection({
   costOfService,
   totalPrice,
   maxGuests,
+  ratingContent,
   children,
 }: Props) {
   const [startDate, setStartDate] = useState<Date | null>(null);
@@ -40,51 +42,36 @@ export default function BookingSection({
     setEndDate(end);
   };
 
-  return (
-    <section
-      className="px-4 md:px-10 lg:mx-20 flex flex-col md:flex-row justify-between gap-8 md:gap-12 lg:gap-20 py-6"
-      id="quinta_info">
-      <div className="w-full md:w-1/2 space-y-6">
-        {/* Server-rendered content (calificaciones, descripción, servicios) */}
-        {children}
-
-        {/* Calendario */}
-        <div>
-          <h3 className="font-semibold mb-2">Modificar tu ingreso y salida</h3>
-          <p className="text-sm text-gray-500 mb-2">Estadía mínima 2 noches</p>
-          <Calendar onDatesChange={handleDatesChange} />
-        </div>
-      </div>
-
-      {/* Reservar derecha */}
-      <div className="rounded-xl bg-white shadow-md shadow-black/50 py-6 px-12 flex top-22 flex-col md:sticky h-fit">
-        <p className="text-2xl text-center font-semibold mb-5">
+  const renderReservationCard = () => {
+    return (
+      <div className="rounded-xl bg-white shadow-md shadow-black/50 py-6 px-6 md:px-12 flex flex-col h-fit">
+        <p className="text-2xl text-center font-semibold mb-5 text-gray-800">
           {`${formatedPrice} por noche`}
         </p>
 
         <div className="border-t border-x border-black/40 rounded-t-md divide-x grid grid-cols-2 overflow-hidden">
-          <div className="flex flex-col justify-center items-center py-1 px-10 text-sm">
+          <div className="flex flex-col justify-center items-center py-1 px-4 text-sm">
             <p className="text-black text-sm font-semibold">Fecha de ingreso</p>
             <div className="flex items-center gap-2 justify-center">
               <p className="font-medium text-gray-700">
                 {formatDate(startDate)}
               </p>
-              <CalendarDays className="w-4" />
+              <CalendarDays className="w-4 text-gray-500" />
             </div>
           </div>
-          <div className="flex flex-col justify-center items-center py-1 px-10 text-sm">
+          <div className="flex flex-col justify-center items-center py-1 px-4 text-sm">
             <p className="text-black text-sm font-semibold">Fecha de salida</p>
             <div className="flex items-center gap-2 justify-center">
               <p className="font-medium text-gray-700">{formatDate(endDate)}</p>
-              <CalendarDays className="w-4" />
+              <CalendarDays className="w-4 text-gray-500" />
             </div>
           </div>
         </div>
 
         <div className="border border-black/40 rounded-b-md p-2 text-sm">
-          <p className="text-black font-semibold">Cantidad de Huéspedes</p>
+          <p className="text-black font-semibold mb-1">Cantidad de Huéspedes</p>
           <select
-            className="w-1/2"
+            className="w-full bg-white text-gray-700 border border-gray-200 rounded p-1 outline-none cursor-pointer"
             name="huespedes"
             value={selectedGuests}
             onChange={(e) => setSelectedGuests(Number(e.target.value))}>
@@ -122,6 +109,37 @@ export default function BookingSection({
             Reservar
           </button>
         )}
+      </div>
+    );
+  };
+
+  return (
+    <section
+      className="px-4 md:px-10 lg:mx-20 flex flex-col md:flex-row justify-between gap-8 md:gap-12 lg:gap-20 py-6"
+      id="quinta_info">
+      <div className="w-full md:w-1/2 space-y-6">
+        {/* Calificaciones arriba de todo */}
+        {ratingContent}
+
+        {/* Reservar en mobile ONLY */}
+        <div className="block md:hidden">
+          {renderReservationCard()}
+        </div>
+
+        {/* Server-rendered content (anfitrión, descripción, servicios) */}
+        {children}
+
+        {/* Calendario */}
+        <div>
+          <h3 className="font-semibold mb-2">Modificar tu ingreso y salida</h3>
+          <p className="text-sm text-gray-500 mb-2">Estadía mínima 2 noches</p>
+          <Calendar onDatesChange={handleDatesChange} />
+        </div>
+      </div>
+
+      {/* Reservar derecha (desktop ONLY) */}
+      <div className="hidden md:block md:sticky top-22 h-fit">
+        {renderReservationCard()}
       </div>
     </section>
   );

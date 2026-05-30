@@ -349,7 +349,7 @@ export default function PreviewReservationPage() {
               Las cancelaciones se regirán por las Políticas de Cancelación y Reembolso vigentes en la plataforma.
             </p>
             <Link
-              href="/terms"
+              href="/cancelation"
               className="font-semibold text-sm underline hover:text-primaryDark"
             >
               Mas información

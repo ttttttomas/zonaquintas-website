@@ -5,20 +5,32 @@ import toast, { Toaster } from "react-hot-toast";
 
 export default function RegisterPage() {
   const { register, handleSubmit } = useForm();
+
   const onSubmit = handleSubmit(async (data) => {
-    const response = await AuthServices.register(data);
-    if (response?.status === 200) {
-      console.log(response);
-      toast.success(`${response.data.message}`);
-      setTimeout(() => {
-        window.location.href = "/my-account";
-      }, 2000);
+    try {
+      if (data.password !== data.confirm_password) {
+        toast.error("Las contraseñas no coinciden");
+        return;
+      }
+      const response = await AuthServices.register(data);
+      if (response?.status === 200) {
+        console.log(response);
+        toast.success(`${response.data.message}`);
+        setTimeout(() => {
+          window.location.href = "/my-account";
+        }, 2000);
+      }
+    } catch (error: any) {
+      const message =
+        error?.response?.data?.message ||
+        "Error al registrarse. Revise su conexión y/o credenciales.";
+      toast.error(message);
     }
   });
   return (
-    <main className="flex items-center h-[60vh] justify-center pb-12 px-4 sm:px-6 lg:px-8">
+    <main className="flex items-center h-[80vh] justify-center pb-12 px-4 sm:px-6 lg:px-8">
       <Toaster position="bottom-center" />
-      <div className="absolute publicar h-[66vh] -z-10 w-full" />
+      <div className="absolute publicar h-[86vh] -z-10 w-full" />
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -56,6 +68,18 @@ export default function RegisterPage() {
           className="border border-black/30 rounded-lg p-2"
           placeholder="Contraseña"
           type="password"
+        />
+        <input
+          {...register("confirm_password")}
+          className="border border-black/30 rounded-lg p-2"
+          placeholder="Confirmar contraseña"
+          type="password"
+        />
+        <input
+          {...register("phone")}
+          className="border border-black/30 rounded-lg p-2"
+          placeholder="Telefono"
+          type="text"
         />
         <button
           className="bg-primaryDark cursor-pointer text-white py-3 rounded-lg"

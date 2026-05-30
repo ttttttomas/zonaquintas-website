@@ -81,17 +81,18 @@ export default function Header() {
       links.push({ label: "Registrate", href: "/register" });
     }
 
-    if (user) {
-      if (user.membership_status === "active") {
-        links.push({ label: "Mis Datos", href: "/my-account" });
-        // links.push({ label: "Mi Membresía", href: "/my-membership" });
-      } else {
-        links.push({ label: "Mis Datos", href: "/my-account" });
-        // links.push({ label: "Membresía Premium", href: "/membresia" });
-      }
-    }
+    // if (user) {
+    //   if (user.membership_status === "active") {
+    //     links.push({ label: "Mis Datos", href: "/my-account" });
+    //     links.push({ label: "Mi Membresía", href: "/my-membership" });
+    //   } else {
+    //     links.push({ label: "Mis Datos", href: "/my-account" });
+    //     links.push({ label: "Membresía Premium", href: "/membresia" });
+    //   }
+    // }
 
     if (user) {
+      links.push({ label: "Mis Datos", href: "/my-account" });
       links.push({ type: "separator" });
       links.push({ label: "Cerrar sesión", onClick: logout });
       links.push({ type: "separator" });
@@ -147,10 +148,12 @@ export default function Header() {
         <NavMenu isOpenMenu={isOpen} closeMenu={closeMenus} isMobile={false} /> */}
       <ul className="flex gap-5 items-center md:my-0 my-2">
         <li className="text-gray-900 cursor-pointer">
-          {<DropdownMenu modal={false}>
-            <DropdownMenuTrigger className="text-gray-900 md:hidden cursor-pointer outline-none flex items-center gap-1 hover:opacity-80 transition-opacity font-medium text-md">
+          <DropdownMenu modal={false}>
+            {user ? <DropdownMenuTrigger className="text-gray-900 cursor-pointer outline-none flex items-center gap-1 hover:opacity-80 transition-opacity font-medium text-md">
               Mi Cuenta <span className="text-[10px] ">▼</span>
-            </DropdownMenuTrigger>
+            </DropdownMenuTrigger> : <DropdownMenuTrigger disabled className="text-gray-300 outline-none flex items-center gap-1 font-medium text-md">
+              Mi Cuenta <span className="text-[10px] ">▼</span>
+            </DropdownMenuTrigger>}
             <DropdownMenuContent align="start" className="w-46 mt-2 bg-white shadow-lg border border-gray-100">
               {navLinks.map((link, index) => {
                 if (link.type === "separator") {
@@ -172,7 +175,7 @@ export default function Header() {
                 );
               })}
             </DropdownMenuContent>
-          </DropdownMenu>}
+          </DropdownMenu>
         </li>
         <li className="text-gray-900 cursor-pointer hover:opacity-80 transition-opacity font-medium text-md">
           <Link href="/publicar-quinta">Publica tu Quinta</Link>
@@ -194,17 +197,22 @@ export default function Header() {
           <UserSectionSkeleton />
         </div>
       ) : (
-        <div className="md:flex hidden items-center gap-3 justify-between relative">
-          {user ?
-            <div className="flex bg-primaryDark items-center px-3 py-1 rounded-4xl gap-2 text-white justify-center">
+        <div className="flex items-center gap-3 justify-between relative">
+          {user ? (
+            <div className="hidden md:flex bg-primaryDark items-center px-3 py-1 rounded-4xl gap-2 text-white justify-center">
               {user && <p className="truncate">Bienvenido/a, {user.name}!</p>}
               <UserAvatar size="w-8" />
             </div>
-            :
-            <div className="flex items-center gap-2 text-black divide-x divide-gray-400 justify-center">
-              <Link href="/login"><p className="cursor-pointer truncate pr-2">Inicia sesión</p></Link>
-              <Link href="/register"><p className="cursor-pointer truncate pl-2">Registrate</p></Link>
-            </div>}
+          ) : (
+            <div className="md:flex items-center hidden gap-2 text-black divide-x divide-gray-400 justify-center">
+              <Link href="/login">
+                <p className="cursor-pointer truncate pr-2 font-medium text-md hover:opacity-80 transition-opacity">Inicia sesión</p>
+              </Link>
+              <Link href="/register">
+                <p className="cursor-pointer truncate pl-2 font-medium text-md hover:opacity-80 transition-opacity">Registrate</p>
+              </Link>
+            </div>
+          )}
         </div>
       )}
     </header>

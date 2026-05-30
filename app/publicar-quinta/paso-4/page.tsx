@@ -57,6 +57,7 @@ export default function Paso4Page() {
   const [popUp, setPopUp] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
   console.log(user?.id);
   // Previews de las imágenes seleccionadas
   const imagePreviews = useMemo(
@@ -157,12 +158,12 @@ export default function Paso4Page() {
       <div className="absolute publicar2 h-1/2 z-0 w-full">
         <img className="mx-auto" src="/logo.png" alt="" />
       </div>
-      <h1 className="text-center font-semibold text-xl">
+      <h1 className="text-center font-semibold mt-2 md:text-xl">
         Previsualiza y confirmá todos tus datos
       </h1>
 
       {/* ── PASO 1: Datos básicos ── */}
-      <section className="flex items-center justify-start my-5 gap-10 px-20 w-full">
+      <section className="flex flex-col md:flex-row items-center justify-start my-5 gap-10 px-5 md:px-20 w-full">
         <p className="size-20 pt-4 shrink-0 rounded-full bg-primaryDark text-5xl text-center my-auto text-white font-extrabold">
           1
         </p>
@@ -202,7 +203,7 @@ export default function Paso4Page() {
       <SecondSeparator />
 
       {/* ── PASO 2: Título, imágenes, ubicación ── */}
-      <section className="flex items-center justify-start my-5 gap-10 px-20 w-full">
+      <section className="flex flex-col md:flex-row items-center md:justify-start my-5 gap-10 px-5 md:px-20 w-full">
         <p className="size-20 pt-4 shrink-0 rounded-full bg-primaryDark text-5xl text-center my-auto text-white font-extrabold">
           2
         </p>
@@ -246,7 +247,7 @@ export default function Paso4Page() {
       <SecondSeparator />
 
       {/* ── PASO 3: Precios ── */}
-      <section className="flex items-center justify-start my-5 gap-10 px-20 w-full">
+      <section className="flex flex-col md:flex-row items-center md:justify-start my-5 gap-10 px-5 md:px-20 w-full">
         <p className="size-20 pt-4 shrink-0 rounded-full bg-primaryDark text-5xl text-center my-auto text-white font-extrabold">
           3
         </p>
@@ -262,13 +263,36 @@ export default function Paso4Page() {
         </ul>
       </section>
 
+      <section className="flex items-center my-5 gap-10 px-5 md:px-20">
+        <input
+          type="checkbox"
+          name="publicar_auto"
+          id="publicar_auto"
+          checked={acceptedTerms}
+          onChange={(e) => setAcceptedTerms(e.target.checked)}
+          className="size-5 cursor-pointer shrink-0"
+        />
+        <div className="flex flex-col gap-5">
+          <label htmlFor="publicar_auto" className="cursor-pointer">
+            Las imagenes que subas podran ser utilizadas por ZonaQuintas para promocionar la plataforma en redes sociales,
+            campañas publicitarias y otros medios de marketing. Al continuar, aceptas estos terminos.
+          </label>
+          <label className="underline cursor-pointer font-medium" htmlFor="publicar_auto">
+            Entiendo y acepto que ZonaQuintas puede utilizar las imagenes de mi propiedad con fines de promocion y marketing.
+          </label>
+        </div>
+      </section>
       {error && (
         <p className="text-red-500 font-semibold text-center mb-4">{error}</p>
       )}
 
       <button
-        onClick={() => setPopUp(true)}
-        className="bg-primaryDark w-8/10 z-20 py-2 text-white mx-30 text-xl font-bold rounded-lg cursor-pointer">
+        onClick={() => {
+          if (!acceptedTerms) return;
+          setPopUp(true);
+        }}
+        disabled={!acceptedTerms}
+        className="bg-primaryDark w-8/10 z-20 py-2 text-white mx-30 text-xl font-bold rounded-lg cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
         Confirmar publicación
       </button>
 

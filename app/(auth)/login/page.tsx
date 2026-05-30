@@ -4,6 +4,7 @@ import { AuthServices } from "@/app/services/AuthServices";
 import toast, { Toaster } from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { useUser } from "../../context/UserContext";
+import Link from "next/link";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -65,6 +66,11 @@ export default function LoginPage() {
           type="submit">
           Iniciar sesión
         </button>
+        <Link
+          href="/register"
+          className="text-primaryLight text-center">
+          ¿No tenes cuenta? <span className="underline">Registrate</span>
+        </Link>
       </form>
     </main>
   );

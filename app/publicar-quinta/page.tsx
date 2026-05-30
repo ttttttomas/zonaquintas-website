@@ -32,7 +32,8 @@ export default function PublicarQuintaPage() {
         <h3 className="font-bold mt-5 text-center text-lg">Finaliza el proceso</h3>
         <ul className="flex flex-col justify-center items-center mt-5 gap-2">
           <li>Brindá un precio a la estadía</li>
-          <li>Corrobor</li>
+          <li>Corrobora los datos ingresados</li>
+          <li>Publicá la quinta</li>
         </ul>
       </section>
       <Link href="/publicar-quinta/paso-1" className="bg-primaryDark z-20 w-1/2 text-center mx-auto text-white py-2 rounded-xl text-xl font-bold my-5">Comenzar</Link>

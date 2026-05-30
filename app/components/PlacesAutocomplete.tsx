@@ -185,11 +185,11 @@ export default function PlacesAutocomplete({
       <input
         ref={inputRef}
         placeholder="Ubica tu quinta en el mapa*"
-        className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+        className="w-full bg-white border border-gray-300 focus:border-primaryDark focus:ring-2 focus:ring-primaryDark/20 outline-none px-4 py-3 rounded-xl transition duration-200 shadow-sm placeholder:text-gray-400 text-gray-800 font-medium"
         type="text"
       />
       {/* Asegurate de darle altura al contenedor del mapa */}
-      <div ref={mapDivRef} className="h-72 w-full rounded-xl border" />
+      <div ref={mapDivRef} className="h-72 w-full rounded-2xl border border-gray-200 shadow-inner" />
     </div>
   );
 }

@@ -147,57 +147,58 @@ export default function quintaIdPage({ params }: quintaIdPageProps) {
         formatedPrice={formatedPrice}
         costOfService={String(serviceCostNum.toFixed(2))}
         totalPrice={totalPrice}
-        maxGuests={quinta?.guests || 0}>
-        {/* Calificaciones y anfitrión */}
-        <div className="flex flex-col items-start md:pr-10 lg:pr-20 gap-6 md:gap-10">
-          {owner?.opinions && owner.opinions.length > 0 ? (
-            <div className="flex items-center px-10 py-2 rounded-3xl bg-primaryDark">
-              <div className="flex flex-col items-center space-x-2 px-7">
-                <span className="text-white">
-                  {owner.average_opinions.toLocaleString()}
-                </span>
-                <div className="flex gap-1 items-center">
-                  {Array.from({
-                    length: Math.floor(owner.average_opinions),
-                  }).map((_, i) => (
-                    <Star
-                      className="w-3 text-white fill-yellow-500 stroke-yellow-500"
-                      key={i}
-                    />
-                  ))}
-                  {owner.average_opinions % 1 !== 0 && (
-                    <StarHalf className="w-3 text-white fill-yellow-500 stroke-yellow-500" />
-                  )}
+        maxGuests={quinta?.guests || 0}
+        ratingContent={
+          <div className="flex items-center md:justify-start justify-center md:w-max w-full">
+            {owner?.opinions && owner.opinions.length > 0 ? (
+              <div className="flex items-center px-10 py-2 rounded-3xl bg-primaryDark">
+                <div className="flex flex-col items-center space-x-2 px-7">
+                  <span className="text-white">
+                    {owner.average_opinions.toLocaleString()}
+                  </span>
+                  <div className="flex gap-1 items-center">
+                    {Array.from({
+                      length: Math.floor(owner.average_opinions),
+                    }).map((_, i) => (
+                      <Star
+                        className="w-3 text-white fill-yellow-500 stroke-yellow-500"
+                        key={i}
+                      />
+                    ))}
+                    {owner.average_opinions % 1 !== 0 && (
+                      <StarHalf className="w-3 text-white fill-yellow-500 stroke-yellow-500" />
+                    )}
+                  </div>
+                </div>
+                <p className="text-gray-500">|</p>
+                <div className="text-white flex flex-col items-center px-7">
+                  <p>{owner.opinions.length} opiniones</p>
+                  <Link
+                    href="#opinions"
+                    className="underline text-xs cursor-pointer">
+                    Ver opiniones
+                  </Link>
                 </div>
               </div>
-              <p className="text-gray-500">|</p>
-              <div className="text-white flex flex-col items-center px-7">
-                <p>{owner.opinions.length} opiniones</p>
-                <Link
-                  href="#opinions"
-                  className="underline text-xs cursor-pointer">
-                  Ver opiniones
-                </Link>
+            ) : (
+              <div className="flex items-center md:justify-start justify-center md:w-max w-full px-6 py-2 rounded-3xl border border-primaryDark text-primaryDark font-semibold text-sm">
+                ✨ Nuevo en Zonaquintas
               </div>
-            </div>
-          ) : (
-            <div className="flex items-center md:justify-start justify-center md:w-max w-full px-6 py-2 rounded-3xl border border-primaryDark text-primaryDark font-semibold text-sm">
-              ✨ Nuevo en Zonaquintas
-            </div>
-          )}
-          {/* <p>PRECIO: {formatedPrice}</p> */}
-          <div className="flex items-center space-x-2">
-            <img
-              src="/avatar.png"
-              alt="Avatar anfitrión"
-              className="rounded-full w-10 h-10"
-            />
-            <div className="text-sm">
-              <p className="font-semibold">{`Anfitrión: ${owner?.name}`}</p>
-              <p className="text-gray-500">
-                {owner?.owner_time} como anfitrión
-              </p>
-            </div>
+            )}
+          </div>
+        }>
+        {/* Anfitrión */}
+        <div className="flex items-center space-x-2 md:pr-10 lg:pr-20 gap-6 md:gap-10 pt-4">
+          <img
+            src="/avatar.png"
+            alt="Avatar anfitrión"
+            className="rounded-full w-10 h-10"
+          />
+          <div className="text-sm">
+            <p className="font-semibold">{`Anfitrión: ${owner?.name}`}</p>
+            <p className="text-gray-500">
+              {owner?.owner_time} como anfitrión
+            </p>
           </div>
         </div>
 
