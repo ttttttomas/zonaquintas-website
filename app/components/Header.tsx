@@ -23,6 +23,16 @@ export default function Header() {
   const [isOpen2, setIsOpen2] = useState(true);
   const contentRef = useRef<HTMLDivElement>(null);
   const [maxHeight, setMaxHeight] = useState("0px");
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   useEffect(() => {
     if (isOpen || (isOpen2 && contentRef.current)) {
@@ -151,12 +161,21 @@ export default function Header() {
       <ul className="flex gap-5 items-center md:my-0 my-2">
         <li className="text-gray-900 cursor-pointer">
           <DropdownMenu modal={false}>
-            {user ? <DropdownMenuTrigger className="text-gray-900 cursor-pointer outline-none flex items-center gap-1 hover:opacity-80 transition-opacity font-medium text-md">
+            <DropdownMenuTrigger
+              disabled={!user && !isMobile}
+              className={`outline-none flex items-center gap-1 hover:opacity-80 transition-opacity font-medium text-md ${
+                !user && !isMobile
+                  ? "text-gray-300 cursor-default"
+                  : "text-gray-900 cursor-pointer"
+              }`}
+            >
               Mi Cuenta <span className="text-[10px] ">▼</span>
-            </DropdownMenuTrigger> : <DropdownMenuTrigger disabled className="text-gray-300 outline-none flex items-center gap-1 font-medium text-md">
-              Mi Cuenta <span className="text-[10px] ">▼</span>
-            </DropdownMenuTrigger>}
-            <DropdownMenuContent align="start" className="w-46 mt-2 bg-white shadow-lg border border-gray-100">
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              align="start"
+              sideOffset={8}
+              className="w-46 bg-white shadow-lg border border-gray-100"
+            >
               {navLinks.map((link, index) => {
                 if (link.type === "separator") {
                   return <DropdownMenuSeparator key={index} />;
