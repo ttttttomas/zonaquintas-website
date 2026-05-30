@@ -64,6 +64,8 @@ export default function Header() {
     try {
       const response = await AuthServices.logout();
       closeMenus();
+      // Borrar cookie de frontend
+      document.cookie = "access_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax; Secure";
       setTimeout(() => {
         window.location.href = "/";
         toast.success(response.data.message);

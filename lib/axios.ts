@@ -22,12 +22,28 @@ apiClient.interceptors.response.use(
         localStorage.removeItem("access_token");
         localStorage.removeItem("user");
 
-        // Solo redirigir a login si estamos en una ruta protegida (/system)
-        if (
-          typeof window !== "undefined" &&
-          window.location.pathname.startsWith("/system")
-        ) {
-          window.location.href = "/login";
+        // Borrar cookie de frontend
+        if (typeof document !== "undefined") {
+          document.cookie = "access_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax; Secure";
+        }
+
+        // Solo redirigir a login si estamos en una ruta protegida
+        if (typeof window !== "undefined") {
+          const protectedRoutes = [
+            "/my-account",
+            "/reservations",
+            "/publications",
+            "/dashboard",
+            "/favorites",
+            "/wallet",
+            "/publicar-quinta",
+          ];
+          const isProtectedRoute = protectedRoutes.some((route) =>
+            window.location.pathname.startsWith(route)
+          );
+          if (isProtectedRoute) {
+            window.location.href = "/login";
+          }
         }
       }
     }

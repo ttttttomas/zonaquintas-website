@@ -25,7 +25,7 @@ export default function LoginPage() {
           setTimeout(resolve, 2000);
         });
         await refetchUser();
-        router.push("/");
+        window.location.href = "/";
       }
     } catch (error: any) {
       const message =
