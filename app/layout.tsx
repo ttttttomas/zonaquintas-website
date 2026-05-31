@@ -64,6 +64,19 @@ export default function RootLayout({
             alt=""
           />
         </noscript>
+            <Script
+      src="https://www.googletagmanager.com/gtag/js?id=G-1V563PGQMG"
+      strategy="afterInteractive"
+    />
+
+    <Script id="gtag-init" strategy="afterInteractive">
+      {`
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-1V563PGQMG');
+      `}
+    </Script>
               <Toaster position="top-center" />
               <Header />
               {children}
