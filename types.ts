@@ -57,6 +57,7 @@ export type Quintas = {
   arboleda: boolean; // Arboleda con buena sombra
   cancha_futbol: boolean;
   piscina: boolean;
+  pet: boolean;
   cancha_basquet: boolean;
   cancha_tenis: boolean;
   cancha_padel: boolean;

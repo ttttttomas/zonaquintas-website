@@ -50,7 +50,7 @@ export default function BookingSection({
         </p>
 
         <div className="border-t border-x border-black/40 rounded-t-md divide-x grid grid-cols-2 overflow-hidden">
-          <div className="flex flex-col justify-center items-center py-1 px-4 text-sm">
+          <a href="#fechas" className="flex flex-col justify-center items-center py-1 px-4 text-sm">
             <p className="text-black text-sm font-semibold">Fecha de ingreso</p>
             <div className="flex items-center gap-2 justify-center">
               <p className="font-medium text-gray-700">
@@ -58,14 +58,14 @@ export default function BookingSection({
               </p>
               <CalendarDays className="w-4 text-gray-500" />
             </div>
-          </div>
-          <div className="flex flex-col justify-center items-center py-1 px-4 text-sm">
+          </a>
+          <a href="#fechas" className="flex flex-col justify-center items-center py-1 px-4 text-sm">
             <p className="text-black text-sm font-semibold">Fecha de salida</p>
             <div className="flex items-center gap-2 justify-center">
               <p className="font-medium text-gray-700">{formatDate(endDate)}</p>
               <CalendarDays className="w-4 text-gray-500" />
             </div>
-          </div>
+          </a>
         </div>
 
         <div className="border border-black/40 rounded-b-md p-2 text-sm">
@@ -130,7 +130,7 @@ export default function BookingSection({
         {children}
 
         {/* Calendario */}
-        <div>
+        <div id='fechas'>
           <h3 className="font-semibold mb-2">Modificar tu ingreso y salida</h3>
           <p className="text-sm text-gray-500 mb-2">Estadía mínima 2 noches</p>
           <Calendar onDatesChange={handleDatesChange} />

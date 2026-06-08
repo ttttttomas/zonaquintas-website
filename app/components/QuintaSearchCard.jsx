@@ -113,9 +113,6 @@ export default function QuintaSearchCard({ product }) {
             <p className="text-green-600 text-3xl font-semibold">
               {formatedPrice}
             </p>
-            <p className="text-xs text-gray-500">
-              {costOfService()} costo por servicio
-            </p>
           </div>
           <Link
             href={`/quintas/${product.id}`}

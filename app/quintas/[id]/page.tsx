@@ -288,6 +288,7 @@ export default function quintaIdPage({ params }: quintaIdPageProps) {
                   { key: "arboleda", label: "Arboleda con sombra", icon: <Ico d="M12 2l4 8H8l4-8zm0 8v12M8 18h8" /> },
                   { key: "cancha_futbol", label: "Cancha de fútbol", icon: <Ico d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2zm0 0v20M2 12h20" /> },
                   { key: "piscina", label: "Piscina", icon: <Ico d="M2 12h20M2 16c2 1.5 4 1.5 6 0s4-1.5 6 0 4 1.5 6 0M6 12V5a6 6 0 0 1 12 0v7" /> },
+                  { key: "pet", label: "Pet Friendly", icon: <Ico d="M4.5 12a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m4-4a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m7 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m4 4a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3" /> },
                   { key: "cancha_basquet", label: "Cancha de básquet", icon: <Ico d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2zm0 0c0 10-5 15-5 15M12 2c0 10 5 15 5 15M2 12h20" /> },
                   { key: "cancha_tenis", label: "Cancha de tenis", icon: <Ico d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2zm-9 6h18M3 18h18M12 2v20" /> },
                   { key: "cancha_padel", label: "Cancha de pádel", icon: <Ico d="M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zm7 0v18M3 12h18" /> },

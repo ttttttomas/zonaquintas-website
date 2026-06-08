@@ -116,6 +116,7 @@ export default function AddCharacteristics({
   const ANOTHERS = [
     "Parrilla", "Estufa a gas", "Hogar", "Hamacas paraguayas",
     "Arboleda con buena sombra", "Cancha de fútbol", "Piscina",
+    "Pet Friendly",
     "Cancha de basquet", "Cancha de tenis", "Cancha de padel",
     "Hamacas", "Parlantes",
   ];

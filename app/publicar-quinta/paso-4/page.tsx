@@ -43,6 +43,7 @@ const CHAR_TO_KEY: Record<string, string> = {
   "Arboleda con buena sombra": "arboleda",
   "Cancha de fútbol": "cancha_futbol",
   Piscina: "piscina",
+  "Pet Friendly": "pet",
   "Cancha de basquet": "cancha_basquet",
   "Cancha de tenis": "cancha_tenis",
   "Cancha de padel": "cancha_padel",

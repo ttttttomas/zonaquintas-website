@@ -53,6 +53,7 @@ interface Filters {
   arboleda: boolean | null;
   cancha_futbol: boolean | null;
   piscina: boolean | null;
+  pet: boolean | null;
   cancha_basquet: boolean | null;
   cancha_tenis: boolean | null;
   cancha_padel: boolean | null;
@@ -101,6 +102,7 @@ const defaultFilters: Filters = {
   arboleda: null,
   cancha_futbol: null,
   piscina: null,
+  pet: null,
   cancha_basquet: null,
   cancha_tenis: null,
   cancha_padel: null,
@@ -174,6 +176,7 @@ export const FiltersProvider = ({ children }: any) => {
         req(filters.arboleda,          q.arboleda)          &&
         req(filters.cancha_futbol,     q.cancha_futbol)     &&
         req(filters.piscina,           q.piscina)           &&
+        req(filters.pet,               q.pet)               &&
         req(filters.cancha_basquet,    q.cancha_basquet)    &&
         req(filters.cancha_tenis,      q.cancha_tenis)      &&
         req(filters.cancha_padel,      q.cancha_padel)      &&

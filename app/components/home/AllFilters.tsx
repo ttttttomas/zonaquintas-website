@@ -245,6 +245,14 @@ const IconDishes = (p: any) => (
     />
   </svg>
 );
+const IconPet = (p: any) => (
+  <svg viewBox="0 0 24 24" className={p.className}>
+    <path
+      fill="currentColor"
+      d="M4.5 12a1.5 1.5 0 1 1 0-3a1.5 1.5 0 0 1 0 3m4-4a1.5 1.5 0 1 1 0-3a1.5 1.5 0 0 1 0 3m7 0a1.5 1.5 0 1 1 0-3a1.5 1.5 0 0 1 0 3m4 4a1.5 1.5 0 1 1 0-3a1.5 1.5 0 0 1 0 3M12 18c-1.26 0-2.1-.59-2.72-1.22A3.5 3.5 0 0 0 6 15c-.58 0-1.14.12-1.66.34A7.46 7.46 0 0 1 4 14c0-2.5 3.58-5 8-5s8 2.5 8 5c0 .44-.12.86-.34 1.34c-.52-.22-1.08-.34-1.66-.34a3.5 3.5 0 0 0-3.28 1.78C14.1 17.41 13.26 18 12 18"
+    />
+  </svg>
+);
 
 // ---------- Subcomponentes ----------
 function Chip({
@@ -370,6 +378,7 @@ export default function FiltrosInmuebles({
       { key: "arboleda", label: "Arboleda con sombra", icon: <IconChip className="h-5 w-5" /> },
       { key: "cancha_futbol", label: "Cancha de fútbol", icon: <IconSoccer className="h-5 w-5" /> },
       { key: "piscina", label: "Piscina", icon: <IconPool className="h-5 w-5" /> },
+      { key: "pet", label: "Pet Friendly", icon: <IconPet className="h-5 w-5" /> },
       { key: "cancha_basquet", label: "Cancha de básquet", icon: <IconChip className="h-5 w-5" /> },
       { key: "cancha_tenis", label: "Cancha de tenis", icon: <IconTennis className="h-5 w-5" /> },
       { key: "cancha_padel", label: "Cancha de pádel", icon: <IconTennis className="h-5 w-5" /> },
