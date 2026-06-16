@@ -56,6 +56,7 @@ export default function Paso4Page() {
   const { user } = useUser();
   const router = useRouter();
   const [popUp, setPopUp] = useState(false);
+  const [modal, setModal] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
@@ -143,6 +144,10 @@ export default function Paso4Page() {
     }
   };
 
+  const handleAlert = () => {
+    setModal(true);
+  }
+
   if (submitting) {
     return (
       <main className="flex items-center justify-center min-h-[60vh]">
@@ -156,6 +161,19 @@ export default function Paso4Page() {
 
   return (
     <main className="flex flex-col relative items-center pb-20 justify-center">
+      {modal &&
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="bg-white w-full max-w-md rounded-2xl overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-200">
+            <div className="p-6">
+              <h3 className="text-2xl font-bold text-center text-gray-900 mb-2">Formulario de Prueba</h3>
+              <p className="text-md text-center text-gray-500 mb-4">Esto es un formulario de prueba a modo ilustrativo, no se pueden publicar quintas reales hasta el momento.</p>
+              <p className="text-md text-center text-gray-500 mb-4">Si queres publicar tu quinta, comunicate con nosotros por nuestro <a href="/support" className="text-primaryDark underline">Formulario de Contacto</a>.</p>
+
+              <button onClick={() => setModal(false)} className="mt-2 py-2 px-5 rounded-lg bg-red-500 text-white cursor-pointer mx-auto block">Cerrar</button>
+            </div>
+
+          </div>
+        </div>}
       <div className="absolute publicar2 h-1/2 z-0 w-full">
         <img className="mx-auto" src="/logo.png" alt="" />
       </div>
@@ -318,10 +336,16 @@ export default function Paso4Page() {
                 className="border-black cursor-pointer border py-1 rounded-xl bg-white text-primary w-1/2">
                 Volver
               </button>
-              <button
+              {/* <button
                 disabled={submitting}
                 onClick={handleSubmit}
                 className="border border-primaryDark cursor-pointer py-1 bg-primaryDark text-white rounded-xl w-1/2 disabled:opacity-50">
+                {submitting ? "Enviando..." : "Confirmar publicación"}
+              </button> */}
+              <button
+                // disabled={submitting}
+                onClick={handleAlert}
+                className="border border-primaryDark cursor-pointer py-1 bg-primaryDark text-white rounded-xl w-1/2">
                 {submitting ? "Enviando..." : "Confirmar publicación"}
               </button>
             </div>
