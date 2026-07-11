@@ -134,13 +134,13 @@ export default function Form() {
     <Suspense fallback={<FormSkeleton />}>
       <form
         onSubmit={handleSubmit}
-        className="flex xl:pl-20 md:flex-row flex-col justify-center items-center gap-5 md:gap-8 mb-5 md:mb-10"
+        className="flex xl:pl-20 md:flex-row flex-col justify-center items-center gap-5 md:gap-8 mb-5 md:mb-10 w-full max-w-md md:max-w-none px-4 mx-auto"
       >
         <section
-          className={`md:flex rounded-2xl divide-x divide-gray-200 flex-row border border-black/20 cursor-pointer bg-white md:rounded-full shadow-md hover:shadow-lg transition-shadow`}
+          className="flex flex-col md:flex-row w-full max-w-md md:w-auto md:max-w-none rounded-3xl md:rounded-full divide-y md:divide-y-0 md:divide-x divide-gray-200 border border-black/20 cursor-pointer bg-white shadow-md hover:shadow-lg transition-shadow"
         >
           {/* ── CIUDAD ─────────────────────────────────────────── */}
-          <div ref={cityRef} className="relative">
+          <div ref={cityRef} className="relative w-full md:w-auto">
             <div
               onClick={() => {
                 setCityDropdownOpen((prev) => !prev);
@@ -148,8 +148,9 @@ export default function Form() {
                   setCitySearch(selectedCity || "");
                 }
               }}
-              className={`hover:bg-black/5 w-[220px] rounded-l-full flex md:items-start items-center flex-col px-6 py-4 transition-all ${cityDropdownOpen ? "bg-black/5" : ""
-                }`}
+              className={`hover:bg-black/5 w-full md:w-[220px] rounded-t-3xl md:rounded-r-none md:rounded-l-full flex flex-col items-center md:items-start px-6 py-4 transition-all ${
+                cityDropdownOpen ? "bg-black/5" : ""
+              }`}
             >
               <span className="text-[11px] font-semibold text-gray-700 uppercase tracking-wide">
                 Lugar
@@ -177,7 +178,7 @@ export default function Form() {
 
             {/* Dropdown de ciudades */}
             {cityDropdownOpen && (
-              <div className="absolute top-[calc(100%+12px)] md:left-0 -left-13 z-50 w-[320px] bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+              <div className="absolute top-[calc(100%+12px)] left-1/2 -translate-x-1/2 md:left-0 md:translate-x-0 z-50 w-[290px] xs:w-[320px] bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
                 {/* Campo de búsqueda */}
                 <div className="px-4 pt-4 pb-2">
                   <div className="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 focus-within:border-gray-400 transition-colors">
@@ -230,10 +231,11 @@ export default function Form() {
                           <li
                             key={idx}
                             onClick={() => handleSelectCity(item.city)}
-                            className={`flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-colors ${selectedCity === item.city
-                              ? "bg-gray-100 font-semibold"
-                              : "hover:bg-gray-50"
-                              }`}
+                            className={`flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-colors ${
+                              selectedCity === item.city
+                                ? "bg-gray-100 font-semibold"
+                                : "hover:bg-gray-50"
+                            }`}
                           >
                             <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center shrink-0">
                               <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -260,53 +262,58 @@ export default function Form() {
           </div>
 
           {/* ── FECHA IDA ───────────────────────────────────────── */}
-          <DatePicker
-            autoComplete="off"
-            placeholderText="Check-in"
-            selected={startDate}
-            onChange={(date) => setStartDate(date)}
-            startDate={startDate}
-            withPortal
-            name="startDate"
-            customInput={
-              <div className="flex flex-col md:items-start items-center w-full px-6 py-4 md:w-[160px] hover:bg-black/5 transition-all cursor-pointer">
-                <span className="text-[11px] font-semibold text-gray-700 uppercase tracking-wide">
-                  Check-in
-                </span>
-                <span className={`text-sm ${startDate ? "font-semibold text-gray-900" : "text-gray-400"}`}>
-                  {startDate ? startDate.toLocaleDateString("es-AR", { day: "2-digit", month: "short" }) : "Agregar fecha"}
-                </span>
-              </div>
-            }
-          />
+          <div className="w-full md:w-auto">
+            <DatePicker
+              autoComplete="off"
+              placeholderText="Check-in"
+              selected={startDate}
+              onChange={(date) => setStartDate(date)}
+              startDate={startDate}
+              withPortal
+              name="startDate"
+              customInput={
+                <div className="flex flex-col items-center md:items-start w-full px-6 py-4 md:w-[160px] hover:bg-black/5 transition-all cursor-pointer">
+                  <span className="text-[11px] font-semibold text-gray-700 uppercase tracking-wide">
+                    Check-in
+                  </span>
+                  <span className={`text-sm ${startDate ? "font-semibold text-gray-900" : "text-gray-400"}`}>
+                    {startDate ? startDate.toLocaleDateString("es-AR", { day: "2-digit", month: "short" }) : "Agregar fecha"}
+                  </span>
+                </div>
+              }
+            />
+          </div>
 
           {/* ── FECHA VUELTA ────────────────────────────────────── */}
-          <DatePicker
-            autoComplete="off"
-            placeholderText="Check-out"
-            selected={endDate}
-            onChange={(date) => setEndDate(date)}
-            endDate={endDate}
-            withPortal
-            name="endDate"
-            customInput={
-              <div className="flex flex-col md:items-start items-center w-full px-6 py-4 md:w-[160px] hover:bg-black/5 transition-all cursor-pointer">
-                <span className="text-[11px] font-semibold text-gray-700 uppercase tracking-wide">
-                  Check-out
-                </span>
-                <span className={`text-sm ${endDate ? "font-semibold text-gray-900" : "text-gray-400"}`}>
-                  {endDate ? endDate.toLocaleDateString("es-AR", { day: "2-digit", month: "short" }) : "Agregar fecha"}
-                </span>
-              </div>
-            }
-          />
+          <div className="w-full md:w-auto">
+            <DatePicker
+              autoComplete="off"
+              placeholderText="Check-out"
+              selected={endDate}
+              onChange={(date) => setEndDate(date)}
+              endDate={endDate}
+              withPortal
+              name="endDate"
+              customInput={
+                <div className="flex flex-col items-center md:items-start w-full px-6 py-4 md:w-[160px] hover:bg-black/5 transition-all cursor-pointer">
+                  <span className="text-[11px] font-semibold text-gray-700 uppercase tracking-wide">
+                    Check-out
+                  </span>
+                  <span className={`text-sm ${endDate ? "font-semibold text-gray-900" : "text-gray-400"}`}>
+                    {endDate ? endDate.toLocaleDateString("es-AR", { day: "2-digit", month: "short" }) : "Agregar fecha"}
+                  </span>
+                </div>
+              }
+            />
+          </div>
 
           {/* ── HUÉSPEDES ───────────────────────────────────────── */}
-          <div ref={guestsRef} className="relative">
+          <div ref={guestsRef} className="relative w-full md:w-auto">
             <div
               onClick={() => setViewGuests((prev) => !prev)}
-              className={`hover:bg-black/5  items-center py-4 md:w-[170px] rounded-r-full flex flex-col transition-all ${viewGuests ? "bg-black/5" : ""
-                }`}
+              className={`hover:bg-black/5 items-center py-4 w-full md:w-[170px] rounded-b-3xl md:rounded-l-none md:rounded-r-full flex flex-col md:items-start px-6 transition-all ${
+                viewGuests ? "bg-black/5" : ""
+              }`}
             >
               <span className="text-[11px] font-semibold text-gray-700 uppercase tracking-wide">
                 Huéspedes
@@ -318,7 +325,7 @@ export default function Form() {
 
             {/* Dropdown huéspedes */}
             {viewGuests && (
-              <div className="absolute top-[calc(100%+12px)] right-0 z-50 w-[260px] bg-white rounded-3xl shadow-2xl border border-gray-100 p-5 animate-in fade-in slide-in-from-top-2 duration-200">
+              <div className="absolute top-[calc(100%+12px)] left-1/2 -translate-x-1/2 md:left-auto md:translate-x-0 md:right-0 z-50 w-[260px] bg-white rounded-3xl shadow-2xl border border-gray-100 p-5 animate-in fade-in slide-in-from-top-2 duration-200">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="font-semibold text-gray-900 text-sm">Huéspedes</p>

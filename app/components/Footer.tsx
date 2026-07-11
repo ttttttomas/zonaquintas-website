@@ -7,7 +7,7 @@ export default function Footer() {
   return (
     <footer className="flex flex-col">
       <SecondSeparator />
-      <section className="flex flex-col px-5 md:px-10 md:flex-row gap-5 justify-between mt-8 pt-5 border-gray-300 md:mb-20">
+      <section className="flex flex-col px-5 md:px-10 md:flex-row gap-5 justify-between mt-8 border-gray-300 md:mb-5">
         <div className="flex flex-col w-full md:w-96 gap-5">
           <div className="mx-auto md:mx-0">
             <Logo className="w-[120px]" />
@@ -65,14 +65,14 @@ export default function Footer() {
           <p className="mt-1">Soporte</p>
         </Link>
       </section>
-      <section className="flex flex-col md:flex-row w-full justify-between items-center font-bold md:px-10 bg-white">
+      <section className="flex flex-row w-full justify-between items-center font-bold md:py-0 py-2 md:px-5 bg-white">
         <p className="text-xs md:text-md">
           ©2025 - Todos los derechos reservados
         </p>
-        <div className="flex justify-between md:w-auto w-full md:pl-0 pl-5 items-center gap-5">
+        <div className="flex md:justify-between md:w-auto w-full md:pl-0 items-center justify-end md:gap-5">
           <p className="text-xs md:text-md">Desarrollado por </p>
           <Link target="_blank" href="https://www.iwebtecnology.com/">
-            <img src="/iweb.png" alt="logo" className="h-10" />
+            <img src="/iweb.png" alt="logo" className="h-8" />
           </Link>
         </div>
       </section>
