@@ -63,11 +63,91 @@ export const metadata: Metadata = {
     "casa de campo alquiler",
     "reserva online quinta",
   ],
+  // ── Base URL (requerida para que las URLs relativas de OG funcionen) ──────
+  metadataBase: new URL("https://www.zonaquintas.com"),
+  // ── Open Graph ────────────────────────────────────────────────────────────
+  openGraph: {
+    type: "website",
+    url: "https://www.zonaquintas.com",
+    siteName: "ZonaQuintas",
+    locale: "es_AR",
+    title: "ZonaQuintas | El lugar para disfrutar tus fines de semana",
+    description:
+      "Encontrá y reservá la quinta perfecta para tus vacaciones, fines de semana y escapadas. Alquiler de quintas con piscina, áreas verdes y todas las comodidades.",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "ZonaQuintas — Marketplace de alquiler de quintas en Argentina",
+      },
+    ],
+  },
+  // ── Twitter / X Card ─────────────────────────────────────────────────────
+  twitter: {
+    card: "summary_large_image",
+    title: "ZonaQuintas | El lugar para disfrutar tus fines de semana",
+    description:
+      "Encontrá y reservá la quinta perfecta para tus vacaciones, fines de semana y escapadas.",
+    images: ["/og-image.png"],
+  },
+  // ── Robots ────────────────────────────────────────────────────────────────
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  // ── Íconos ───────────────────────────────────────────────────────────────
   icons: {
     icon: "/logo.png",
     shortcut: "/logo.png",
     apple: "/logo.png",
   },
+};
+
+// ── JSON-LD (Schema.org) ───────────────────────────────────────────────────
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://www.zonaquintas.com/#organization",
+      name: "ZonaQuintas",
+      url: "https://www.zonaquintas.com",
+      logo: {
+        "@type": "ImageObject",
+        url: "https://www.zonaquintas.com/logo.png",
+      },
+      description:
+        "Marketplace de alquiler temporario de quintas y casas de campo en Argentina.",
+      areaServed: {
+        "@type": "Country",
+        name: "Argentina",
+      },
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://www.zonaquintas.com/#website",
+      url: "https://www.zonaquintas.com",
+      name: "ZonaQuintas",
+      publisher: { "@id": "https://www.zonaquintas.com/#organization" },
+      inLanguage: "es-AR",
+      potentialAction: {
+        "@type": "SearchAction",
+        target: {
+          "@type": "EntryPoint",
+          urlTemplate:
+            "https://www.zonaquintas.com/quintas?place={search_term_string}",
+        },
+        "query-input": "required name=search_term_string",
+      },
+    },
+  ],
 };
 
 const META_PIXEL_ID = "1713121929685672";
@@ -80,6 +160,11 @@ export default function RootLayout({
   return (
     <html lang="es">
       <head>
+        {/* JSON-LD — Schema.org */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
         <Script id="meta-pixel" strategy="afterInteractive">
           {`
             !function(f,b,e,v,n,t,s)
