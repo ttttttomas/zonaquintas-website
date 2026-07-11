@@ -19,7 +19,7 @@ export default function StaticMap({ lat, lng, zoom = 15 }: Props) {
     const loader = new Loader({
       apiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
       version: "weekly",
-      libraries: ["marker"],
+      libraries: ["places", "marker"],
       language: "es",
       region: "AR",
     });

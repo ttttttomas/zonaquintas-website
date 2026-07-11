@@ -17,8 +17,52 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "ZonaQuintas | El lugar para disfrutar tus fines de semana",
   description: "Encontrá y reservá la quinta perfecta para tus vacaciones, fines de semana y escapadas. Alquiler de quintas con piscina, áreas verdes y todas las comodidades. ¡Reservá ahora tu próxima aventura!",
-  keywords:
-    "ZonaQuintas, finde semana, quintas, alquiler de quintas, vacaciones, viajes, hotel, apartamento, alquiler, reservas",
+  keywords: [
+    // Marca
+    "ZonaQuintas",
+    "zona quintas",
+    // Core — producto principal
+    "alquiler de quintas",
+    "alquilar mi quinta",
+    "quintas para eventos",
+    "alquiler quintas Argentina",
+    "quintas para alquilar",
+    "quintas por fin de semana",
+    "alquiler quinta fin de semana",
+    "alquiler quinta temporario",
+    "quinta de fin de semana",
+    "alquiler casas de campo",
+    // Ocasiones / intención
+    "escapadas de fin de semana",
+    "finde de semana en quinta",
+    "vacaciones en quinta",
+    "alquiler para cumpleaños",
+    "alquiler para eventos familiares",
+    "casas para alquilar con pileta",
+    "casas para alquilar con parrilla",
+    // Amenities buscados frecuentemente
+    "quinta con piscina",
+    "quinta con pileta",
+    "quinta con parrilla",
+    "quinta con jacuzzi",
+    "quinta con cancha de fútbol",
+    "quinta con cancha de pádel",
+    "quinta pet friendly",
+    "quinta acepta mascotas",
+    // Tipo de huésped / uso
+    "alquiler grupal casa de campo",
+    "casas rurales Argentina",
+    "turismo rural Argentina",
+    // Long-tail geográficos
+    "quintas en Buenos Aires",
+    "quintas en GBA",
+    "quintas en Córdoba",
+    "quintas en Entre Ríos",
+    // Genéricos de la categoría
+    "alojamiento rural",
+    "casa de campo alquiler",
+    "reserva online quinta",
+  ],
   icons: {
     icon: "/logo.png",
     shortcut: "/logo.png",
@@ -35,7 +79,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es">
-            <head>
+      <head>
         <Script id="meta-pixel" strategy="afterInteractive">
           {`
             !function(f,b,e,v,n,t,s)
@@ -65,35 +109,35 @@ export default function RootLayout({
           <UserProvider>
             <body className={`bg-[#f7f3f0] mt-32 ${inter.className}`}>
               <noscript>
-          <img
-            height="1"
-            width="1"
-            style={{ display: "none" }}
-            src={`https://www.facebook.com/tr?id=${META_PIXEL_ID}&ev=PageView&noscript=1`}
-            alt=""
-          />
-        </noscript>
-            <Script
-      src="https://www.googletagmanager.com/gtag/js?id=G-1V563PGQMG"
-      strategy="afterInteractive"
-    />
+                <img
+                  height="1"
+                  width="1"
+                  style={{ display: "none" }}
+                  src={`https://www.facebook.com/tr?id=${META_PIXEL_ID}&ev=PageView&noscript=1`}
+                  alt=""
+                />
+              </noscript>
+              <Script
+                src="https://www.googletagmanager.com/gtag/js?id=G-1V563PGQMG"
+                strategy="afterInteractive"
+              />
 
-    <Script id="gtag-init" strategy="afterInteractive">
-      {`
+              <Script id="gtag-init" strategy="afterInteractive">
+                {`
         window.dataLayer = window.dataLayer || [];
         function gtag(){dataLayer.push(arguments);}
         gtag('js', new Date());
         gtag('config', 'G-1V563PGQMG');
       `}
-    </Script>
-        <noscript>
-          <iframe
-            src="https://www.googletagmanager.com/ns.html?id=GTM-MC25527K"
-            height="0"
-            width="0"
-            style={{ display: "none", visibility: "hidden" }}
-          />
-        </noscript>
+              </Script>
+              <noscript>
+                <iframe
+                  src="https://www.googletagmanager.com/ns.html?id=GTM-MC25527K"
+                  height="0"
+                  width="0"
+                  style={{ display: "none", visibility: "hidden" }}
+                />
+              </noscript>
               <Toaster position="top-center" />
               <Header />
               {children}

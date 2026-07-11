@@ -42,7 +42,7 @@ export default function QuintasMap({
       new Loader({
         apiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
         version: 'weekly',
-        libraries: ['marker'],
+        libraries: ['places', 'marker'],
         language: 'es',
         region: 'AR',
       }),
