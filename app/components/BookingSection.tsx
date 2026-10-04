@@ -38,12 +38,12 @@ export default function BookingSection({
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [selectedGuests, setSelectedGuests] = useState(1);
-  const [pivot, setPivot] = useState(() => dateFromISO(argentinaToday()));
   const [availability, setAvailability] = useState<QuintaAvailability | null>(null);
   const [availabilityError, setAvailabilityError] = useState(false);
   const [availabilityLoading, setAvailabilityLoading] = useState(true);
-  const loadedFrom = localDate(new Date(pivot.getFullYear(), pivot.getMonth(), 1));
-  const loadedTo = localDate(new Date(pivot.getFullYear() + 1, pivot.getMonth(), 1));
+  const today = dateFromISO(argentinaToday());
+  const loadedFrom = localDate(new Date(today.getFullYear(), today.getMonth(), 1));
+  const loadedTo = localDate(new Date(today.getFullYear() + 1, today.getMonth(), 1));
 
   useEffect(() => {
     let active = true;
@@ -158,7 +158,7 @@ export default function BookingSection({
           <p className="text-sm text-gray-500 mb-2">Estadía mínima 2 noches</p>
           {availabilityLoading ? <div className="h-64 rounded-xl bg-gray-100 animate-pulse" aria-label="Cargando disponibilidad" /> :
             availabilityError || !availability ? <p role="alert" className="text-sm text-red-600">No se pudo cargar la disponibilidad. Recargá la página para intentar de nuevo.</p> :
-            <Calendar availability={availability} loadedFrom={loadedFrom} loadedTo={loadedTo} onMonthChange={setPivot} onDatesChange={handleDatesChange} />}
+            <Calendar availability={availability} loadedFrom={loadedFrom} loadedTo={loadedTo} onDatesChange={handleDatesChange} />}
         </div>
       </div>
 
