@@ -1,7 +1,11 @@
 import { apiClient } from "@/lib/axios";
-import { Users } from "@/types";
+import { QuintaAvailability, Users } from "@/types";
 
 export const ProductsServices = {
+  getAvailability: async (id: string, from: string, to: string): Promise<QuintaAvailability> => {
+    const response = await apiClient.get<QuintaAvailability>(`/quintas/${id}/availability`, { params: { from, to } });
+    return response.data;
+  },
   getQuintas: async () => {
     const response = await apiClient.get("/quintas");
 

@@ -60,13 +60,11 @@ export default function Paso4Page() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
-  console.log(user?.id);
   // Previews de las imágenes seleccionadas
   const imagePreviews = useMemo(
     () => form.images.map((file) => URL.createObjectURL(file as any)),
     [form.images],
   );
-  console.log(form);
   const charBooleans: Record<string, boolean> = {};
   for (const key of Object.values(CHAR_TO_KEY)) {
     charBooleans[key] = false;
@@ -107,6 +105,8 @@ export default function Paso4Page() {
         beds: form.beds,
         price: form.price,
         currency_price: form.currency_price,
+        rental_start_date: form.rental_start_date,
+        rental_end_date: form.rental_end_date,
         owner_id: ownerId,
         ...charBooleans,
         status: form.status,
@@ -279,6 +279,7 @@ export default function Paso4Page() {
                 : "—"}
             </b>
           </li>
+          <li>Período de alquiler: <b className="italic">{form.rental_start_date || "—"} al {form.rental_end_date || "—"}</b></li>
         </ul>
       </section>
 

@@ -1,9 +1,11 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Calendar from "@/app/components/Calendar";
 import { CalendarDays } from "lucide-react";
 import Link from "next/link";
-import { Quintas } from "@/types";
+import { QuintaAvailability, Quintas } from "@/types";
+import { ProductsServices } from "@/app/services/ProductsServices";
+import { argentinaToday, dateFromISO, localDate, stayAvailable } from "@/app/lib/availability";
 
 type Props = {
   formatedPrice: string;
@@ -36,6 +38,27 @@ export default function BookingSection({
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [selectedGuests, setSelectedGuests] = useState(1);
+  const [pivot, setPivot] = useState(() => dateFromISO(argentinaToday()));
+  const [availability, setAvailability] = useState<QuintaAvailability | null>(null);
+  const [availabilityError, setAvailabilityError] = useState(false);
+  const [availabilityLoading, setAvailabilityLoading] = useState(true);
+  const loadedFrom = localDate(new Date(pivot.getFullYear(), pivot.getMonth(), 1));
+  const loadedTo = localDate(new Date(pivot.getFullYear() + 1, pivot.getMonth(), 1));
+
+  useEffect(() => {
+    let active = true;
+    setAvailabilityLoading(true);
+    setAvailabilityError(false);
+    ProductsServices.getAvailability(quinta.id, loadedFrom, loadedTo)
+      .then((value) => { if (active) setAvailability(value); })
+      .catch(() => { if (active) { setAvailability(null); setAvailabilityError(true); } })
+      .finally(() => { if (active) setAvailabilityLoading(false); });
+    return () => { active = false; };
+  }, [quinta.id, loadedFrom, loadedTo]);
+
+  const selectionValid = Boolean(availability && startDate && endDate &&
+    localDate(startDate) >= loadedFrom && localDate(endDate) <= loadedTo &&
+    stayAvailable(availability, localDate(startDate), localDate(endDate)));
 
   const handleDatesChange = (start: Date | null, end: Date | null) => {
     setStartDate(start);
@@ -98,9 +121,9 @@ export default function BookingSection({
           </div>
         </div>
 
-        {startDate && endDate ? (
+        {selectionValid && startDate && endDate ? (
           <Link
-            href={`/quintas/${quinta.id}/preview-reservation?startDate=${startDate?.toISOString() ?? ""}&endDate=${endDate?.toISOString() ?? ""}&guests=${selectedGuests}&service=${costOfService}`}
+            href={`/quintas/${quinta.id}/preview-reservation?startDate=${localDate(startDate)}&endDate=${localDate(endDate)}&guests=${selectedGuests}&service=${costOfService}`}
             className="bg-primaryDark text-white text-center cursor-pointer py-2 rounded-md hover:bg-green-700 transition">
             Reservar
           </Link>
@@ -133,7 +156,9 @@ export default function BookingSection({
         <div id='fechas'>
           <h3 className="font-semibold mb-2">Modificar tu ingreso y salida</h3>
           <p className="text-sm text-gray-500 mb-2">Estadía mínima 2 noches</p>
-          <Calendar onDatesChange={handleDatesChange} />
+          {availabilityLoading ? <div className="h-64 rounded-xl bg-gray-100 animate-pulse" aria-label="Cargando disponibilidad" /> :
+            availabilityError || !availability ? <p role="alert" className="text-sm text-red-600">No se pudo cargar la disponibilidad. Recargá la página para intentar de nuevo.</p> :
+            <Calendar availability={availability} loadedFrom={loadedFrom} loadedTo={loadedTo} onMonthChange={setPivot} onDatesChange={handleDatesChange} />}
         </div>
       </div>
 

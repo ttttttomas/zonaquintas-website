@@ -2,9 +2,14 @@
 import { useState } from "react";
 import { useQuintaForm } from "@/app/context/QuintaFormContext";
 import "react-datepicker/dist/react-datepicker.css";
+import DatePicker, { registerLocale } from "react-datepicker";
+import { es } from "date-fns/locale";
+import { argentinaToday, dateFromISO, localDate } from "@/app/lib/availability";
 
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
+
+registerLocale("es", es);
 
 const formatNumber = (val: string | number): string => {
   if (!val && val !== 0) return "";
@@ -68,12 +73,16 @@ export default function Paso3Page() {
       toast.error("Por favor ingresa un precio válido");
       return;
     }
+    if (!form.rental_start_date || !form.rental_end_date || form.rental_end_date <= form.rental_start_date) {
+      toast.error("Seleccioná el período de alquiler completo");
+      return;
+    }
 
     router.push("/publicar-quinta/paso-4");
   };
 
   return (
-    <main className="flex md:flex-row flex-col mb-10 md:mb-0 gap-10 md:gap-0 md:h-[50vh] items-center justify-between mx-5 md:mx-20">
+    <main className="flex md:flex-row flex-col mb-10 md:mb-0 gap-10 md:gap-0 md:min-h-[50vh] items-center justify-between mx-5 md:mx-20">
       <section className="flex flex-col items-start justify-center w-full md:w-1/3">
         <h1 className="font-semibold md:text-xl mb-5">
           Brindanos la ultima información para tu publicación
@@ -123,6 +132,34 @@ export default function Paso3Page() {
             <span className="pr-2 font-semibold text-gray-700">
               {form.currency_price}
             </span>
+          </div>
+          <div className="flex flex-col gap-2">
+            <label htmlFor="rental-period" className="text-sm font-semibold">Período de alquiler</label>
+            <p className="text-xs text-gray-500">Elegí desde el primer ingreso hasta la última salida permitida.</p>
+            <DatePicker
+              id="rental-period"
+              selectsRange
+              startDate={form.rental_start_date ? dateFromISO(form.rental_start_date) : null}
+              endDate={form.rental_end_date ? dateFromISO(form.rental_end_date) : null}
+              onChange={([start, end]) => updateForm({
+                rental_start_date: start ? localDate(start) : "",
+                rental_end_date: end ? localDate(end) : "",
+              })}
+              minDate={dateFromISO(argentinaToday())}
+              locale="es"
+              dateFormat="dd/MM/yyyy"
+              placeholderText="Seleccioná ingreso y última salida"
+              className="w-full rounded-lg bg-black/10 p-2 outline-none focus-visible:ring-2 focus-visible:ring-primaryDark"
+              wrapperClassName="w-full"
+              isClearable
+            />
+            <div className="flex gap-4 text-sm">
+              <button type="button" className="underline cursor-pointer" onClick={() => {
+                const today = dateFromISO(argentinaToday());
+                updateForm({ rental_start_date: localDate(today), rental_end_date: localDate(new Date(today.getFullYear() + 1, 0, 1)) });
+              }}>Todo el año</button>
+              <button type="button" className="underline cursor-pointer" onClick={() => updateForm({ rental_start_date: "", rental_end_date: "" })}>Limpiar</button>
+            </div>
           </div>
           <button
             type="submit"

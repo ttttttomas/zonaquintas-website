@@ -10,10 +10,11 @@ import { ChevronLeft, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import toast from "react-hot-toast";
 import { AuthServices } from "@/app/services/AuthServices";
+import { dateFromISO, localDate, nightsBetween, stayAvailable } from "@/app/lib/availability";
 
 function formatDateDisplay(iso: string): string {
   if (!iso) return "—";
-  const d = new Date(iso);
+  const d = dateFromISO(iso);
   if (isNaN(d.getTime())) return "—";
   return d.toLocaleDateString("es-AR", {
     day: "2-digit",
@@ -44,33 +45,35 @@ export default function PreviewReservationPage() {
   const [bookingMessage, setBookingMessage] = useState<string | null>(null);
   const [paymentType, setPaymentType] = useState<"deposit" | "balance">("balance");
   const [submitting, setSubmitting] = useState(false);
+  const [availabilityReady, setAvailabilityReady] = useState(false);
   const ownerId = quinta?.owner_id ?? "";
 
   useEffect(() => {
     const fetchQuintaAndOwner = async () => {
       try {
-        const res = await Promise.all([
-          ProductsServices.getQuintaById(id),
-          AuthServices.getUserById(ownerId),
-        ]);
-        const [quinta, owner] = res;
-        setQuinta(quinta);
-        setOwner(owner);
+        const property = await ProductsServices.getQuintaById(id);
+        setQuinta(property);
+        if (property?.owner_id) setOwner(await AuthServices.getUserById(property.owner_id));
+        if (!startDateParam || !endDateParam) throw new Error("Faltan fechas de reserva");
+        const start = dateFromISO(startDateParam);
+        const horizon = localDate(new Date(start.getFullYear() + 1, start.getMonth(), start.getDate()));
+        const response = await ProductsServices.getAvailability(id, startDateParam, horizon);
+        setAvailabilityReady(stayAvailable(response, startDateParam, endDateParam) && endDateParam <= horizon &&
+          nightsBetween(startDateParam, endDateParam) >= 2);
       } catch {
-        console.error("Error cargando quinta");
+        setAvailabilityReady(false);
+        setError("No se pudo verificar la disponibilidad de estas fechas.");
       } finally {
         setLoading(false);
       }
     };
     fetchQuintaAndOwner();
-  }, [id, ownerId, user]);
+  }, [id, startDateParam, endDateParam]);
 
   // Calcular noches y precios
   const nights = useMemo(() => {
     if (!startDateParam || !endDateParam) return 1;
-    const diff =
-      new Date(endDateParam).getTime() - new Date(startDateParam).getTime();
-    const n = Math.ceil(diff / (1000 * 60 * 60 * 24));
+    const n = nightsBetween(startDateParam, endDateParam);
     return n > 0 ? n : 1;
   }, [startDateParam, endDateParam]);
 
@@ -96,7 +99,7 @@ export default function PreviewReservationPage() {
     `${currency} ${val.toLocaleString("es-AR")}`;
 
   const sendEmailToOwner = async () => {
-    const res = await fetch("/api/test-email/new-booking", {
+    await fetch("/api/test-email/new-booking", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -120,29 +123,24 @@ export default function PreviewReservationPage() {
         },
       }),
     });
-    console.log(res);
   };
 
   const createdBooking = async () => {
-    const fixDateToMidnightUTC = (date: string | Date) => {
-      const d = new Date(date);
-      d.setUTCHours(0, 0, 0, 0);
-      return d.toISOString();
-    };
-
-    const formattedCheckIn = fixDateToMidnightUTC(startDateParam);
-    const formattedCheckOut = fixDateToMidnightUTC(endDateParam);
-
-    console.log(formattedCheckIn, "-", formattedCheckOut);
-
+    const start = dateFromISO(startDateParam);
+    const horizon = localDate(new Date(start.getFullYear() + 1, start.getMonth(), start.getDate()));
+    const response = await ProductsServices.getAvailability(id, startDateParam, horizon);
+    if (!stayAvailable(response, startDateParam, endDateParam) || endDateParam > horizon || nights < 2) {
+      setAvailabilityReady(false);
+      throw new Error("Las fechas ya no están disponibles.");
+    }
     await BookingsServices.createBooking({
       status: "pending",
       owner_id: ownerId,
       quinta_id: quintaId,
       guest_id: userId,
       payment_type: paymentType,
-      check_in: formattedCheckIn,
-      check_out: formattedCheckOut,
+      check_in: startDateParam,
+      check_out: endDateParam,
       guest_count: guestsParam,
       message: bookingMessage || "",
       currency_price: currency,
@@ -158,22 +156,25 @@ export default function PreviewReservationPage() {
   }
 
   const handleConfirm = async () => {
+    if (!availabilityReady || submitting) return;
     if (!bookingMessage) {
       alert("Por favor, agrega un mensaje para el anfitrión");
       return;
     }
     setSubmitting(true);
     try {
-      await Promise.all([createdBooking(), sendEmailToOwner()]);
+      await createdBooking();
+      await sendEmailToOwner().catch(() => undefined);
       setTimeout(() => {
         toast.success(
           "Reserva creada exitosamente. Esperando confirmación del anfitrión.",
         );
         router.push(`/quintas/${quintaId}/success`);
       }, 2000);
-    } catch (error) {
-      console.error("Error al confirmar reserva desde el back:", error);
-      toast.error("Error al confirmar reserva. Por favor, inténtalo de nuevo.");
+    } catch (failure: unknown) {
+      const status = (failure as { response?: { status?: number } })?.response?.status;
+      toast.error(status === 409 ? "Las fechas ya fueron reservadas. Elegí otras fechas." : "No se pudo confirmar la reserva. Revisá las fechas e intentá de nuevo.");
+      setSubmitting(false);
     }
   };
 
@@ -204,7 +205,6 @@ export default function PreviewReservationPage() {
       </main>
     );
   }
-  console.log(paymentType);
 
   return (
     <main className="max-w-6xl mx-auto px-4 md:px-8 py-8">
@@ -448,10 +448,11 @@ export default function PreviewReservationPage() {
             favor contáctanos a través de nuestro centro de Soporte.
           </p>
           {/* Submit */}
+          {!availabilityReady && <p role="alert" className="text-sm text-red-600">{error || "Estas fechas ya no están disponibles. Elegí otras fechas."}</p>}
           {quinta.status != "prueba" ?
             <button
               onClick={handleConfirm}
-              disabled={submitting}
+              disabled={submitting || !availabilityReady}
               className="w-full md:w-auto bg-primaryDark hover:bg-green-700 text-white font-bold py-3 px-16 rounded-full text-lg transition cursor-pointer disabled:opacity-50"
             >
               {submitting ? "Procesando..." : "Confirmar reserva"}

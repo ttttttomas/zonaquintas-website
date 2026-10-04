@@ -70,7 +70,7 @@ export async function POST(req: NextRequest) {
       // --- PAGO DE SEÑA ---
 
       // 1. Actualizar booking_payment a paid
-      await fetch(`${API_URL}/booking-payments/${payment_id}`, {
+      const depositPaymentResult = await fetch(`${API_URL}/booking-payments/${payment_id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -79,13 +79,19 @@ export async function POST(req: NextRequest) {
           paid_at: new Date().toISOString(),
         })
       });
+      if (!depositPaymentResult.ok) throw new Error(`No se pudo confirmar la seña: ${depositPaymentResult.status}`);
 
       // 2. Actualizar booking a deposit_paid
-      await fetch(`${API_URL}/bookings/${booking_id}/status`, {
+      const depositBookingResult = await fetch(`${API_URL}/bookings/${booking_id}/status`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: 'paid' })
       });
+      if (depositBookingResult.status === 409) {
+        console.error("Pago de seña recibido para reserva sin disponibilidad; requiere conciliación", booking_id);
+        return NextResponse.json({ received: true, reconciliation_required: true });
+      }
+      if (!depositBookingResult.ok) throw new Error(`No se pudo actualizar la reserva: ${depositBookingResult.status}`);
 
       // 3. Mail confirmación seña
       await fetch(`${API_URL}/api/emails/deposit-confirmed`, {
@@ -100,7 +106,7 @@ export async function POST(req: NextRequest) {
       // --- PAGO DE SALDO ---
 
       // 1. Actualizar booking_payment a paid
-      await fetch(`${API_URL}/booking-payments/${payment_id}`, {
+      const balancePaymentResult = await fetch(`${API_URL}/booking-payments/${payment_id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -109,13 +115,19 @@ export async function POST(req: NextRequest) {
           paid_at: new Date().toISOString(),
         })
       });
+      if (!balancePaymentResult.ok) throw new Error(`No se pudo confirmar el saldo: ${balancePaymentResult.status}`);
 
       // 2. Actualizar booking a confirmed (pago completo)
-      await fetch(`${API_URL}/bookings/${booking_id}/status`, {
+      const balanceBookingResult = await fetch(`${API_URL}/bookings/${booking_id}/status`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: 'finished' })
       });
+      if (balanceBookingResult.status === 409) {
+        console.error("Pago de saldo recibido para reserva sin disponibilidad; requiere conciliación", booking_id);
+        return NextResponse.json({ received: true, reconciliation_required: true });
+      }
+      if (!balanceBookingResult.ok) throw new Error(`No se pudo actualizar la reserva: ${balanceBookingResult.status}`);
 
       // 3. Mail confirmación final
       await fetch(`${API_URL}/api/emails/balance-confirmed`, {

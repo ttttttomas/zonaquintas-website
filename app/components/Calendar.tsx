@@ -1,6 +1,8 @@
 "use client";
 import { useState } from "react";
 import toast from "react-hot-toast";
+import type { QuintaAvailability } from "@/types";
+import { argentinaToday, dateFromISO, localDate, nightsBetween, stayAvailable } from "@/app/lib/availability";
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 const MONTHS_ES = [
@@ -43,11 +45,13 @@ interface MonthGridProps {
   checkIn: Date | null;
   checkOut: Date | null;
   onSelect: (date: Date) => void;
+  availability: QuintaAvailability;
+  loadedFrom: string;
+  loadedTo: string;
 }
 
-function MonthGrid({ year, month, checkIn, checkOut, onSelect }: MonthGridProps) {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+function MonthGrid({ year, month, checkIn, checkOut, onSelect, availability, loadedFrom, loadedTo }: MonthGridProps) {
+  const today = argentinaToday();
   const cells = buildGrid(year, month);
 
   return (
@@ -63,8 +67,16 @@ function MonthGrid({ year, month, checkIn, checkOut, onSelect }: MonthGridProps)
         {cells.map((date, i) => {
           if (!date) return <span key={`empty-${i}`} />;
 
-          const isPast = date < today;
-          const isDisabled = isPast;
+          const isPast = localDate(date) < today;
+          const day = localDate(date);
+          const isOccupied = availability.blocked.some((booking) => booking.check_in <= day && day < booking.check_out);
+          const choosingCheckout = Boolean(checkIn && !checkOut && date > checkIn);
+          const isDisabled = isPast || day < loadedFrom || (choosingCheckout ? day > loadedTo : day >= loadedTo) ||
+            Boolean(availability.rental_start_date && day < availability.rental_start_date) ||
+            Boolean(availability.rental_end_date && (choosingCheckout ? day > availability.rental_end_date : day >= availability.rental_end_date)) ||
+            Boolean(choosingCheckout
+              ? !stayAvailable(availability, localDate(checkIn!), day)
+              : isOccupied);
           const isCheckIn = checkIn && isSameDay(date, checkIn);
           const isCheckOut = checkOut && isSameDay(date, checkOut);
           const isSelected = isCheckIn || isCheckOut;
@@ -104,10 +116,14 @@ function MonthGrid({ year, month, checkIn, checkOut, onSelect }: MonthGridProps)
 // ── Public API ────────────────────────────────────────────────────────────────
 type Props = {
   onDatesChange?: (startDate: Date | null, endDate: Date | null) => void;
+  availability: QuintaAvailability;
+  loadedFrom: string;
+  loadedTo: string;
+  onMonthChange?: (month: Date) => void;
 };
 
-export default function Calendar({ onDatesChange }: Props) {
-  const now = new Date();
+export default function Calendar({ onDatesChange, availability, loadedFrom, loadedTo, onMonthChange }: Props) {
+  const now = dateFromISO(argentinaToday());
   const [pivotMonth, setPivotMonth] = useState(
     new Date(now.getFullYear(), now.getMonth(), 1)
   );
@@ -123,7 +139,7 @@ export default function Calendar({ onDatesChange }: Props) {
       onDatesChange?.(date, null);
     } else {
       // Validar estadía mínima de 2 noches
-      if (checkIn && date.getTime() - checkIn.getTime() < 86400000 * 2) {
+      if (checkIn && nightsBetween(localDate(checkIn), localDate(date)) < 2) {
         toast.error("La estadía mínima es de 2 noches");
         setCheckIn(date);
         setCheckOut(null);
@@ -137,8 +153,17 @@ export default function Calendar({ onDatesChange }: Props) {
     }
   };
 
-  const prevMonth = () => setPivotMonth((m) => addMonths(m, -1));
-  const nextMonth = () => setPivotMonth((m) => addMonths(m, 1));
+  const changeMonth = (delta: number) => {
+    const next = addMonths(pivotMonth, delta);
+    setPivotMonth(next);
+    onMonthChange?.(next);
+    setCheckIn(null);
+    setCheckOut(null);
+    setPhase("idle");
+    onDatesChange?.(null, null);
+  };
+  const prevMonth = () => changeMonth(-1);
+  const nextMonth = () => changeMonth(1);
 
   return (
     <div className="select-none w-full">
@@ -176,6 +201,9 @@ export default function Calendar({ onDatesChange }: Props) {
         checkIn={checkIn}
         checkOut={checkOut}
         onSelect={handleSelect}
+        availability={availability}
+        loadedFrom={loadedFrom}
+        loadedTo={loadedTo}
       />
 
       {/* Hint mientras se espera el checkout */}
