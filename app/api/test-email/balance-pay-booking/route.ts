@@ -7,7 +7,7 @@ export async function POST(request: NextRequest) {
     const data = await request.json();
 
     await resend.emails.send({
-      from: "onboarding@resend.dev",
+      from: "pagos@zonaquintas.com",
       to: "totobarajas124@gmail.com",
       subject: "Llego el momento de pagar!",
       react: PayBalanceEmail({

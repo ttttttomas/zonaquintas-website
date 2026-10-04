@@ -7,7 +7,7 @@ export async function POST(request: NextRequest) {
         const data = await request.json();
 
         await resend.emails.send({
-            from: "onboarding@resend.dev",
+            from: "reservas@zonaquintas.com",
             to: "totobarajas124@gmail.com",
             subject: "¡Reserva Confirmada! 🎉",
             react: BalanceConfirmed({

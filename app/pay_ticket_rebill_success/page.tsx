@@ -51,8 +51,7 @@ function SuccessContent() {
         <ul className="flex flex-col justify-center items-center gap-2">
           <li>Nombre: {owner?.name}</li>
           <li>Email: {owner?.email}</li>
-          <li>Teléfono: {owner?.phone}</li>
-          <li>Dirección: {owner?.address}</li>
+          <Link target="_blank" className="hover:opacity-80 transition-opacity cursor-pointer underline text-primaryDark" href={`https://wa.me/54${owner?.phone}?text=Hola ${owner?.name}! Ya realice el pago de mi reserva en ZonaQuintas`}>Teléfono: {owner?.phone}</Link>
         </ul>
       </div>
       <p className="text-gray-700 text-center font-medium md:mx-2">

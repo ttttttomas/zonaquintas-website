@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
 
         const { error } = await resend.emails.send({
             from: "onboarding@resend.dev",
-            to: 'totobarajas124@gmail.com',
+            to: 'contacto@zonaquintas.com',
             replyTo: body.email,
             subject: `Contacto ZonaQuintas — Consulta de ${body.name} - ${body.role}`,
             react: ContactoEmail({

@@ -37,10 +37,11 @@ export default function QuintasFilters() {
   }
 
   return (
-    <section className="flex flex-wrap lg:gap-x-16 gap-x-10 justify-center">
+    <section className="flex flex-wrap justify-center mt-12 gap-20 max-w-[100rem] mx-auto">
       {dataFiltered?.map((product: Quintas) => (
         <QuintaCard key={product.id} product={product} />
       ))}
+
       {dataFiltered?.length === 0 && (
         <p className="text-gray-400 py-10">No hay quintas que coincidan con los filtros</p>
       )}

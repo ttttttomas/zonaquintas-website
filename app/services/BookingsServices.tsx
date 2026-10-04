@@ -47,4 +47,9 @@ export const BookingsServices = {
     const r = await apiClient.get(`/getBookingsInDate`);
     return r.data;
   },
+
+  getBookingById: async (id: string) => {
+    const r = await apiClient.get(`/bookings/${id}`);
+    return r.data;
+  },
 }

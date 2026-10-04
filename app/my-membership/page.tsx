@@ -93,7 +93,7 @@ export default function MyMembershipPage() {
           ) : (
             <div className="inline-flex items-center gap-2 bg-yellow-100 text-yellow-700 px-4 py-2 rounded-full font-bold border border-yellow-200 text-sm">
               <AlertTriangle size={18} />
-              <span>ESTADO: {user.membership_status?.toUpperCase() || "INACTIVA"}</span>
+              <span>ESTADO: INACTIVA</span>
             </div>
           )}
         </div>
@@ -190,7 +190,7 @@ export default function MyMembershipPage() {
               <p className="text-gray-600 mb-8">
                 Unite al Plan Premium para disfrutar de publicaciones ilimitadas, cero comisiones y soporte 24/7.
               </p>
-              <Link href="/membership" className="inline-flex items-center justify-center bg-primaryDark text-white px-8 py-4 rounded-2xl font-bold text-lg hover:shadow-lg hover:shadow-primaryDark/30 transition-all">
+              <Link href="/membresia" className="inline-flex items-center justify-center bg-primaryDark text-white px-8 py-4 rounded-2xl font-bold text-lg hover:shadow-lg hover:shadow-primaryDark/30 transition-all">
                 Ver Planes Disponibles
               </Link>
             </div>
