@@ -6,12 +6,16 @@ export async function POST(request: NextRequest) {
   try {
     const data = await request.json();
 
+    if (!data.guest?.email) {
+      return NextResponse.json({ ok: false, error: "Falta el email del huésped" }, { status: 400 });
+    }
+
     await resend.emails.send({
       from: "pagos@zonaquintas.com",
-      to: "totobarajas124@gmail.com",
+      to: data.guest.email,
       subject: "Link de pago ZonaQuintas",
       react: LinkPagoEmail({
-        nombreHuesped: data.owner.name,
+        nombreHuesped: data.guest.name,
         nombrePropiedad: data.property.title,
         fechaIngreso: data.property.check_in,
         fechaEgreso: data.property.check_out,

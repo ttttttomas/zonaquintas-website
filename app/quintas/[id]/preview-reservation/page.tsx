@@ -114,8 +114,8 @@ export default function PreviewReservationPage() {
         },
         property: {
           title: quinta?.title,
-          checkIn: startDateParam,
-          checkOut: endDateParam,
+          check_in: startDateParam,
+          check_out: endDateParam,
           guests: guestsParam,
           total: total,
           currency: currency,

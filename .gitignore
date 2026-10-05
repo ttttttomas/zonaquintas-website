@@ -22,7 +22,7 @@
 
 # archivos .md
 *.md
-!docs/planes/*.md
+/docs/planes/*.md
 
 
 # misc

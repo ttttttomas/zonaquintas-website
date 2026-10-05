@@ -6,9 +6,13 @@ export async function POST(request: NextRequest) {
   try {
     const data = await request.json();
 
+    if (!data.owner?.email) {
+      return NextResponse.json({ ok: false, error: "Falta el email del propietario" }, { status: 400 });
+    }
+
     await resend.emails.send({
       from: "reservas@zonaquintas.com",
-      to: 'totobarajas124@gmail.com',
+      to: data.owner.email,
       subject: "Hey! Llegó un pedido de reserva en ZonaQuintas",
       react: NewBookingEmail({
         ownerName: data.owner.name,

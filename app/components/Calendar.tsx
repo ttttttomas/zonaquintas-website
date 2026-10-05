@@ -157,10 +157,6 @@ export default function Calendar({ onDatesChange, availability, loadedFrom, load
     const next = addMonths(pivotMonth, delta);
     setPivotMonth(next);
     onMonthChange?.(next);
-    setCheckIn(null);
-    setCheckOut(null);
-    setPhase("idle");
-    onDatesChange?.(null, null);
   };
   const prevMonth = () => changeMonth(-1);
   const nextMonth = () => changeMonth(1);

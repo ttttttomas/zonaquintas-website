@@ -8,7 +8,7 @@ export async function POST(request: NextRequest) {
 
     await resend.emails.send({
       from: "pagos@zonaquintas.com",
-      to: 'totobarajas124@gmail.com',
+      to: 'contacto@zonaquintas.com',
       subject: "Nuevo pedido de transferencia",
       react: RequestBalance({
         clientName: data.client.name,

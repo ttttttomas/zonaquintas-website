@@ -65,7 +65,7 @@ function ReservationCard({ booking, onUpdated }: { booking: Booking; onUpdated: 
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            owner: { name: user?.name },
+            guest: { name: booking.guest_name, email: booking.guest_email },
             property: {
               title: booking.quinta_title,
               check_in: booking.check_in,
@@ -125,7 +125,7 @@ function ReservationCard({ booking, onUpdated }: { booking: Booking; onUpdated: 
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          owner: { name: user?.name },
+          guest: { name: booking.guest_name, email: booking.guest_email },
           property: {
             title: booking.quinta_title,
             check_in: booking.check_in,
@@ -339,7 +339,7 @@ export default function ReservationsPage() {
   return (
     <main className="mx-auto px-4 md:px-10 py-10">
       {loadError ? <p role="alert" className="text-red-600 mb-6">No se pudieron cargar las reservas. Recargá la página para intentar de nuevo.</p> :
-        <OwnerAvailabilityCalendar properties={properties} bookings={allBookings} revision={revision} />}
+        <OwnerAvailabilityCalendar properties={properties} bookings={allBookings} />}
       <div className="flex flex-col md:flex-row justify-between items-start gap-8">
         <div className="flex-1 space-y-12 w-full">
 

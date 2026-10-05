@@ -6,12 +6,16 @@ export async function POST(request: NextRequest) {
     try {
         const data = await request.json();
 
+        if (!data.guest?.email) {
+            return NextResponse.json({ ok: false, error: "Falta el email del huésped" }, { status: 400 });
+        }
+
         await resend.emails.send({
             from: "reservas@zonaquintas.com",
-            to: "totobarajas124@gmail.com",
+            to: data.guest.email,
             subject: "¡Reserva Confirmada! 🎉",
             react: BalanceConfirmed({
-                nombreHuesped: data.owner.name,
+                nombreHuesped: data.guest.name,
                 nombrePropiedad: data.property.title,
                 linkPago: data.linkPago,
                 currency: data.property.currency,
