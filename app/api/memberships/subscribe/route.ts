@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getRebillApiKey } from "@/lib/rebill-server";
 
 const REBILL_API_URL = "https://api.rebill.com/v3";
-const REBILL_API_KEY = "sk_2ca4dc4cdece4f178010dcf0f7b6d0fe";
 const REBILL_PLAN_ID = process.env.REBILL_PLAN_ID;
 const FASTAPI_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 const INTERNAL_SECRET = process.env.INTERNAL_SECRET!;
@@ -9,6 +9,14 @@ const url = "https://imido-curliest-cole.ngrok-free.dev"
 
 export async function POST(req: NextRequest) {
     try {
+        const rebillApiKey = getRebillApiKey();
+        if (!rebillApiKey) {
+            return NextResponse.json(
+                { error: "La integración de pagos no está configurada" },
+                { status: 500 }
+            );
+        }
+
         const { userId, email, firstName, lastName } = await req.json();
 
         if (!userId || !email || !firstName || !lastName) {
@@ -23,7 +31,7 @@ export async function POST(req: NextRequest) {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "x-api-key": REBILL_API_KEY,
+                "x-api-key": rebillApiKey,
             },
             body: JSON.stringify({
                 type: "plan",                    // ← "plan" no "subscription"

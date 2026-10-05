@@ -1,17 +1,24 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getRebillApiKey } from "@/lib/rebill-server";
 
 const REBILL_API_URL = "https://api.rebill.com/v3";
-const REBILL_API_KEY = "sk_2ca4dc4cdece4f178010dcf0f7b6d0fe";
 const FASTAPI_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
 export async function POST(req: NextRequest) {
     try {
         const { userId, subscriptionId } = await req.json();
+        const rebillApiKey = getRebillApiKey();
 
         if (!subscriptionId || !userId) {
             return NextResponse.json(
                 { error: "Faltan userId o subscriptionId" },
                 { status: 400 }
+            );
+        }
+        if (!rebillApiKey) {
+            return NextResponse.json(
+                { error: "La integración de pagos no está configurada" },
+                { status: 500 }
             );
         }
 
@@ -20,7 +27,7 @@ export async function POST(req: NextRequest) {
             method: "PATCH",
             headers: {
                 "Content-Type": "application/json",
-                "x-api-key": REBILL_API_KEY,
+                "x-api-key": rebillApiKey,
             },
             body: JSON.stringify({ status: "cancelled" }),
         });
