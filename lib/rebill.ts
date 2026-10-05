@@ -1,8 +1,7 @@
 import { PriceInput } from "@/types";
 
 const REBILL_API_URL = "https://api.rebill.com/v3";
-// const REBILL_API_KEY = process.env.REBILL_API_KEY!;
-const REBILL_API_KEY = "sk_2ca4dc4cdece4f178010dcf0f7b6d0fe";
+const REBILL_API_KEY = process.env.REBILL_API_KEY!;
 
 const headers = {
   "x-api-key": REBILL_API_KEY,
@@ -51,9 +50,6 @@ export async function createPaymentLinkRebill(data: {
         approved: `https://www.zonaquintas.com/pay_ticket_rebill_success?id=${data.ownerId}`,
         rejected: "https://www.zonaquintas.com/pay_ticket_rebill_rejected",
         pending: "https://www.zonaquintas.com/pay_ticket_rebill_pending",
-        // approved: "http://localhost:3000/pay_ticket_rebill_success",
-        // rejected: "http://localhost:3000/pay_ticket_rebill_rejected",
-        // pending: "http://localhost:3000/pay_ticket_rebill_pending",
       },
       metadata: {
         payment_id: data.paymentId, // lo pasás al llamar la función

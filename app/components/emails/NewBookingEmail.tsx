@@ -12,14 +12,14 @@ interface NewBookingEmailProps {
   message: string;
 }
 
-export default function NewBookingEmail({ 
-  ownerName, 
-  guestName, 
-  propertyTitle, 
-  checkIn, 
-  checkOut, 
-  guests, 
-  total, 
+export default function NewBookingEmail({
+  ownerName,
+  guestName,
+  propertyTitle,
+  checkIn,
+  checkOut,
+  guests,
+  total,
   currency,
   message,
 }: NewBookingEmailProps) {
@@ -52,9 +52,9 @@ export default function NewBookingEmail({
             <Text style={guestNameText}>{guestName}</Text>
           </Section>
           <Section style={actionSection}>
-            <Button 
-              // href={`https://zonaquintas.com/reservations`} // TODO: Cambiar URL
-              href={`https://localhost:3000/reservations`}
+            <Button
+              href={`https://zonaquintas.com/reservations`} // TODO: Cambiar URL
+              // href={`https://localhost:3000/reservations`}
               style={button}
             >
               Ver reserva

@@ -5,10 +5,29 @@ import { BookingsServices } from "@/app/services/BookingsServices";
 import { Booking, Quintas } from "@/types";
 import { ProductsServices } from "@/app/services/ProductsServices";
 import OwnerAvailabilityCalendar from "@/app/components/OwnerAvailabilityCalendar";
+import { argentinaToday } from "@/app/lib/availability";
 import { createPaymentLinkRebill } from "@/lib/rebill";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+
+function balancePaymentDate(checkOut: string): string {
+  const [year, month, day] = checkOut.slice(0, 10).split("-").map(Number);
+  return new Date(year, month - 1, day - 1).toLocaleDateString("es-AR");
+}
+
+function isBalancePaymentWindowOpen(checkOut: string): boolean {
+  if (process.env.NODE_ENV === "development") return true;
+
+  const departureDate = checkOut.slice(0, 10);
+  const [year, month, day] = departureDate.split("-").map(Number);
+  const paymentStartDate = new Date(Date.UTC(year, month - 1, day - 1))
+    .toISOString()
+    .slice(0, 10);
+  const today = argentinaToday();
+
+  return today >= paymentStartDate && today <= departureDate;
+}
 
 function ReservationCard({ booking, onUpdated }: { booking: Booking; onUpdated: () => void }) {
   const { user } = useUser();
@@ -97,6 +116,11 @@ function ReservationCard({ booking, onUpdated }: { booking: Booking; onUpdated: 
   };
 
   const handleFinish = async (id: string) => {
+    if (!isBalancePaymentWindowOpen(booking.check_out)) {
+      toast.error(`El link de saldo estará disponible desde el ${balancePaymentDate(booking.check_out)}`);
+      return;
+    }
+
     try {
       const balancePayment = await BookingsServices.createBookingPayments(id, {
         payment_type: "balance",
@@ -142,24 +166,6 @@ function ReservationCard({ booking, onUpdated }: { booking: Booking; onUpdated: 
     } catch (error) {
       toast.error("Error al enviar link de saldo");
     }
-  };
-
-  const isOneWeekBefore = (dateStr: string): boolean => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const parts = dateStr.split("-");
-    const checkInDate = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
-    checkInDate.setHours(0, 0, 0, 0);
-
-    const diffDays = Math.round((checkInDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-    return diffDays <= 7 && diffDays >= 0;
-  };
-
-  const datePayLabel = (dateStr: string): string => {
-    const parts = dateStr.split("-");
-    const d = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
-    d.setDate(d.getDate() - 7);
-    return d.toLocaleDateString("es-AR");
   };
 
   return (
@@ -248,11 +254,11 @@ function ReservationCard({ booking, onUpdated }: { booking: Booking; onUpdated: 
             <div className="bg-green-50 text-primaryDark p-2 rounded-lg text-center font-bold text-sm">
               ✓ Pagada totalmente
             </div>
-          ) : !isOneWeekBefore(booking.check_in) ? (
+          ) : !isBalancePaymentWindowOpen(booking.check_out) ? (
             <div className="bg-blue-50 p-3 rounded-lg border border-blue-100">
               <p className="text-blue-700 font-bold text-sm text-center">✓ Seña pagada (50%)</p>
               <p className="text-[10px] text-blue-500 text-center mt-1 uppercase font-bold">
-                Saldo restante: {datePayLabel(booking.check_in)}
+                Saldo restante disponible desde: {balancePaymentDate(booking.check_out)}
               </p>
             </div>
           ) : (

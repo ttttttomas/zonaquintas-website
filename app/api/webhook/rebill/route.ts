@@ -1,8 +1,22 @@
-// app/api/webhooks/rebill/route.ts
+//  Para que Rebill notifique a tu Next local, configurá en el panel de Rebill una URL pública que apunte a tu máquina,
+//   por ejemplo un túnel de ngrok hacia http://localhost:3000/api/webhook/rebill. Después, en el entorno local, configurá
+//   BACKEND_API_URL con la URL de FastAPI que usa tu app. El webhook actual todavía no está publicado, así que tampoco
+//   verá esta corrección hasta que se despliegue.
+
+//   whsec_a9a67296cb47ad1b63711857d02af3fbb6d4fc3750a01e25d780bfdabcf7601a
+
 import { NextRequest, NextResponse } from 'next/server';
 
-// const API_URL = process.env.NEXT_PUBLIC_API_URL;
-const API_URL = "http://localhost:8000";
+const API_URL = (process.env.BACKEND_API_URL ?? process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000").replace(/\/$/, "");
+
+async function backendFetch(path: string, init: RequestInit) {
+  const response = await fetch(`${API_URL}${path}`, init);
+  if (!response.ok) {
+    const detail = await response.text().catch(() => "");
+    throw new Error(`Backend ${init.method ?? "GET"} ${path} respondió ${response.status}${detail ? `: ${detail}` : ""}`);
+  }
+  return response;
+}
 
 function getNextMonth(): string {
   const d = new Date();
@@ -12,17 +26,23 @@ function getNextMonth(): string {
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
-  console.log("Rebill webhook recibido:", JSON.stringify(body, null, 2));
-
   const event = body.webhook?.event;
-  const payment = body.data?.payment;
+  const payment = body.data?.payment ?? body.data;
   const planId = body.data?.planId
+
+  console.log("Rebill webhook recibido", {
+    event,
+    logId: body.webhook?.logId,
+    paymentId: payment?.id,
+    status: payment?.status,
+    bookingId: payment?.metadata?.booking_id,
+  });
 
   // ── Membresía fallida (cobro rechazado) ──────────────────────────────────
   if (event === 'payment.created' && payment?.status === 'rejected' && planId) {
     const user_id = payment?.metadata?.user_id;
     if (user_id) {
-      await fetch(`${API_URL}/users/${user_id}/membership`, {
+      await backendFetch(`/users/${user_id}/membership`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -35,15 +55,15 @@ export async function POST(req: NextRequest) {
   }
 
   // ── Ignorar eventos que no son payment.created approved ──────────────────
-  if (event !== 'payment.created' || payment?.status !== 'approved') {
+  if (!['payment.created', 'payment.updated'].includes(event) || payment?.status !== 'approved') {
     console.log("Evento ignorado:", event, payment?.status);
     return NextResponse.json({ received: true });
   }
 
-  const { payment_id, booking_id, payment_type, user_id } = payment.metadata;
+  const { payment_id, booking_id, payment_type, user_id } = payment.metadata ?? {};
 
   if (planId && user_id) {
-    await fetch(`${API_URL}/users/${user_id}/membership`, {
+    await backendFetch(`/users/${user_id}/membership`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
@@ -70,7 +90,7 @@ export async function POST(req: NextRequest) {
       // --- PAGO DE SEÑA ---
 
       // 1. Actualizar booking_payment a paid
-      const depositPaymentResult = await fetch(`${API_URL}/booking-payments/${payment_id}`, {
+      const depositPaymentResult = await backendFetch(`/booking-payments/${payment_id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -106,7 +126,7 @@ export async function POST(req: NextRequest) {
       // --- PAGO DE SALDO ---
 
       // 1. Actualizar booking_payment a paid
-      const balancePaymentResult = await fetch(`${API_URL}/booking-payments/${payment_id}`, {
+      const balancePaymentResult = await backendFetch(`/booking-payments/${payment_id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
