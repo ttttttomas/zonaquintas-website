@@ -1,6 +1,6 @@
 # Plan de implementación: disponibilidad y calendarios de dueños
 
-Estado: pendiente de ejecución. [Índice](./README.md) · [Plan de pagos](./pagos.md)
+Estado: implementado en ramas `feature/disponibilidad-duenos`; pendiente de migración y validación en MySQL de prueba. [Índice](./README.md) · [Plan de pagos](./pagos.md)
 
 ## 1. Alcance solicitado
 
@@ -114,3 +114,10 @@ La consulta de disponibilidad es informativa. La garantía contra dos solicitude
 5. Preparar cambios y evidencia para revisión en cada repositorio. La PR del backend se crea cuando el usuario lo indique.
 
 Rollback: revertir la interfaz si fuera necesario conservando las validaciones de backend para no reabrir dobles reservas. No quitar columnas con información ya cargada sin respaldo y evaluación de compatibilidad. Los mayores riesgos son bloqueo indefinido de solicitudes, pagos tardíos, estados históricos ambiguos y fechas con interpretación diferente entre cliente y servidor.
+
+## 8. Estado de ejecución
+
+- Implementados: migración SQL versionada y preflight, período obligatorio para quintas nuevas, actualización autenticada del período, disponibilidad pública sin datos de huéspedes, bloqueo transaccional por quinta en altas y reactivaciones, calendario del wizard, selección del huésped y calendario mensual del dueño.
+- Las quintas existentes conservan `NULL/NULL` como política transitoria sin temporada limitada; el dueño puede configurarla con `PATCH /quintas/{id}/rental-period`. No hay caducidad automática de solicitudes pendientes.
+- Verificados localmente: 7 tests SQLite/HTTP de disponibilidad, compilación Python, tipos y build Next, y ESLint directo sobre los archivos tocados. `npm run lint` sigue apuntando a `next lint`, retirado en Next 16. La prueba de concurrencia real y la ejecución de la migración requieren MySQL/InnoDB de prueba; no se ejecutaron sobre una base desplegada.
+- El webhook conserva un cobro confirmado cuando la reserva ya no tiene disponibilidad y marca `reconciliation_required` en su respuesta, sin volver a ocupar fechas ni enviar confirmación. La conciliación operativa queda pendiente de definir.

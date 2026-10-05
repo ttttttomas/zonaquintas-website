@@ -28,6 +28,8 @@ export type QuintaFormData = {
   // ── Paso 3 ──
   price: number;
   currency_price: "ARS" | "USD";
+  rental_start_date: string;
+  rental_end_date: string;
 };
 
 const DEFAULT_FORM: QuintaFormData = {
@@ -51,6 +53,8 @@ const DEFAULT_FORM: QuintaFormData = {
 
   price: 0,
   currency_price: "ARS",
+  rental_start_date: "",
+  rental_end_date: "",
   status: "pending",
   payment_type: "",
 };

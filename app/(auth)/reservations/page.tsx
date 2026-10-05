@@ -2,16 +2,16 @@
 import { Separator } from "@/app/components/ui/Separator";
 import { useUser } from "@/app/context/UserContext";
 import { BookingsServices } from "@/app/services/BookingsServices";
-import { Booking } from "@/types";
+import { Booking, Quintas } from "@/types";
+import { ProductsServices } from "@/app/services/ProductsServices";
+import OwnerAvailabilityCalendar from "@/app/components/OwnerAvailabilityCalendar";
 import { createPaymentLinkRebill } from "@/lib/rebill";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { useRouter } from "next/navigation";
 
-function ReservationCard({ booking }: { booking: Booking }) {
+function ReservationCard({ booking, onUpdated }: { booking: Booking; onUpdated: () => void }) {
   const { user } = useUser();
-  const router = useRouter();
 
   // Cálculo de noches para el despeje matemático
   const nights = (() => {
@@ -79,7 +79,7 @@ function ReservationCard({ booking }: { booking: Booking }) {
       ]);
 
       toast.success("Reserva confirmada exitosamente");
-      setTimeout(() => router.refresh(), 1500);
+      onUpdated();
     } catch (error) {
       console.error("Error confirmando:", error);
       toast.error("Error al confirmar la reserva");
@@ -90,7 +90,7 @@ function ReservationCard({ booking }: { booking: Booking }) {
     try {
       await BookingsServices.bookingAction(id, "rejected");
       toast.success("Reserva cancelada exitosamente");
-      setTimeout(() => router.refresh(), 1500);
+      onUpdated();
     } catch (error) {
       toast.error("Error al cancelar la reserva");
     }
@@ -138,7 +138,7 @@ function ReservationCard({ booking }: { booking: Booking }) {
       });
 
       toast.success("Link de saldo enviado al huésped");
-      setTimeout(() => router.refresh(), 1500);
+      onUpdated();
     } catch (error) {
       toast.error("Error al enviar link de saldo");
     }
@@ -210,7 +210,7 @@ function ReservationCard({ booking }: { booking: Booking }) {
         <div className="text-sm pb-4">
           <p className="font-semibold text-gray-800 mb-2 text-xs uppercase tracking-wider text-center">Mensaje del huésped</p>
           <div className="bg-gray-50 rounded-lg p-3 text-gray-600 text-xs italic border border-gray-100">
-            "{booking.message || "Sin mensaje..."}"
+            &quot;{booking.message || "Sin mensaje..."}&quot;
           </div>
         </div>
       ) : (
@@ -276,14 +276,29 @@ export default function ReservationsPage() {
   const [reservationsAccepted, setReservationsAccepted] = useState<Booking[]>([]);
   const [reservationsPaid, setReservationsPaid] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
+  const [properties, setProperties] = useState<Quintas[]>([]);
+  const [allBookings, setAllBookings] = useState<Booking[]>([]);
+  const [revision, setRevision] = useState(0);
+  const [loadError, setLoadError] = useState(false);
+
+  useEffect(() => {
+    if (!user) return;
+    const timer = window.setInterval(() => setRevision((value) => value + 1), 30000);
+    return () => window.clearInterval(timer);
+  }, [user]);
 
   useEffect(() => {
     if (!user) return;
 
     const getOwnerReservations = async () => {
-      setLoading(true);
       try {
-        const reservations = await BookingsServices.getOwnerBookings(user.id);
+        const [reservations, allProperties] = await Promise.all([
+          BookingsServices.getOwnerBookings(user.id),
+          ProductsServices.getQuintas(),
+        ]);
+        setProperties((allProperties as Quintas[]).filter((property) => property.owner_id === user.id));
+        setAllBookings(reservations);
+        setLoadError(false);
         const pending: Booking[] = [];
         const done: Booking[] = [];
         const accepted: Booking[] = [];
@@ -302,13 +317,14 @@ export default function ReservationsPage() {
         setReservationsPaid(paid);
       } catch (error) {
         console.error("Error loading bookings:", error);
+        setLoadError(true);
       } finally {
         setLoading(false);
       }
     };
 
     getOwnerReservations();
-  }, [user]);
+  }, [user, revision]);
 
   if (loading) {
     return (
@@ -322,6 +338,8 @@ export default function ReservationsPage() {
 
   return (
     <main className="mx-auto px-4 md:px-10 py-10">
+      {loadError ? <p role="alert" className="text-red-600 mb-6">No se pudieron cargar las reservas. Recargá la página para intentar de nuevo.</p> :
+        <OwnerAvailabilityCalendar properties={properties} bookings={allBookings} revision={revision} />}
       <div className="flex flex-col md:flex-row justify-between items-start gap-8">
         <div className="flex-1 space-y-12 w-full">
 
@@ -332,7 +350,7 @@ export default function ReservationsPage() {
             </h2>
             <div className="flex flex-wrap gap-6">
               {reservationsPending.length > 0 ? (
-                reservationsPending.map((res) => <ReservationCard key={res.id} booking={res} />)
+                reservationsPending.map((res) => <ReservationCard key={res.id} booking={res} onUpdated={() => setRevision((value) => value + 1)} />)
               ) : (
                 <p className="text-gray-400 italic">No tienes reservas pendientes en este momento.</p>
               )}
@@ -347,7 +365,7 @@ export default function ReservationsPage() {
             <div className="flex flex-wrap gap-6">
               {[...reservationsAccepted, ...reservationsPaid].length > 0 ? (
                 [...reservationsAccepted, ...reservationsPaid].map((res) => (
-                  <ReservationCard key={res.id} booking={res} />
+                  <ReservationCard key={res.id} booking={res} onUpdated={() => setRevision((value) => value + 1)} />
                 ))
               ) : (
                 <p className="text-gray-400 italic">No hay reservas activas esperando pago.</p>
@@ -362,7 +380,7 @@ export default function ReservationsPage() {
             </h2>
             <div className="flex flex-wrap gap-6">
               {reservationsDone.length > 0 ? (
-                reservationsDone.map((res) => <ReservationCard key={res.id} booking={res} />)
+                reservationsDone.map((res) => <ReservationCard key={res.id} booking={res} onUpdated={() => setRevision((value) => value + 1)} />)
               ) : (
                 <p className="text-gray-400 italic">Tu historial de reservas finalizadas aparecerá aquí.</p>
               )}

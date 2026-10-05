@@ -18,6 +18,8 @@ export type Quintas = {
   owner_id: string; // DEBERIA SER EL ID DEL USUARIO QUE CREO LA QUINTA
   currency_price: "ARS" | "USD"; // STRING
   created_at: string;
+  rental_start_date?: string | null;
+  rental_end_date?: string | null;
   // ── Características básicas ──
   // Habitaciones
   sabanas: boolean;
@@ -65,6 +67,13 @@ export type Quintas = {
   parlantes: boolean;
 
 
+};
+
+export type QuintaAvailability = {
+  quinta_id: string;
+  rental_start_date: string | null;
+  rental_end_date: string | null;
+  blocked: { check_in: string; check_out: string }[];
 };
 
 type Picture = {
