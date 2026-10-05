@@ -14,6 +14,16 @@ export const ProductsServices = {
     }
     return null;
   },
+  getQuintasActive: async () => {
+    const response = await apiClient.get("/quintas");
+
+    if (response.status === 200) {
+      const quintas = response.data;
+      const quintasActive = quintas.filter((quinta: any) => quinta.status === "active");
+      return quintasActive;
+    }
+    return null;
+  },
   getQuintaById: async (id: string) => {
     const response = await apiClient.get(`/quintas/${id}`);
 

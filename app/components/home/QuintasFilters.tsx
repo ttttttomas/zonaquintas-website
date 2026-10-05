@@ -13,7 +13,7 @@ export default function QuintasFilters() {
   useEffect(() => {
     const fetchQuintas = async () => {
       try {
-        const res = await ProductsServices.getQuintas();
+        const res = await ProductsServices.getQuintasActive();
         setQuintas(res);
         setLoading(false);
       } catch (error) {
