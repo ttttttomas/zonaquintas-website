@@ -32,6 +32,7 @@ apiClient.interceptors.response.use(
           const protectedRoutes = [
             "/my-account",
             "/reservations",
+            "/estadias",
             "/publications",
             "/dashboard",
             "/favorites",

@@ -19,16 +19,6 @@ export default function QuintaSearchCard({ product }) {
     maximumFractionDigits: 0,
   });
 
-  const costOfService = () => {
-    const res = product.price * 0.06;
-    const formated = res.toLocaleString("es-AR", {
-      style: "currency",
-      currency: product.currency_price,
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    });
-    return formated;
-  };
   const handleClick = (e) => {
     e.stopPropagation();
     e.preventDefault();

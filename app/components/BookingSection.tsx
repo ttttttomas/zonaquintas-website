@@ -9,8 +9,6 @@ import { argentinaToday, dateFromISO, localDate, stayAvailable } from "@/app/lib
 
 type Props = {
   formatedPrice: string;
-  costOfService: string;
-  totalPrice: string;
   quinta: Quintas;
   maxGuests: number;
   ratingContent?: React.ReactNode; // calificaciones
@@ -29,8 +27,6 @@ function formatDate(date: Date | null): string {
 export default function BookingSection({
   formatedPrice,
   quinta,
-  costOfService,
-  totalPrice,
   maxGuests,
   ratingContent,
   children,
@@ -112,8 +108,6 @@ export default function BookingSection({
             <span className="text-black font-semibold">{formatedPrice}</span>
           </div>
           <div className="flex justify-between">
-            {/* <span>Costo de servicio</span> */}
-            {/* <span className="text-black font-semibold">$ {costOfService}</span> */}
           </div>
           <div className="flex justify-between font-semibold py-5 border-t border-gray-400">
             <span>Total</span>
@@ -123,7 +117,7 @@ export default function BookingSection({
 
         {selectionValid && startDate && endDate ? (
           <Link
-            href={`/quintas/${quinta.id}/preview-reservation?startDate=${localDate(startDate)}&endDate=${localDate(endDate)}&guests=${selectedGuests}&service=${costOfService}`}
+            href={`/quintas/${quinta.id}/preview-reservation?startDate=${localDate(startDate)}&endDate=${localDate(endDate)}&guests=${selectedGuests}`}
             className="bg-primaryDark text-white text-center cursor-pointer py-2 rounded-md hover:bg-green-700 transition">
             Reservar
           </Link>

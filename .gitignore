@@ -23,6 +23,7 @@
 # archivos .md
 *.md
 /docs/planes/*.md
+!/plan-implementacion-resenas.md
 
 
 # misc

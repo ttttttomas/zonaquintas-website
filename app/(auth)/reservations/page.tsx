@@ -32,24 +32,9 @@ function isBalancePaymentWindowOpen(checkOut: string): boolean {
 function ReservationCard({ booking, onUpdated }: { booking: Booking; onUpdated: () => void }) {
   const { user } = useUser();
 
-  // Cálculo de noches para el despeje matemático
-  const nights = (() => {
-    const start = new Date(booking.check_in);
-    const end = new Date(booking.check_out);
-    const diff = end.getTime() - start.getTime();
-    const n = Math.ceil(diff / (1000 * 60 * 60 * 24));
-    return n > 0 ? n : 1;
-  })();
-
-  // Fórmula: Total = (Precio * Noches) + (Precio * 0.06)
-  // Despeje: Precio = Total / (Noches + 0.06)
-  const pricePerNight = booking.amount / (nights + 0.06);
-  const subtotal = pricePerNight * nights;
-  const serviceFee = pricePerNight * 0.06;
-
   const isDeposit = booking.payment_type === "deposit";
-  const firstPaymentAmount = isDeposit ? (subtotal * 0.5) + serviceFee : booking.amount;
-  const secondPaymentAmount = subtotal * 0.5;
+  const firstPaymentAmount = isDeposit ? Math.round(booking.amount * 0.5) : booking.amount;
+  const secondPaymentAmount = booking.amount - firstPaymentAmount;
 
   const handleAccepted = async (id: string) => {
     try {

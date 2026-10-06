@@ -9,6 +9,7 @@ import { redirect } from "next/navigation";
 import { ProductsServices } from "@/app/services/ProductsServices";
 import { Booking, Quintas } from "@/types";
 import { BookingsServices } from "@/app/services/BookingsServices";
+import User from "@/app/components/icons/User";
 
 function BookingCard({ booking }: { booking: Booking }) {
   return (
@@ -25,7 +26,7 @@ function BookingCard({ booking }: { booking: Booking }) {
 }
 
 export default function DashboardPage() {
-  const { user } = useUser();
+  const { user, loading: authLoading } = useUser();
   const [quintasPending, setQuintasPending] = useState<Quintas[]>([]);
   const [quintasActive, setQuintasActive] = useState<Quintas[]>([]);
   const [quintasRejected, setQuintasRejected] = useState<Quintas[]>([]);
@@ -37,6 +38,7 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (authLoading) return;
     const checkIsAdmin = async () => {
       if (user?.role === "admin") {
         console.log("es admin");
@@ -60,7 +62,7 @@ export default function DashboardPage() {
       }
     };
     checkIsAdmin();
-  }, [user]);
+  }, [user, authLoading]);
 
   if (loading) {
     return (
@@ -189,6 +191,12 @@ export default function DashboardPage() {
                 </svg>
                 <p>{quintasPending.length} Publicaciones pendientes</p>
               </li>
+              <li className="flex ml-1 gap-3">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="black" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 4C13.0609 4 14.0783 4.42143 14.8284 5.17157C15.5786 5.92172 16 6.93913 16 8C16 9.06087 15.5786 10.0783 14.8284 10.8284C14.0783 11.5786 13.0609 12 12 12C10.9391 12 9.92172 11.5786 9.17157 10.8284C8.42143 10.0783 8 9.06087 8 8C8 6.93913 8.42143 5.92172 9.17157 5.17157C9.92172 4.42143 10.9391 4 12 4ZM12 14C16.42 14 20 15.79 20 18V20H4V18C4 15.79 7.58 14 12 14Z" fill="black" />
+                </svg>
+                <p>{new Set(quintas.map(quinta => quinta.owner_id)).size} Dueños</p>
+              </li>
               <li className="flex items-center gap-2">
                 <svg width="30" height="30" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M14.1673 23.3346C14.7199 23.3346 15.2498 23.1151 15.6405 22.7244C16.0312 22.3337 16.2507 21.8038 16.2507 21.2513C16.2507 20.6988 16.0312 20.1689 15.6405 19.7782C15.2498 19.3875 14.7199 19.168 14.1673 19.168C13.6148 19.168 13.0849 19.3875 12.6942 19.7782C12.3035 20.1689 12.084 20.6988 12.084 21.2513C12.084 21.8038 12.3035 22.3337 12.6942 22.7244C13.0849 23.1151 13.6148 23.3346 14.1673 23.3346ZM14.1673 29.168C14.7199 29.168 15.2498 28.9485 15.6405 28.5578C16.0312 28.1671 16.2507 27.6372 16.2507 27.0846C16.2507 26.5321 16.0312 26.0022 15.6405 25.6115C15.2498 25.2208 14.7199 25.0013 14.1673 25.0013C13.6148 25.0013 13.0849 25.2208 12.6942 25.6115C12.3035 26.0022 12.084 26.5321 12.084 27.0846C12.084 27.6372 12.3035 28.1671 12.6942 28.5578C13.0849 28.9485 13.6148 29.168 14.1673 29.168ZM22.084 21.2513C22.084 21.8038 21.8645 22.3337 21.4738 22.7244C21.0831 23.1151 20.5532 23.3346 20.0007 23.3346C19.4481 23.3346 18.9182 23.1151 18.5275 22.7244C18.1368 22.3337 17.9173 21.8038 17.9173 21.2513C17.9173 20.6988 18.1368 20.1689 18.5275 19.7782C18.9182 19.3875 19.4481 19.168 20.0007 19.168C20.5532 19.168 21.0831 19.3875 21.4738 19.7782C21.8645 20.1689 22.084 20.6988 22.084 21.2513ZM20.0007 29.168C20.5532 29.168 21.0831 28.9485 21.4738 28.5578C21.8645 28.1671 22.084 27.6372 22.084 27.0846C22.084 26.5321 21.8645 26.0022 21.4738 25.6115C21.0831 25.2208 20.5532 25.0013 20.0007 25.0013C19.4481 25.0013 18.9182 25.2208 18.5275 25.6115C18.1368 26.0022 17.9173 26.5321 17.9173 27.0846C17.9173 27.6372 18.1368 28.1671 18.5275 28.5578C18.9182 28.9485 19.4481 29.168 20.0007 29.168ZM27.9173 21.2513C27.9173 21.8038 27.6978 22.3337 27.3071 22.7244C26.9164 23.1151 26.3865 23.3346 25.834 23.3346C25.2814 23.3346 24.7515 23.1151 24.3608 22.7244C23.9701 22.3337 23.7507 21.8038 23.7507 21.2513C23.7507 20.6988 23.9701 20.1689 24.3608 19.7782C24.7515 19.3875 25.2814 19.168 25.834 19.168C26.3865 19.168 26.9164 19.3875 27.3071 19.7782C27.6978 20.1689 27.9173 20.6988 27.9173 21.2513Z" fill="black" />
@@ -197,6 +205,7 @@ export default function DashboardPage() {
 
                 <p>{bookingsInDate.length} Estadías en curso</p>
               </li>
+
               <li className="flex items-center gap-2">
                 <svg width="30" height="30" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path opacity="0.5" d="M15.0867 7.5C15 8.46333 15 9.67333 15 11.2033V28.7967C15 30.3267 15 31.5367 15.0867 32.5H13.3333C9.405 32.5 7.44 32.5 6.22 31.28C5 30.0583 5 28.095 5 24.1667V15.8333C5 11.905 5 9.94 6.22 8.72C7.44 7.5 9.405 7.5 13.3333 7.5H15.0867Z" fill="black" />
@@ -219,6 +228,7 @@ export default function DashboardPage() {
 
                 <p>{quintasRejected.length} Publicaciones rechazadas</p>
               </li>
+
             </ul>
           </div>
         </section>

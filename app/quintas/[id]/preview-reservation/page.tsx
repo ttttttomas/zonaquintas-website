@@ -35,7 +35,6 @@ export default function PreviewReservationPage() {
   const startDateParam = searchParams.get("startDate") ?? "";
   const endDateParam = searchParams.get("endDate") ?? "";
   const guestsParam = Number(searchParams.get("guests")) || 1;
-  const serviceCost = Number(searchParams.get("service")) || 0;
 
   const [quinta, setQuinta] = useState<Quintas | null>(null);
   const [userData, setUserData] = useState<Users | null>(null);
@@ -52,6 +51,9 @@ export default function PreviewReservationPage() {
     const fetchQuintaAndOwner = async () => {
       try {
         const property = await ProductsServices.getQuintaById(id);
+        if (!property || property.status !== "active") {
+          throw new Error("La quinta no está disponible para reservas.");
+        }
         setQuinta(property);
         if (property?.owner_id) setOwner(await AuthServices.getUserById(property.owner_id));
         if (!startDateParam || !endDateParam) throw new Error("Faltan fechas de reserva");
@@ -93,7 +95,7 @@ export default function PreviewReservationPage() {
 
   const currency = quinta?.currency_price ?? "USD";
   const subtotal = pricePerNight * nights;
-  const total = subtotal + serviceCost;
+  const total = subtotal;
 
   const formatCurrency = (val: number) =>
     `${currency} ${val.toLocaleString("es-AR")}`;
@@ -507,10 +509,6 @@ export default function PreviewReservationPage() {
                 <span className="font-medium">{formatCurrency(subtotal)}</span>
               </div>
               <div className="flex justify-between">
-                {/* <span className="text-gray-600">Costo de servicio</span> */}
-                <span className="font-medium">
-                  {/* {formatCurrency(serviceCost)} */}
-                </span>
               </div>
 
               <hr className="border-gray-200 my-2" />

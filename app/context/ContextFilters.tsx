@@ -61,7 +61,7 @@ interface Filters {
   parlantes: boolean | null;
 }
 
-const defaultFilters: Filters = {
+export const defaultFilters: Filters = {
   bedrooms: 0,
   bathrooms: 0,
   amb: 0,
@@ -134,10 +134,10 @@ export const FiltersProvider = ({ children }: any) => {
         filters.priceRange[0] <= price &&
         price <= filters.priceRange[1] &&
         // ── Características básicas numéricas ─────────────────
-        (filters.bedrooms  === 0 || filters.bedrooms  <= bedrooms)  &&
-        (filters.bathrooms === 0 || filters.bathrooms <= bathrooms) &&
-        (filters.amb       === 0 || filters.amb       <= envs)      &&
-        (filters.beds      === 0 || filters.beds      <= beds)      &&
+        (filters.bedrooms  === 0 || bedrooms <= filters.bedrooms)  &&
+        (filters.bathrooms === 0 || bathrooms <= filters.bathrooms) &&
+        (filters.amb       === 0 || envs <= filters.amb)      &&
+        (filters.beds      === 0 || beds <= filters.beds)      &&
         // ── Huéspedes y lugar (Form) ──────────────────────────
         (filters.guests === null || filters.guests <= guests)       &&
         (filters.place  === null || filters.place  === q.city)      &&

@@ -71,13 +71,13 @@ export default function Form() {
     const fetchCities = async () => {
       setLoadingCities(true);
       try {
-        const data = await ProductsServices.getAddressFromQuintas();
+        const data = await ProductsServices.getQuintasActive();
         if (data && Array.isArray(data)) {
-          // Filtrar el primer elemento tipo placeholder {"address":"string","city":"string"}
-          const validCities = data.filter(
-            (item: CityAddress) =>
+          const validCities = data
+            .filter((item: CityAddress & { status?: string }) =>
               item.city && item.city !== "string" && item.address !== "string"
-          );
+            )
+            .map((item: CityAddress) => ({ address: item.address, city: item.city }));
           // Deduplicar por city
           const unique = validCities.filter(
             (item: CityAddress, idx: number, arr: CityAddress[]) =>

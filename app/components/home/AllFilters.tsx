@@ -2,7 +2,7 @@
 import React, { useMemo, useState } from "react";
 import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
-import { useFilters } from "@/app/context/ContextFilters";
+import { defaultFilters, useFilters } from "@/app/context/ContextFilters";
 
 // ---------- Simple SVG icons (sin dependencias) ----------
 const IconWifi = (p: any) => (
@@ -334,9 +334,12 @@ export default function FiltrosInmuebles({
 }: {
   handleClick: any;
 }) {
-  const { filters, setFilters, resetFilters } = useFilters();
-  // Estado local del slider — solo se aplica al contexto al clickar "Ver resultados"
-  const [priceRange, setPriceRange] = useState<[number, number]>(filters.priceRange);
+  const { filters, setFilters } = useFilters();
+  const [draftFilters, setDraftFilters] = useState<any>(() => ({
+    ...filters,
+    priceRange: [...filters.priceRange],
+  }));
+  const [priceRange, setPriceRange] = useState<[number, number]>(draftFilters.priceRange);
 
   const fmt = (n: number) =>
     n.toLocaleString("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 0 });
@@ -389,7 +392,7 @@ export default function FiltrosInmuebles({
   );
 
   const toggleFeature = (key: string) => {
-    setFilters((prev: any) => ({
+    setDraftFilters((prev: any) => ({
       ...prev,
       [key]: prev[key] === true ? null : true,
     }));
@@ -446,16 +449,16 @@ export default function FiltrosInmuebles({
           </div>
           <div className="flex w-full flex-col items-center gap-7">
             <Stepper
-              value={filters.bedrooms}
-              setValue={(v: number) => setFilters((prev: any) => ({ ...prev, bedrooms: v }))}
+              value={draftFilters.bedrooms}
+              setValue={(v: number) => setDraftFilters((prev: any) => ({ ...prev, bedrooms: v }))}
             />
             <Stepper
-              value={filters.amb}
-              setValue={(v: number) => setFilters((prev: any) => ({ ...prev, amb: v }))}
+              value={draftFilters.amb}
+              setValue={(v: number) => setDraftFilters((prev: any) => ({ ...prev, amb: v }))}
             />
             <Stepper
-              value={filters.bathrooms}
-              setValue={(v: number) => setFilters((prev: any) => ({ ...prev, bathrooms: v }))}
+              value={draftFilters.bathrooms}
+              setValue={(v: number) => setDraftFilters((prev: any) => ({ ...prev, bathrooms: v }))}
             />
           </div>
         </div>
@@ -468,7 +471,7 @@ export default function FiltrosInmuebles({
           {featureList.map((f) => (
             <Chip
               key={f.key}
-              active={filters[f.key as keyof typeof filters] === true}
+              active={draftFilters[f.key] === true}
               onClick={() => toggleFeature(f.key)}
               icon={f.icon}
               label={f.label}
@@ -479,7 +482,7 @@ export default function FiltrosInmuebles({
         <div className="mt-10 flex justify-center gap-4">
           <button
             onClick={() => {
-              resetFilters();
+              setDraftFilters({ ...defaultFilters, priceRange: [...defaultFilters.priceRange] });
               setPriceRange([0, 5000000]);
             }}
             className="px-6 py-2 rounded-full border border-neutral-600 text-neutral-200 hover:bg-white/5 transition-colors">
@@ -487,7 +490,7 @@ export default function FiltrosInmuebles({
           </button>
           <button
             onClick={() => {
-              setFilters((prev: any) => ({ ...prev, priceRange }));
+              setFilters((prev: any) => ({ ...prev, ...draftFilters, priceRange }));
               handleClick();
             }}
             className="px-6 py-2 rounded-full bg-emerald-600 text-white hover:bg-emerald-700 transition-colors">

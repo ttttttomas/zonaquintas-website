@@ -132,6 +132,7 @@ export default function DashboardCard({ quinta, handleAccept, handleReject }: Pr
         />
         <ul className="flex flex-col justify-between px-2 py-3">
           <li>Titulo: {quinta.title}</li>
+          <li><Link href={`/dashboard/cliente/${quinta.owner_id}`} className="text-primaryDark hover:underline">Ver perfil del dueño</Link></li>
           <li>Ciudad: {quinta.city}</li>
           <li>Direccion: {quinta.address}</li>
           <li>Precio: {quinta.price.toLocaleString('es-AR', { style: 'currency', currency: 'ARS', minimumFractionDigits: 0, maximumFractionDigits: 2 })}</li>

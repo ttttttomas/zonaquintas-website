@@ -16,6 +16,7 @@ import Link from "next/link";
 import SecondSeparator from "@/app/components/SecondSeparator";
 import StaticMap from "@/app/components/StaticMap";
 import ImageGallery from "@/app/components/quintas/ImageGallery";
+import { useUser } from "@/app/context/UserContext";
 import { Quintas, Users } from "@/types";
 import { use, useEffect, useState } from "react";
 interface quintaIdPageProps {
@@ -26,6 +27,7 @@ interface quintaIdPageProps {
 
 export default function quintaIdPage({ params }: quintaIdPageProps) {
   const { id } = use(params);
+  const { user } = useUser();
 
   const [quinta, setQuinta] = useState<Quintas | null>(null);
   const [owner, setOwner] = useState<Users | null>(null);
@@ -58,8 +60,6 @@ export default function quintaIdPage({ params }: quintaIdPageProps) {
 
   const currency = quinta?.currency_price ?? "ARS";
   const priceNum = quinta?.price ?? 0;
-  const serviceCostNum = priceNum * 0.06;
-  const totalNum = priceNum + serviceCostNum;
   const languagesMayus = owner?.languages.map((lang) => lang.charAt(0).toUpperCase() + lang.slice(1));
 
   const formatCurrency = (amount: number) => {
@@ -72,8 +72,6 @@ export default function quintaIdPage({ params }: quintaIdPageProps) {
   };
 
   const formatedPrice = formatCurrency(priceNum);
-  const costOfService = formatCurrency(serviceCostNum);
-  const totalPrice = formatCurrency(totalNum);
 
   const handleShare = () => {
     navigator.clipboard.writeText(window.location.href);
@@ -90,7 +88,7 @@ export default function quintaIdPage({ params }: quintaIdPageProps) {
     );
   }
 
-  if (!quinta) {
+  if (!quinta || (quinta.status !== "active" && user?.role !== "admin")) {
     return (
       <div className="flex flex-col gap-5 items-center justify-center min-h-[60vh]">
         <p className="text-lg text-center font-semibold">No se encontro la quinta</p>
@@ -145,8 +143,6 @@ export default function quintaIdPage({ params }: quintaIdPageProps) {
       <BookingSection
         quinta={quinta!}
         formatedPrice={formatedPrice}
-        costOfService={String(serviceCostNum.toFixed(2))}
-        totalPrice={totalPrice}
         maxGuests={quinta?.guests || 0}
         ratingContent={
           <div className="flex items-center md:justify-start justify-center md:w-max w-full">

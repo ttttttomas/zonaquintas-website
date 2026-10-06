@@ -1,5 +1,5 @@
 import { apiClient } from "@/lib/axios";
-import { QuintaAvailability, Users } from "@/types";
+import { QuintaAvailability, Quintas, Users } from "@/types";
 
 export const ProductsServices = {
   getAvailability: async (id: string, from: string, to: string): Promise<QuintaAvailability> => {
@@ -14,15 +14,17 @@ export const ProductsServices = {
     }
     return null;
   },
-  getQuintasActive: async () => {
+  getQuintasActive: async (): Promise<Quintas[]> => {
     const response = await apiClient.get("/quintas");
 
     if (response.status === 200) {
       const quintas = response.data;
-      const quintasActive = quintas.filter((quinta: any) => quinta.status === "active");
+      const quintasActive = Array.isArray(quintas)
+        ? quintas.filter((quinta: any) => quinta.status === "active")
+        : [];
       return quintasActive;
     }
-    return null;
+    return [];
   },
   getQuintaById: async (id: string) => {
     const response = await apiClient.get(`/quintas/${id}`);

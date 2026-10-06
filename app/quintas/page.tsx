@@ -38,7 +38,7 @@ function QuintasContent() {
   useEffect(() => {
     const fetchQuintas = async () => {
       try {
-        const res = await ProductsServices.getQuintas();
+        const res = await ProductsServices.getQuintasActive();
         setQuintas(res);
       } catch (error) {
         console.error("Error al cargar quintas:", error);
@@ -60,7 +60,7 @@ function QuintasContent() {
 
   // Mapear al shape que espera QuintasMap: { id, title, price, lat, lng, ... }
   // El tipo Quintas usa `latitude` y `length` (en lugar de lng) — parseamos a número
-  const mapListings = quintas
+  const mapListings = (quintasFiltered as Quintas[])
     .map((q: Quintas) => ({
       id: q.id,
       title: q.title,
