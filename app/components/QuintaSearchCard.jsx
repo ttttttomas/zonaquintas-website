@@ -64,19 +64,7 @@ export default function QuintaSearchCard({ product }) {
             {product.address}
           </p>
 
-          {/* Opiniones */}
-          {/* <div className="flex justify-center md:justify-start items-center text-sm my-2 gap-1">
-            <span>4,5</span>
-            <div className="flex text-yellow-500">
-              {[...Array(5)].map((_, i) => (
-                <Star
-                  key={i}
-                  className="w-4 h-4 fill-yellow-500 stroke-yellow-500"
-                />
-              ))}
-            </div>
-            <span className="text-gray-400">| 72 opiniones</span>
-          </div> */}
+          {product.review_summary?.count > 0 && <div className="my-2 flex items-center justify-center gap-1 text-sm md:justify-start"><span>{product.review_summary.average?.toLocaleString("es-AR", { maximumFractionDigits: 1 })}</span><Star className="size-4 fill-yellow-500 stroke-yellow-500" /><span className="text-gray-400">| {product.review_summary.count} opiniones</span></div>}
           <ul className="flex md:grid grid-cols-2 place-items-center py-2 flex-row md:flex-col gap-2 mt-3 text-sm justify-between">
             <li className="flex items-center gap-2">
               <Bath />

@@ -20,6 +20,7 @@ export type Quintas = {
   created_at: string;
   rental_start_date?: string | null;
   rental_end_date?: string | null;
+  review_summary?: { count: number; average: number | null };
   // ── Características básicas ──
   // Habitaciones
   sabanas: boolean;
@@ -91,7 +92,8 @@ export type Users = {
   owner_time: string;
   owner_location: string;
   created_at: string;
-  average_opinions: number; // PROMEDIO DE OPINION; FLOAT
+  average_opinions: number | null; // PROMEDIO DE OPINION; FLOAT
+  review_reminders_enabled?: boolean;
   role: "admin" | "user";
   email: string;
   password: string;
@@ -133,6 +135,13 @@ export type Booking = {
   guest_email?: string;
   guest_phone?: string;
   guest_name?: string;
+  guest_avatar_url?: string | null;
+  guest_review_count?: number;
+  guest_review_average?: number | null;
+  can_review?: boolean;
+  has_review?: boolean;
+  review_reason?: string | null;
+  review_deadline_at?: string | null;
 }
 
 export type BookingPayments = {

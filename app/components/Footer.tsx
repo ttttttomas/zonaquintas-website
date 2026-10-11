@@ -1,30 +1,36 @@
 import Link from "next/link";
 import Logo from "./icons/Logo";
-import Soporte from "./icons/Soporte";
 import SecondSeparator from "./SecondSeparator";
 
 export default function Footer() {
   return (
     <footer className="flex flex-col">
       <SecondSeparator />
-      <section className="flex flex-col px-5 md:px-10 md:flex-row gap-5 justify-between mt-8 border-gray-300 md:mb-5">
-        <div className="flex flex-col w-full md:w-96 gap-5">
-          <div className="mx-auto md:mx-0">
-            <Logo className="w-[120px]" />
+      <section className="flex flex-col px-5 md:px-10 md:flex-row gap-8 md:gap-5 justify-between mt-3 border-gray-300 md:mb-2">
+        <div className="flex flex-col gap-5">
+          <div className="flex flex-col items-center md:items-start md:flex-row gap-3 md:gap-5 mx-auto md:mx-0">
+            <Logo className="w-[76px] md:w-[120px]" />
+            <div className="flex flex-col gap-2 items-start justify-center md:max-w-[500px]">
+              <p className="font-semibold text-xl">ZonaQuintas</p>
+              <small className="font-medium text-sm leading-relaxed">
+                Plataforma digital para alquilar casas de fin de
+                semana en Argentina. Conectamos propietarios y viajeros de forma
+                simple, rápida y segura.
+              </small>
+            </div>
           </div>
-          <small className="font-semibold">
-            ZonaQuintas es una plataforma digital para alquilar casas de fin de
-            semana en Argentina. Conectamos propietarios y viajeros de forma
-            simple, rápida y segura.
-          </small>
-          <div className="flex md:flex-col text-sm md:text-md underline items-start justify-between w-full flex-row">
-            <Link href="/terms">Términos y condiciones</Link>
-            <Link href="/politics">Políticas de privacidad</Link>
-            <Link href="/cancelation">Política de cancelación y reembolso del huésped</Link>
+          <div className="flex flex-col gap-5">
+            <div className="flex flex-col md:flex-row text-sm md:text-md underline md:text-nowrap items-start gap-3 md:gap-5 md:justify-between w-full">
+              <Link href="/terms">Términos y condiciones</Link>
+              <Link href="/politics">Políticas de privacidad</Link>
+              <Link href="/cancelation">Política de cancelación y reembolso del huésped</Link>
+            </div>
           </div>
         </div>
-        <div className="flex justify-center gap-10 items-center">
-          <ul className="flex flex-col">
+
+
+        <div className="grid grid-cols-2 gap-x-5 gap-y-6 md:flex md:justify-center md:gap-10 md:items-center">
+          <ul className="flex flex-col gap-1">
             <p className="font-medium underline  text-sm md:text-md">
               Como ser anfitrion
             </p>
@@ -34,7 +40,7 @@ export default function Footer() {
               Publicá tu Quinta
             </Link>
           </ul>
-          <ul className="flex flex-col  text-sm md:text-md">
+          <ul className="flex flex-col gap-2 text-sm md:text-md">
             <Link
               target="_blank"
               className="font-medium flex items-center gap-2"
@@ -58,18 +64,12 @@ export default function Footer() {
             </Link>
           </ul>
         </div>
-        <Link
-          href="/support#form"
-          className="flex gap-1 md:mb-0 mb-5 items-start pt-5 justify-center">
-          <Soporte />
-          <p className="mt-1">Soporte</p>
-        </Link>
       </section>
-      <section className="flex flex-row w-full justify-between items-center font-bold md:py-0 py-2 md:px-5 bg-white">
-        <p className="text-xs md:text-md">
+      <section className="flex flex-col gap-2 w-full justify-between items-center font-bold py-4 px-5 md:flex-row md:gap-0 md:py-0 md:px-5 bg-white">
+        <p className="text-xs md:text-md text-center md:text-left">
           ©2025 - Todos los derechos reservados
         </p>
-        <div className="flex md:justify-between md:w-auto w-full md:pl-0 items-center justify-end md:gap-5">
+        <div className="flex md:justify-between md:w-auto w-full md:pl-0 items-center justify-center md:justify-end md:gap-5">
           <p className="text-xs md:text-md">Desarrollado por </p>
           <Link target="_blank" href="https://www.iwebtecnology.com/">
             <img src="/iweb.png" alt="logo" className="h-8" />

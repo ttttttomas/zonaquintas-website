@@ -35,12 +35,12 @@ export default function LoginPage() {
     }
   });
   return (
-    <main className="flex items-center h-[60vh] justify-center pb-12 px-4 sm:px-6 lg:px-8">
+    <main className="flex items-center h-[60vh] justify-center md:pt-0 pt-20 pb-12 px-4 sm:px-6 lg:px-8">
       <Toaster position="bottom-center" />
       <div className="absolute publicar h-[66vh] -z-10 w-full" />
       <form
         onSubmit={onSubmit}
-        className="bg-white w-full max-w-4xl px-5 md:px-20 gap-5 shadow-lg py-10 shadow-black/20 flex flex-col text-black">
+        className="w-full max-w-4xl px-5 md:px-20 gap-5 py-10 shadow-black/20 flex flex-col text-black">
         <img
           src="/logo.png"
           className="size-30 mx-auto object-cover mb-5"

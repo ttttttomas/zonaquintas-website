@@ -1,6 +1,4 @@
 "use client";
-/* eslint-disable @next/next/no-img-element */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import Heart from "@/app/components/icons/Heart";
 import {
   Star,
@@ -16,6 +14,8 @@ import Link from "next/link";
 import SecondSeparator from "@/app/components/SecondSeparator";
 import StaticMap from "@/app/components/StaticMap";
 import ImageGallery from "@/app/components/quintas/ImageGallery";
+import QuintaReviews from "@/app/components/QuintaReviews";
+import { ReviewsServices, type ReviewSummary } from "@/app/services/ReviewsServices";
 import { useUser } from "@/app/context/UserContext";
 import { Quintas, Users } from "@/types";
 import { use, useEffect, useState } from "react";
@@ -25,12 +25,13 @@ interface quintaIdPageProps {
   }>;
 }
 
-export default function quintaIdPage({ params }: quintaIdPageProps) {
+export default function QuintaIdPage({ params }: quintaIdPageProps) {
   const { id } = use(params);
   const { user } = useUser();
 
   const [quinta, setQuinta] = useState<Quintas | null>(null);
   const [owner, setOwner] = useState<Users | null>(null);
+  const [hostSummary, setHostSummary] = useState<ReviewSummary | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -46,6 +47,7 @@ export default function quintaIdPage({ params }: quintaIdPageProps) {
             quintaData.owner_id,
           );
           setOwner(ownerData);
+          ReviewsServices.hostSummary(quintaData.owner_id).then(setHostSummary).catch(() => {});
         }
       } catch (error) {
         // Manejar error si alguna petición falla
@@ -146,29 +148,29 @@ export default function quintaIdPage({ params }: quintaIdPageProps) {
         maxGuests={quinta?.guests || 0}
         ratingContent={
           <div className="flex items-center md:justify-start justify-center md:w-max w-full">
-            {owner?.opinions && owner.opinions.length > 0 ? (
+            {hostSummary && hostSummary.count > 0 ? (
               <div className="flex items-center px-10 py-2 rounded-3xl bg-primaryDark">
                 <div className="flex flex-col items-center space-x-2 px-7">
                   <span className="text-white">
-                    {owner.average_opinions.toLocaleString()}
+                    {hostSummary.average?.toLocaleString("es-AR", { maximumFractionDigits: 1 })}
                   </span>
                   <div className="flex gap-1 items-center">
                     {Array.from({
-                      length: Math.floor(owner.average_opinions),
+                      length: Math.floor(hostSummary.average || 0),
                     }).map((_, i) => (
                       <Star
                         className="w-3 text-white fill-yellow-500 stroke-yellow-500"
                         key={i}
                       />
                     ))}
-                    {owner.average_opinions % 1 !== 0 && (
+                    {(hostSummary.average || 0) % 1 !== 0 && (
                       <StarHalf className="w-3 text-white fill-yellow-500 stroke-yellow-500" />
                     )}
                   </div>
                 </div>
                 <p className="text-gray-500">|</p>
                 <div className="text-white flex flex-col items-center px-7">
-                  <p>{owner.opinions.length} opiniones</p>
+                  <p>{hostSummary.count} opiniones</p>
                   <Link
                     href="#opinions"
                     className="underline text-xs cursor-pointer">
@@ -331,17 +333,8 @@ export default function quintaIdPage({ params }: quintaIdPageProps) {
       </BookingSection>
       {/* <SecondSeparator /> */}
 
-      {owner?.opinions && owner.opinions.length > 0 && (
-        <>
-          <section
-            className="px-4 md:px-10 lg:mx-20 py-8 space-y-8"
-            id="opinions">
-            <h3 className="text-xl font-semibold">Reseñas de los huéspedes</h3>
-            {/* Aquí iría el mapeo de reseñas reales cuando existan */}
-          </section>
-          <SecondSeparator />
-        </>
-      )}
+      <QuintaReviews quintaId={id} />
+      <SecondSeparator />
       <SecondSeparator />
       <section className="px-4 md:px-10 lg:mx-20 my-5" id="map">
         <div>
@@ -371,23 +364,23 @@ export default function quintaIdPage({ params }: quintaIdPageProps) {
               />
               <p className="font-semibold">Anfitrión: {owner?.name}</p>
             </div>
-            {owner?.opinions && owner.opinions.length > 0 && (
+            {hostSummary && hostSummary.count > 0 && (
               <div className="flex flex-col justify-between gap-10 text-center">
                 <div>
                   <p className="text-xl font-semibold">
-                    {owner.opinions.length}
+                    {hostSummary.count}
                   </p>
                   <p className="text-gray-500">Opiniones</p>
                 </div>
                 <div>
                   <p className="text-xl font-semibold">
-                    {owner.average_opinions}
+                    {hostSummary.average?.toLocaleString("es-AR", { maximumFractionDigits: 1 })}
                     <span className="text-yellow-500">★</span>
                   </p>
                   <p className="text-gray-500">Puntuación</p>
                 </div>
                 <div>
-                  <p className="text-xl font-semibold">{owner.owner_time}</p>
+                  <p className="text-xl font-semibold">{owner?.owner_time}</p>
                   <p className="text-gray-500">Anfitrión</p>
                 </div>
               </div>
@@ -396,15 +389,13 @@ export default function quintaIdPage({ params }: quintaIdPageProps) {
 
           {/* Información y contacto */}
           <div className="flex-1 flex flex-col justify-between gap-10 text-sm text-gray-800">
-            {owner?.opinions && owner.opinions.length > 0 ? (
+            {hostSummary && hostSummary.count > 0 ? (
               <div className="flex items-start flex-col gap-2">
                 <h3 className="font-semibold">
-                  {owner.name} es un gran Anfitrión
+                  Reseñas de {owner?.name}
                 </h3>
                 <p>
-                  Esto lo confirma que su puntuación es superior a 4,00, un
-                  promedio por alto de la media que se asegura que los huéspedes
-                  tengan una experiencia gratificante en su estadía.
+                  Leé las experiencias verificadas de huéspedes que se alojaron en esta quinta.
                 </p>
               </div>
             ) : (
@@ -413,25 +404,18 @@ export default function quintaIdPage({ params }: quintaIdPageProps) {
                   Este es el inmueble de {owner?.name}
                 </h3>
                 <p>
-                  {owner?.name} es un nuevo anfitrión en ZonaQuintas. Estamos
-                  seguros de que hará todo lo posible para que tengas una
-                  estadía inolvidable en su propiedad.
+                  Todavía no hay reseñas verificadas de este anfitrión.
                 </p>
                 <b className="text-primaryDark underline">
-                  En ZonaQuintas nos encargamos de verificar la identidad del
-                  anfitrión y de que su propiedad cumpla con nuestros estándares
-                  de calidad.
+                  Conocé los detalles de la quinta y consultá al anfitrión antes de reservar.
                 </b>
               </div>
             )}
 
-            {owner?.opinions && owner.opinions.length > 0 && (
+            {hostSummary && hostSummary.count > 0 && (
               <div className="flex items-start flex-col gap-2">
                 <h3 className="font-semibold">Contacto con el Anfitrión</h3>
-                <p>
-                  Índice de respuesta: <span className="font-medium">100%</span>
-                </p>
-                <p>Responde en el mismo día de la consulta</p>
+                <p>Consultá los detalles de la reserva para contactar al anfitrión.</p>
               </div>
             )}
           </div>

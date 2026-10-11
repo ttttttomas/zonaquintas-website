@@ -10,6 +10,7 @@ import { ProductsServices } from "@/app/services/ProductsServices";
 import { Booking, Quintas } from "@/types";
 import { BookingsServices } from "@/app/services/BookingsServices";
 import User from "@/app/components/icons/User";
+import Link from "next/link";
 
 function BookingCard({ booking }: { booking: Booking }) {
   return (
@@ -81,6 +82,7 @@ export default function DashboardPage() {
       <SecondSeparator />
       {isAdmin && (
         <section className="mx-16 flex mb-10">
+          <Link href="/dashboard/resenas" className="mr-4 h-fit rounded-lg border border-primaryDark px-4 py-2 text-sm text-primaryDark">Moderar reseñas</Link>
           <div className="w-2/3 flex flex-col gap-5">
             <div className="flex mt-5 gap-2">
               <p className="font-semibold text-xl">Quintas activas</p>

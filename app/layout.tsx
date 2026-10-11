@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Header from "./components/Header";
+import MobileNavigation from "./components/MobileNavigation";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Footer from "./components/Footer";
@@ -192,7 +193,7 @@ export default function RootLayout({
       <FiltersProvider>
         <SearchProvider>
           <UserProvider>
-            <body className={`bg-[#f7f3f0] mt-32 ${inter.className}`}>
+            <body className={`bg-[#f7f3f0] mt-20 pb-[calc(4.5rem_+_env(safe-area-inset-bottom))] md:mt-32 md:pb-0 ${inter.className}`}>
               <noscript>
                 <img
                   height="1"
@@ -227,6 +228,7 @@ export default function RootLayout({
               <Header />
               {children}
               <Footer />
+              <MobileNavigation />
             </body>
           </UserProvider>
         </SearchProvider>

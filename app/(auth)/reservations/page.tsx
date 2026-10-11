@@ -12,6 +12,8 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import AccountSectionLayout from "@/app/components/AccountSectionLayout";
 import { CalendarDays, CircleCheck, Clock3, Hourglass } from "lucide-react";
+import ReviewDialog from "@/app/components/ReviewDialog";
+import MyReviewsPanel from "@/app/components/MyReviewsPanel";
 
 function balancePaymentDate(checkOut: string): string {
   const [year, month, day] = checkOut.slice(0, 10).split("-").map(Number);
@@ -33,6 +35,7 @@ function isBalancePaymentWindowOpen(checkOut: string): boolean {
 
 function ReservationCard({ booking, onUpdated }: { booking: Booking; onUpdated: () => void }) {
   const { user } = useUser();
+  const [reviewOpen, setReviewOpen] = useState(false);
 
   const isDeposit = booking.payment_type === "deposit";
   const firstPaymentAmount = isDeposit ? Math.round(booking.amount * 0.5) : booking.amount;
@@ -181,6 +184,7 @@ function ReservationCard({ booking, onUpdated }: { booking: Booking; onUpdated: 
       <div className="text-sm py-3">
         <p className="font-semibold text-gray-800 mb-1 text-xs uppercase tracking-wider">Huéspedes</p>
         <p className="text-gray-600">{booking.guest_count} {booking.guest_count === 1 ? "Huésped" : "Huéspedes"}</p>
+        {booking.guest_name && <p className="mt-1 text-gray-600">Reserva de {booking.guest_name.split(" ")[0]}{booking.guest_review_count ? ` · ${Number(booking.guest_review_average).toLocaleString("es-AR", { maximumFractionDigits: 1 })} ★ (${booking.guest_review_count} reseñas)` : " · Sin reseñas recibidas"}</p>}
       </div>
 
       <Separator color="bg-gray-200" />
@@ -258,6 +262,8 @@ function ReservationCard({ booking, onUpdated }: { booking: Booking; onUpdated: 
           )}
         </div>
       )}
+      {(booking.can_review || booking.has_review) && booking.id && <button type="button" onClick={() => setReviewOpen(true)} className="mt-3 rounded-lg border border-primaryDark px-4 py-2 text-sm font-semibold text-primaryDark focus-visible:outline-2 focus-visible:outline-primaryDark">{booking.has_review ? "Ver tu reseña" : "Calificar al huésped"}</button>}
+      {reviewOpen && booking.id && <ReviewDialog bookingId={booking.id} onClose={() => setReviewOpen(false)} onSaved={onUpdated} />}
     </div>
   );
 }
@@ -273,7 +279,12 @@ export default function ReservationsPage() {
   const [allBookings, setAllBookings] = useState<Booking[]>([]);
   const [revision, setRevision] = useState(0);
   const [loadError, setLoadError] = useState(false);
-  const [section, setSection] = useState<"calendar" | "pending" | "process" | "finished">("calendar");
+  const [section, setSection] = useState<"calendar" | "pending" | "process" | "finished" | "reviews">("calendar");
+  const [reviewBooking, setReviewBooking] = useState<string | null>(null);
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("action") === "review" && params.get("booking")) { setSection("reviews"); setReviewBooking(params.get("booking")); }
+  }, []);
 
   useEffect(() => {
     if (!user) return;
@@ -332,8 +343,11 @@ export default function ReservationsPage() {
       {key:"pending",label:"Pendientes",count:reservationsPending.length,icon:Clock3},
       {key:"process",label:"En proceso de pago",count:reservationsAccepted.length+reservationsPaid.length,icon:Hourglass},
       {key:"finished",label:"Finalizadas",count:reservationsDone.length,icon:CircleCheck},
+      {key:"reviews",label:"Reseñas",count:allBookings.filter(booking => booking.can_review).length,icon:CircleCheck},
     ].map(({key,label,count,icon:Icon})=><button key={key} type="button" aria-pressed={section===key} onClick={()=>setSection(key as typeof section)} className={`flex shrink-0 items-center gap-2 border-b-2 px-3 py-3 text-xs font-semibold transition md:text-sm ${section===key?"border-primaryDark text-primaryDark":"border-transparent text-gray-500 hover:text-gray-900"}`}><Icon size={17}/>{label}{count !== null && <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[10px]">{count}</span>}</button>)}</nav>
     {section === "calendar" && !loadError && <section className="mb-5 overflow-hidden rounded-2xl border border-gray-200 bg-white p-3 md:p-5"><h2 className="mb-4 flex items-center gap-2 font-semibold"><CalendarDays size={18} className="text-primaryDark"/>Calendario de disponibilidad</h2><OwnerAvailabilityCalendar properties={properties} bookings={allBookings} /></section>}
-    {section !== "calendar" && <section aria-live="polite"><div className="mb-4 flex items-center gap-2"><span className={`size-2.5 rounded-full ${section === "pending" ? "bg-amber-400" : section === "process" ? "bg-orange-400" : "bg-green-500"}`} /><h2 className="text-lg font-semibold">{sectionTitle}</h2></div><div className="grid items-start gap-4 md:grid-cols-2 xl:grid-cols-3">{visibleBookings.map(res=><ReservationCard key={res.id} booking={res} onUpdated={()=>setRevision(v=>v+1)}/>)}{visibleBookings.length === 0 && <div className="col-span-full rounded-2xl border border-dashed border-gray-300 bg-white px-6 py-12 text-center"><CircleCheck size={28} className="mx-auto mb-3 text-gray-400"/><p className="font-medium text-gray-700">{section === "pending" ? "No tenés reservas pendientes." : section === "process" ? "No hay reservas esperando el pago del huésped." : "Tu historial de reservas finalizadas aparecerá acá."}</p></div>}</div></section>}
+    {section === "reviews" && user && <section className="space-y-6"><div><h2 className="text-lg font-semibold">Por calificar</h2><div className="mt-3 grid items-start gap-4 md:grid-cols-2 xl:grid-cols-3">{allBookings.filter(booking => booking.can_review).map(booking => <ReservationCard key={booking.id} booking={booking} onUpdated={() => setRevision(value => value + 1)} />)}{!allBookings.some(booking => booking.can_review) && <p className="text-sm text-gray-500">No tenés huéspedes pendientes de calificar.</p>}</div></div><MyReviewsPanel userId={user.id} role="owner" revision={revision} quintas={properties.map(property => ({ id: property.id, title: property.title }))} /></section>}
+    {section !== "calendar" && section !== "reviews" && <section aria-live="polite"><div className="mb-4 flex items-center gap-2"><span className={`size-2.5 rounded-full ${section === "pending" ? "bg-amber-400" : section === "process" ? "bg-orange-400" : "bg-green-500"}`} /><h2 className="text-lg font-semibold">{sectionTitle}</h2></div><div className="grid items-start gap-4 md:grid-cols-2 xl:grid-cols-3">{visibleBookings.map(res=><ReservationCard key={res.id} booking={res} onUpdated={()=>setRevision(v=>v+1)}/>)}{visibleBookings.length === 0 && <div className="col-span-full rounded-2xl border border-dashed border-gray-300 bg-white px-6 py-12 text-center"><CircleCheck size={28} className="mx-auto mb-3 text-gray-400"/><p className="font-medium text-gray-700">{section === "pending" ? "No tenés reservas pendientes." : section === "process" ? "No hay reservas esperando el pago del huésped." : "Tu historial de reservas finalizadas aparecerá acá."}</p></div>}</div></section>}
+    {reviewBooking && <ReviewDialog bookingId={reviewBooking} onClose={() => setReviewBooking(null)} onSaved={() => setRevision(value => value + 1)} />}
   </AccountSectionLayout>;
 }

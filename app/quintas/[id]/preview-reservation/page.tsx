@@ -4,6 +4,7 @@ import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState, useMemo } from "react";
 import { ProductsServices } from "@/app/services/ProductsServices";
 import { BookingsServices } from "@/app/services/BookingsServices";
+import { ReviewsServices, type ReviewSummary } from "@/app/services/ReviewsServices";
 import { useUser } from "@/app/context/UserContext";
 import { Quintas, Users } from "@/types";
 import { ChevronLeft, ShieldCheck } from "lucide-react";
@@ -37,6 +38,8 @@ export default function PreviewReservationPage() {
   const guestsParam = Number(searchParams.get("guests")) || 1;
 
   const [quinta, setQuinta] = useState<Quintas | null>(null);
+  const [reviewSummary, setReviewSummary] = useState<ReviewSummary | null>(null);
+  const [reviewsLoading, setReviewsLoading] = useState(true);
   const [userData, setUserData] = useState<Users | null>(null);
   const [owner, setOwner] = useState<Users | null>(null);
   const [loading, setLoading] = useState(true);
@@ -46,6 +49,13 @@ export default function PreviewReservationPage() {
   const [submitting, setSubmitting] = useState(false);
   const [availabilityReady, setAvailabilityReady] = useState(false);
   const ownerId = quinta?.owner_id ?? "";
+
+  useEffect(() => {
+    let active = true;
+    setReviewsLoading(true);
+    ReviewsServices.quinta(id, 1, 0).then(data => { if (active) setReviewSummary(data.summary); }).catch(() => { if (active) setReviewSummary(null); }).finally(() => { if (active) setReviewsLoading(false); });
+    return () => { active = false; };
+  }, [id]);
 
   useEffect(() => {
     const fetchQuintaAndOwner = async () => {
@@ -489,14 +499,7 @@ export default function PreviewReservationPage() {
               </div>
             </div>
 
-            {/* Rating */}
-            {/* <div className="flex items-center gap-2 px-4 pb-3">
-              <span className="font-semibold text-sm">4,5</span>
-              <Star className="w-3.5 h-3.5 fill-yellow-400 stroke-yellow-400" />
-              <span className="text-sm text-blue-600 font-medium">
-                72 opiniones
-              </span>
-            </div> */}
+            {reviewsLoading ? <div aria-busy="true" aria-label="Cargando reseñas" className="mx-4 mb-3 h-5 w-28 animate-pulse rounded bg-gray-200" /> : reviewSummary && reviewSummary.count > 0 && <div className="flex items-center gap-2 px-4 pb-3 text-sm"><span className="font-semibold">{reviewSummary.average?.toLocaleString("es-AR", { maximumFractionDigits: 1 })} ★</span><span className="font-medium text-blue-600">{reviewSummary.count} opiniones</span></div>}
 
             <hr className="border-gray-200" />
 
