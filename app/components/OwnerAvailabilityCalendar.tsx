@@ -20,23 +20,20 @@ export default function OwnerAvailabilityCalendar({ properties, bookings }: {
   const changeMonth = (delta: number) => setMonth(new Date(month.getFullYear(), month.getMonth() + delta, 1));
 
   return (
-    <section className="mb-10 rounded-xl w-max p-5" aria-label="Calendario de disponibilidad">
-      <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-        <span className="w-2 h-8 bg-blue-500 rounded-full" />
-        Calendario de disponibilidad
-      </h2>      {properties.length === 0 ? <p className="text-gray-500">Todavía no tenés quintas publicadas.</p> : <>
+    <section className="w-full min-w-0 rounded-xl p-1" aria-label="Calendario de disponibilidad">
+      {properties.length === 0 ? <p className="text-gray-500">Todavía no tenés quintas publicadas.</p> : <>
         <label htmlFor="owner-quinta" className="block text-sm font-semibold mb-1">Quinta</label>
         <select id="owner-quinta" className="w-full max-w-sm border rounded-lg p-2 mb-4 bg-white" value={selectedId} onChange={(event) => setQuintaId(event.target.value)}>
           {properties.map((property) => <option key={property.id} value={property.id}>{property.title}</option>)}
         </select>
-        <div className="flex items-center justify-between max-w-md mb-3">
+        <div className="flex w-full items-center justify-between mb-3">
           <button type="button" onClick={() => changeMonth(-1)} aria-label="Mes anterior" className="p-2 rounded-full cursor-pointer hover:bg-gray-100">‹</button>
           <h3 className="font-semibold capitalize">{month.toLocaleDateString("es-AR", { month: "long", year: "numeric" })}</h3>
           <button type="button" onClick={() => changeMonth(1)} aria-label="Mes siguiente" className="p-2 rounded-full cursor-pointer hover:bg-gray-100">›</button>
         </div>
         {selectedProperty ? <>
           {!selectedProperty.rental_start_date && <p className="text-sm text-amber-700 mb-2">Esta quinta todavía no tiene un período de alquiler configurado.</p>}
-          <div className="grid grid-cols-7 gap-1 bg-white/50 p-3 rounded-lg max-w-md" role="grid" aria-label="Estado de cada día">
+          <div className="grid w-full grid-cols-7 gap-1 bg-white/50 p-2 sm:gap-2 sm:p-3 rounded-lg" role="grid" aria-label="Estado de cada día">
             {weekdays.map((day) => <span key={day} className="text-center text-xs font-semibold text-gray-500">{day}</span>)}
             {Array.from({ length: firstWeekday }, (_, index) => <span key={`empty-${index}`} />)}
             {Array.from({ length: days }, (_, index) => {
@@ -47,10 +44,10 @@ export default function OwnerAvailabilityCalendar({ properties, bookings }: {
                 !["rejected", "cancelled", "rechazado", "cancelado"].includes(item.status.toLowerCase()));
               const state = outside ? "Fuera de rango" : booking && ["pending", "pendiente"].includes(booking.status.toLowerCase()) ? "Pendiente" : booking ? "Reservada" : "Disponible";
               const color = outside ? "bg-gray-100 text-gray-400" : state === "Pendiente" ? "bg-amber-100 text-amber-900" : state === "Reservada" ? "bg-red-100 text-red-900" : "bg-green-50 text-green-900";
-              return <span key={day} role="gridcell" aria-label={`${index + 1}: ${state}`} className={`rounded-lg py-2 text-center text-sm ${color}`}>{index + 1}</span>;
+              return <span key={day} role="gridcell" aria-label={`${index + 1}: ${state}`} className={`rounded-lg py-2 text-center text-sm sm:py-3 ${color}`}>{index + 1}</span>;
             })}
           </div>
-          <span className="mt-3 text-xs text-green-500">Verde: disponible</span><span className="text-xs text-amber-500"> · Amarillo: pendiente</span><span className="text-xs text-red-500"> · Rojo: reservada</span><span className="text-xs text-gray-500"> · Gris: fuera de rango</span>
+          <div className="mt-3 flex flex-wrap gap-x-3 gap-y-1 text-xs"><span className="text-green-600">Verde: disponible</span><span className="text-amber-600">Amarillo: pendiente</span><span className="text-red-600">Rojo: reservada</span><span className="text-gray-500">Gris: fuera de rango</span></div>
         </> : null}
       </>}
     </section>

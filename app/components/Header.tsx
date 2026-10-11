@@ -19,6 +19,12 @@ import {
 export default function Header() {
   const { user, loading } = useUser();
   const path = usePathname();
+  const showAccountNavigation = ![
+    "/my-account",
+    "/reservations",
+    "/publications",
+    "/wallet",
+  ].includes(path);
   const [isOpen, setIsOpen] = useState(true);
   const [isOpen2, setIsOpen2] = useState(true);
   const contentRef = useRef<HTMLDivElement>(null);
@@ -159,7 +165,7 @@ export default function Header() {
       {/* <Menu onClick={handleClick} />
         <NavMenu isOpenMenu={isOpen} closeMenu={closeMenus} isMobile={false} /> */}
       <ul className="flex gap-5 items-center md:my-0 my-2">
-        <li className="text-gray-900 cursor-pointer">
+        {showAccountNavigation && <li className="text-gray-900 cursor-pointer">
           <DropdownMenu modal={false}>
             <DropdownMenuTrigger
               disabled={!user && !isMobile}
@@ -197,7 +203,7 @@ export default function Header() {
               })}
             </DropdownMenuContent>
           </DropdownMenu>
-        </li>
+        </li>}
         <li className="text-gray-900 cursor-pointer hover:opacity-80 transition-opacity font-medium text-md">
           <Link href="/publicar-quinta">Publica tu Quinta</Link>
         </li>

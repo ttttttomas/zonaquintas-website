@@ -1,380 +1,74 @@
 "use client";
-import Saldo from "@/app/components/icons/Saldo";
+
+import { useEffect, useMemo, useState } from "react";
+import { CalendarDays, Check, ChevronDown, CircleHelp, Coins, ArrowLeftRight, Wallet as WalletIcon, Bell, X, Send } from "lucide-react";
+import { toast } from "react-hot-toast";
 import { useUser } from "@/app/context/UserContext";
 import { ProductsServices } from "@/app/services/ProductsServices";
-import { Wallet } from "@/types";
-import { useEffect, useState } from "react";
+import AccountSectionLayout from "@/app/components/AccountSectionLayout";
+import type { Transaction, Wallet } from "@/types";
 
-type Form = {
-  bankAccount: string;
-  usd: number;
-  ars: number;
-};
+const button = "inline-flex min-h-10 items-center justify-center gap-2 rounded-lg px-4 text-sm font-semibold transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primaryDark disabled:cursor-not-allowed disabled:opacity-50";
+const currencyAmount = (amount: number, currency: string) => new Intl.NumberFormat("es-AR", { style: "currency", currency, maximumFractionDigits: 2 }).format(Number(amount || 0));
+
+function WalletSkeleton() { return <AccountSectionLayout><div aria-busy="true" aria-label="Cargando billetera" className="animate-pulse space-y-5"><div className="h-44 rounded-2xl bg-gray-200"/><div className="grid gap-4 md:grid-cols-3">{[0,1,2].map(i=><div key={i} className="h-28 rounded-2xl bg-gray-200"/>)}</div><div className="h-80 rounded-2xl bg-gray-200"/></div></AccountSectionLayout>; }
+
+function BalanceCard({ title, amount, description, icon: Icon, color }: { title: string; amount: Wallet["balances"]["retenido"]; description: string; icon: typeof WalletIcon; color: string }) {
+  return <article className={`rounded-2xl border border-gray-100 p-5 ${color}`}><div className="flex items-start justify-between gap-3"><div><p className="text-sm font-medium text-gray-600">{title}</p><p className="mt-2 text-xl font-semibold text-gray-900 md:text-2xl">{currencyAmount(amount.ARS,"ARS")}</p><p className="mt-1 text-sm font-medium text-gray-500">{currencyAmount(amount.USD,"USD")}</p></div><span className="rounded-xl bg-white/80 p-3 text-primaryDark"><Icon size={21}/></span></div><p className="mt-3 text-xs text-gray-500">{description}</p></article>;
+}
+
+function TransactionStatus({ status }: { status: string }) {
+  const normalized = status.toUpperCase();
+  const tone = normalized === "DISPONIBLE" ? "bg-amber-100 text-amber-800" : normalized === "RETENIDO" ? "bg-red-100 text-red-700" : "bg-green-100 text-green-800";
+  return <span className={`inline-flex rounded-full px-2.5 py-1 text-[10px] font-semibold ${tone}`}>{normalized || "SIN ESTADO"}</span>;
+}
 
 export default function WalletPage() {
-  const { user } = useUser();
+  const { user, loading: authLoading } = useUser();
   const [loading, setLoading] = useState(true);
   const [wallet, setWallet] = useState<Wallet | null>(null);
+  const [loadError, setLoadError] = useState(false);
+  const [revision, setRevision] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
-  const [formData, setFormData] = useState<Form>({
-    bankAccount: "",
-    usd: 0,
-    ars: 0,
-  });
+  const [bankAccount, setBankAccount] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [statusFilter, setStatusFilter] = useState("all");
 
   useEffect(() => {
-    if (!user) return;
+    if (authLoading) return;
+    if (!user?.id) { setLoading(false); return; }
+    const controller = new AbortController(); setLoading(true); setLoadError(false);
+    ProductsServices.getWallet(user.id).then((result: Wallet | null) => { if (!controller.signal.aborted) { setWallet(result); if (!result) setLoadError(true); } }).catch(() => { if (!controller.signal.aborted) setLoadError(true); }).finally(() => { if (!controller.signal.aborted) setLoading(false); });
+    return () => controller.abort();
+  }, [user?.id,authLoading,revision]);
 
-    const getWallet = async () => {
-      try {
-        const wallet = await ProductsServices.getWallet(user.id);
-        setWallet(wallet);
-        setLoading(false);
-      } catch (error) {
-        console.error("Error cargando wallet:", error);
-        // opcional: manejar un estado de error
-      } finally {
-        setLoading(false);
-      }
-    };
+  const transactions = useMemo(() => (wallet?.recent_transactions || []).filter((item: Transaction) => statusFilter === "all" || item.status.toUpperCase() === statusFilter), [wallet,statusFilter]);
 
-    getWallet();
-  }, [user]);
-
-  if (loading) {
-    return (
-      <main className="flex items-center justify-center min-h-[60vh]">
-        <div className="animate-spin rounded-full border-4 border-primaryDark border-t-transparent">
-          <img src="logo.png" width={80} height={80} alt="" />
-        </div>
-      </main>
-    );
-  }
-  console.log(typeof wallet?.balances.disponible.USD);
-
-  const openModal = () => setIsOpen(true);
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  async function requestTransfer(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!bankAccount.trim()) { toast.error("Ingresá el CBU o alias de destino."); return; }
+    setSubmitting(true);
     try {
-      const data = formData;
-      fetch("/api/test-email/request-balance", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          client: {
-            name: user?.name,
-          },
-          property: {
-            totalArs: wallet?.balances.disponible.ARS,
-            totalUsd: wallet?.balances.disponible.USD,
-            bank_account: data.bankAccount,
-          },
-        }),
-      });
-      setIsOpen(false);
-    } catch (error) {
-      console.error("Error enviando solicitud:", error);
-      // opcional: manejar un estado de error
-    }
-  };
+      const response = await fetch("/api/test-email/request-balance", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ client: { name: user?.name }, property: { totalArs: wallet?.balances.disponible.ARS, totalUsd: wallet?.balances.disponible.USD, bank_account: bankAccount.trim() } }) });
+      if (!response.ok) throw new Error("No se pudo enviar la solicitud");
+      toast.success("Solicitud de transferencia enviada."); setIsOpen(false); setBankAccount("");
+    } catch { toast.error("No pudimos enviar la solicitud. Intentá nuevamente."); }
+    finally { setSubmitting(false); }
+  }
 
-  return (
-    <main
-      className={`flex flex-col relative items-center justify-center mb-20 mx-10`}
-    >
-      <div className="publicar rounded-xl absolute h-full z-0 w-full" />
-      <section className="border relative border-black/50 rounded-xl mx-20 w-full flex flex-col">
-        <div className="flex md:flex-row flex-col items-center px-5 py-3 bg-white rounded-t-xl border-black/50 justify-between gap-5">
-          <div className="flex items-center px-5 py-3 bg-white rounded-t-xl border-black/50 justify-start gap-5">
-            <svg
-              width="55"
-              viewBox="0 0 65 65"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M25.4395 3.47656L22.9639 23.2317H28.3975L34.6309 4.62422L25.4395 3.47656ZM37.0811 4.49219L30.8096 23.2317L49.8145 23.2444L54.1689 10.2178L37.0811 4.49219ZM22.8496 5.84297L13.7217 6.83828L15.5117 23.2317H20.6787L22.8496 5.84297ZM8.12305 19.4231C6.66309 19.4231 5.68809 20.5403 5.42275 21.6067C5.29072 22.1399 5.36562 22.5716 5.51543 22.8128C5.66396 23.0413 5.86963 23.2317 6.59961 23.2317H13.2139L12.7949 19.4231H8.12305ZM53.4961 19.4231L52.2266 23.2317H58.2568C57.9268 22.597 57.7871 21.9241 57.876 21.2513C57.9648 20.5911 58.2188 19.9944 58.5488 19.4231H53.4961ZM5.20312 25.5169V56.8616C5.20312 57.5091 5.55732 58.2708 6.13877 58.8548C6.72148 59.4388 7.48828 59.7942 8.12305 59.7942L56.873 59.8069C57.5078 59.8069 58.2695 59.4515 58.8535 58.8675C59.4375 58.2835 59.793 57.5218 59.793 56.8743V47.8606H48.748C43.1621 47.8606 43.1621 37.4505 48.748 37.4505H59.793V25.5296L5.20312 25.5169ZM48.748 39.7356C46.209 39.7356 46.209 45.5755 48.748 45.5755H51.5791C50.4365 45.0931 49.6367 43.9632 49.6367 42.6556C49.6367 41.3479 50.4365 40.2181 51.5791 39.7356H48.748ZM54.042 39.7356C55.1846 40.2181 55.9844 41.3479 55.9844 42.6556C55.9844 43.9632 55.1846 45.0931 54.042 45.5755H61.8242V39.7356H54.042ZM52.8105 41.7669C52.3027 41.7669 51.9219 42.1478 51.9219 42.6556C51.9219 43.1634 52.3027 43.5442 52.8105 43.5442C53.3184 43.5442 53.6992 43.1634 53.6992 42.6556C53.6992 42.1478 53.3184 41.7669 52.8105 41.7669Z"
-                fill="#337444"
-              />
-            </svg>
-            <h1 className="text-2xl font-semibold">Mi Wallet</h1>
-          </div>
-          <button
-            onClick={openModal}
-            className="bg-orange-400 px-4 py-2 cursor-pointer rounded-md"
-          >
-            Solicitar Transferencia
-          </button>
-        </div>
-        <section className="mx-5 mt-10 mb-20 gap-10 flex flex-col">
-          <ul className="flex flex-col md:flex-row gap-10 md:gap-0 justify-between">
-            <li className="flex flex-col bg-white font-semibold border border-black/50 px-5 py-2 rounded-md items-center justify-center">
-              <div className="flex items-center gap-2">
-                <Saldo />
-                <p>Saldo retenido</p>
-                <div className="relative inline-block group">
-                  {/* Signo de pregunta */}
-                  <small className="bg-orange-400 rounded-full h-5 w-5 flex items-center justify-center text-white font-bold cursor-pointer select-none">
-                    ?
-                  </small>
+  if (loading || authLoading) return <WalletSkeleton />;
+  if (loadError || !wallet) return <AccountSectionLayout><div className="rounded-2xl border border-gray-200 bg-white p-8 text-center"><p role="alert" className="text-sm text-gray-600">No pudimos cargar tu billetera.</p><button className={`${button} mt-4 bg-primaryDark text-white`} onClick={()=>setRevision(value=>value+1)}>Reintentar</button></div></AccountSectionLayout>;
 
-                  {/* Tooltip - oculto por defecto, visible en hover */}
-                  <div
-                    className="invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-opacity duration-300
-                  absolute left-1/2 -translate-x-1/2 top-full mt-2
-                  w-50 spaccing-y-1 bg-orange-400 rounded-xl px-2 py-3
-                   font-semibold
-                  flex flex-col items-center
-                  whitespace-normal
-                  z-50
-                  drop-shadow-md"
-                  >
-                    <p className="text-sm">Que es esto?</p>
-                    <p className="text-xs">
-                      Tranquilo, no te preocupes, en ZonaQuintas nos encargamos
-                      de retener los ingresos hasta que la estadía de la reserva
-                      se complemente exitosamente para ofrecer mayor confianza y
-                      seguridad tanto a huéspedes como anfitriones.
-                    </p>
-                  </div>
-                </div>
-              </div>
-              <div className="flex gap-5">
-                <p>
-                  ARS ${wallet?.balances.retenido.ARS.toLocaleString("es-AR")}
-                </p>
-                <p>
-                  USD ${wallet?.balances.retenido.USD.toLocaleString("es-AR")}
-                </p>
-              </div>
-            </li>
-            <li className="flex flex-col bg-white font-semibold border border-black/50 px-5 py-2 rounded-md items-center justify-center">
-              <div className="flex items-center gap-2">
-                <Saldo />
-                <p>Saldo disponible</p>
-                <div className="relative inline-block group">
-                  {/* Signo de pregunta */}
-                  <small className="bg-orange-400 rounded-full h-5 w-5 flex items-center justify-center text-white font-bold cursor-pointer select-none">
-                    ?
-                  </small>
-
-                  {/* Tooltip - oculto por defecto, visible en hover */}
-                  <div
-                    className="invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-opacity duration-300
-                  absolute left-1/2 -translate-x-1/2 top-full mt-2
-                  w-50 spaccing-y-1 bg-orange-400 rounded-xl px-2 py-3
-                   font-semibold
-                  flex flex-col items-center
-                  whitespace-normal
-                  z-50
-                  drop-shadow-md"
-                  >
-                    <p className="text-xs">
-                      Este es tu dinero listo para ser transferido a tu cuenta.
-                      Podes hacer la solicitud de transferencia en cualquier
-                      momento y nosotros te transferiremos el dinero a tu banco
-                      indicado.
-                    </p>
-                  </div>
-                </div>
-              </div>
-              <div className="flex gap-5">
-                <p>
-                  ARS ${wallet?.balances.disponible.ARS.toLocaleString("es-AR")}
-                </p>
-                <p>
-                  USD ${wallet?.balances.disponible.USD.toLocaleString("es-AR")}
-                </p>
-              </div>
-            </li>
-            <li className="flex flex-col bg-white font-semibold border border-black/50 px-5 py-2 rounded-md items-center justify-center">
-              <div className="flex items-center gap-2">
-                <Saldo />
-                <p>Total transferido</p>
-                <div className="relative inline-block group">
-                  {/* Signo de pregunta */}
-                  <small className="bg-orange-400 rounded-full h-5 w-5 flex items-center justify-center text-white font-bold cursor-pointer select-none">
-                    ?
-                  </small>
-
-                  {/* Tooltip - oculto por defecto, visible en hover */}
-                  <div
-                    className="invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-opacity duration-300
-                  absolute left-1/2 -translate-x-1/2 top-full mt-2
-                  w-50 spaccing-y-1 bg-orange-400 rounded-xl px-2 py-3
-                   font-semibold
-                  flex flex-col items-center
-                  whitespace-normal
-                  z-50
-                  drop-shadow-md"
-                  >
-                    <p className="text-xs">
-                      Este es el balance de la cantidad de dinero transferido
-                      hasta el momento.
-                    </p>
-                  </div>
-                </div>
-              </div>
-              <div className="flex gap-5">
-                <p>
-                  ARS ${wallet?.balances.entregado.ARS.toLocaleString("es-AR")}
-                </p>
-                <p>
-                  USD ${wallet?.balances.entregado.USD.toLocaleString("es-AR")}
-                </p>
-              </div>
-            </li>
-          </ul>
-          <div className="flex gap-10 flex-col md:flex-row">
-            <div className="md:w-3/4 border border-black/50 rounded-md p-5 bg-white">
-              <h2 className="font-semibold text-xl">Lista de movimientos</h2>
-              {/* 🧱 Tabla completa en pantallas medianas o mayores */}
-              <div className="hidden md:block  max-h-96 overflow-x-auto">
-                {wallet?.recent_transactions.length === 0 ? (
-                  <div className="flex justify-center items-center">
-                    <p className="text-center">No hay movimientos de cuenta.</p>
-                  </div>
-                ) : (
-                  <table className="w-full text-sm">
-                    <thead className=" text-left font-medium">
-                      <tr>
-                        <th className="px-6 py-3">Fecha</th>
-                        <th className="px-6 py-3">Quinta</th>
-                        <th className="px-6 py-3">Monto</th>
-                        <th className="px-6 py-3">Estado</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {wallet?.recent_transactions.map((m, i) => (
-                        <tr
-                          key={i}
-                          className="border-t border-black/20 hover:bg-gray-50 transition"
-                        >
-                          <td className="px-6 py-3">{m.date}</td>
-                          <td className="px-6 py-3">{m.quinta_name}</td>
-                          <td className="px-6 py-3 font-medium">
-                            ${m.amount.toLocaleString("es-AR")}
-                          </td>
-                          <td className="px-6 py-3">
-                            <span
-                              className={`px-3 py-1 rounded-md text-xs font-semibold ${m.status === "DISPONIBLE"
-                                ? "bg-yellow-400 text-black"
-                                : m.status === "RETENIDO"
-                                  ? "bg-red-600 text-white"
-                                  : "bg-green-600 text-white"
-                                }`}
-                            >
-                              {m.status}
-                            </span>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                )}
-              </div>
-
-              {/* 📱 Vista mobile tipo "cards" */}
-              <div className="md:hidden divide-y divide-gray-200">
-                {wallet?.recent_transactions.map((m, i) => (
-                  <div key={i} className="p-4 flex flex-col gap-2">
-                    <div className="flex justify-between">
-                      <span className="text-gray-500 text-sm">Fecha</span>
-                      <span className="font-medium">{m.date}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-500 text-sm">Quinta</span>
-                      <span className="font-medium">{m.quinta_name}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-500 text-sm">Monto</span>
-                      <span className="font-medium">{m.amount}</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-gray-500 text-sm">Estado</span>
-                      <span
-                        className={`px-3 py-1 rounded-md text-xs font-semibold ${m.status === "DISPONIBLE"
-                          ? "bg-yellow-400 text-black"
-                          : m.status === "RETENIDO"
-                            ? "bg-red-600 text-white"
-                            : "bg-green-600 text-white"
-                          }`}
-                      >
-                        {m.status}
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div className="md:w-1/4 gap-5 flex flex-col">
-              <div className="font-semibold border border-black/50 rounded-md flex p-5 flex-col bg-white gap-3">
-                <p>Próxima transferencia</p>
-                <small>Proxima fecha de pago estimada</small>
-                <p>
-                  {wallet?.next_transfer ??
-                    "Todavía no se ha transferido ningún monto."}
-                </p>
-              </div>
-              <div className="bg-white flex flex-col border border-black/50 rounded-md gap-3 p-5">
-                <p className="font-semibold">Notificaciones</p>
-                <ul className="flex flex-col pl-5 gap-3">
-                  <li className="text-sm">
-                    Reserva 20/01/2026, Barajas Tomás cancelada.
-                  </li>
-                  <li className="text-sm">
-                    Reserva 20/01/2026, Barajas Tomás cancelada.
-                  </li>
-                  <li className="text-sm">
-                    Reserva 20/01/2026, Barajas Tomás cancelada.
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </section>
+  return <AccountSectionLayout>
+    <section className="relative isolate mb-5 overflow-hidden rounded-2xl bg-gray-900 text-white"><img src="/fondo.png" alt="" aria-hidden="true" className="absolute inset-0 -z-20 size-full object-cover"/><div className="absolute inset-0 -z-10 bg-gray-950/55"/><div className="flex flex-col gap-5 p-6 sm:p-8 md:flex-row md:items-center md:justify-between"><div><span className="mb-3 inline-flex rounded-xl bg-white/15 p-3"><WalletIcon size={24}/></span><h1 className="text-2xl font-semibold md:text-3xl">Mi Wallet</h1><p className="mt-2 max-w-lg text-sm text-white/85">Gestioná tus pagos, reembolsos y transferencias en ZonaQuintas.</p></div><button onClick={()=>setIsOpen(true)} disabled={wallet.balances.disponible.ARS <= 0 && wallet.balances.disponible.USD <= 0} className={`${button} min-h-12 bg-green-500 px-5 text-gray-950 hover:bg-green-400`}><Send size={16}/>Solicitar transferencia</button></div></section>
+    <section aria-label="Resumen de billetera" className="mb-5 grid gap-3 md:grid-cols-3"><BalanceCard title="Saldo retenido" amount={wallet.balances.retenido} description="Se libera cuando corresponde según el estado de la estadía." icon={WalletIcon} color="bg-green-50/80"/><BalanceCard title="Saldo disponible" amount={wallet.balances.disponible} description="Fondos disponibles para solicitar una transferencia." icon={Coins} color="bg-blue-50/80"/><BalanceCard title="Total transferido" amount={wallet.balances.entregado} description="Fondos que ya fueron transferidos a tu cuenta." icon={ArrowLeftRight} color="bg-white"/></section>
+    <div className="grid items-start gap-5 xl:grid-cols-[minmax(0,1.7fr)_minmax(250px,0.8fr)]">
+      <section aria-label="Lista de movimientos" className="min-w-0 rounded-2xl border border-gray-200 bg-white p-4 md:p-5"><div className="mb-4 flex flex-wrap items-center justify-between gap-3"><h2 className="text-lg font-semibold">Lista de movimientos</h2><label className="relative"><span className="sr-only">Filtrar movimientos</span><select className="min-h-10 appearance-none rounded-lg border border-gray-200 bg-white py-2 pl-3 pr-9 text-sm" value={statusFilter} onChange={e=>setStatusFilter(e.target.value)}><option value="all">Todos los movimientos</option><option value="RETENIDO">Retenidos</option><option value="DISPONIBLE">Disponibles</option><option value="ENTREGADO">Transferidos</option></select><ChevronDown size={15} className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"/></label></div>
+        {transactions.length ? <><div className="hidden overflow-x-auto md:block"><table className="w-full min-w-[540px] text-left text-sm"><caption className="sr-only">Movimientos de tu billetera</caption><thead className="border-y border-gray-100 text-xs text-gray-500"><tr><th scope="col" className="px-3 py-3 font-medium">Fecha</th><th scope="col" className="px-3 py-3 font-medium">Descripción / quinta</th><th scope="col" className="px-3 py-3 font-medium">Monto</th><th scope="col" className="px-3 py-3 font-medium">Estado</th></tr></thead><tbody>{transactions.map((item,i)=><tr key={item.id || `${item.date}-${i}`} className="border-b border-gray-100 last:border-0"><td className="whitespace-nowrap px-3 py-4 text-gray-600">{item.date}</td><td className="px-3 py-4"><p className="font-medium">{item.description || "Movimiento de reserva"}</p><p className="mt-1 text-xs text-gray-500">{item.quinta_name}</p></td><td className="whitespace-nowrap px-3 py-4 font-semibold">{currencyAmount(item.amount,item.currency)}</td><td className="px-3 py-4"><TransactionStatus status={item.status}/></td></tr>)}</tbody></table></div><div className="divide-y divide-gray-100 md:hidden">{transactions.map((item,i)=><article key={item.id || `${item.date}-${i}`} className="space-y-3 py-4 first:pt-1"><div className="flex justify-between gap-3"><div><p className="text-sm font-semibold">{item.quinta_name || "Movimiento de reserva"}</p><p className="mt-1 text-xs text-gray-500">{item.description}</p></div><p className="whitespace-nowrap text-sm font-semibold">{currencyAmount(item.amount,item.currency)}</p></div><div className="flex items-center justify-between"><span className="text-xs text-gray-500">{item.date}</span><TransactionStatus status={item.status}/></div></article>)}</div></> : <div className="rounded-xl bg-gray-50 px-4 py-12 text-center"><ArrowLeftRight size={25} className="mx-auto mb-3 text-gray-400"/><p className="text-sm font-medium text-gray-700">No hay movimientos para mostrar.</p><p className="mt-1 text-xs text-gray-500">Cuando haya actividad, la vas a encontrar acá.</p></div>}
       </section>
-      {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <form
-            onSubmit={handleSubmit}
-            className="bg-white rounded-lg flex flex-col gap-3 justify-center items-center p-4 max-w-md"
-          >
-            <h2 className="text-xl font-semibold">Solicitar Transferencia</h2>
-            <p>
-              Saldo disponible en ARS: $
-              {wallet?.balances.disponible.ARS.toLocaleString("es-AR")}
-            </p>
-            <p>
-              Saldo disponible en USD: $
-              {wallet?.balances.disponible.USD.toLocaleString("es-AR")}
-            </p>
-            <input
-              name="bankAccount"
-              onChange={(e) =>
-                setFormData({ ...formData, bankAccount: e.target.value })
-              }
-              type="text"
-              placeholder="CBU o Alias"
-              className="bg-white border border-gray-300 rounded-md py-2 px-4 block w-full focus:border-primary focus:ring-primary focus:outline-none focus:ring-opacity-40"
-            />
-            <div className="flex gap-5 justify-between">
-              <button className="bg-primaryDark text-white px-4 py-2 rounded-md cursor-pointer">
-                Enviar solicitud
-              </button>
-              <button
-                onClick={() => setIsOpen(false)}
-                className="bg-red-500 text-white px-4 py-2 rounded-md cursor-pointer"
-              >
-                Cerrar
-              </button>
-            </div>
-          </form>
-        </div>
-      )}
-    </main>
-  );
+      <aside className="space-y-4"><section className="rounded-2xl border border-gray-200 bg-white p-5"><h2 className="flex items-center gap-2 font-semibold"><CalendarDays size={18} className="text-primaryDark"/>Próxima transferencia</h2><p className="mt-4 text-xs text-gray-500">Próxima fecha de pago estimada</p><p className="mt-1 font-medium">{wallet.next_transfer || "Todavía no hay una transferencia programada."}</p><div className="mt-4 flex gap-2 rounded-xl bg-gray-50 p-3 text-xs leading-relaxed text-gray-600"><CircleHelp size={16} className="mt-0.5 shrink-0 text-gray-500"/>El saldo disponible puede solicitarse mediante transferencia a tu cuenta bancaria.</div></section>
+        <section className="rounded-2xl border border-gray-200 bg-white p-5"><h2 className="flex items-center gap-2 font-semibold"><Bell size={18} className="text-primaryDark"/>Notificaciones</h2><div className="mt-4 rounded-xl bg-gray-50 p-4 text-center"><p className="text-sm font-medium text-gray-700">No tenés notificaciones nuevas.</p><p className="mt-1 text-xs text-gray-500">Cuando haya informaci?n disponible, la vas a encontrar ac?.</p></div></section></aside>
+    </div>
+    {isOpen && <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-950/50 p-4" onMouseDown={e=>{if(e.target===e.currentTarget&&!submitting)setIsOpen(false);}}><section role="dialog" aria-modal="true" aria-labelledby="transfer-title" className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl"><div className="flex items-center justify-between"><h2 id="transfer-title" className="text-xl font-semibold">Solicitar transferencia</h2><button type="button" disabled={submitting} onClick={()=>setIsOpen(false)} aria-label="Cerrar" className="rounded-lg p-2 text-gray-500 hover:bg-gray-100"><X size={19}/></button></div><p className="mt-2 text-sm text-gray-500">Indicá la cuenta donde querés recibir tus fondos.</p><div className="mt-5 space-y-2 rounded-xl bg-gray-50 p-4 text-sm"><p className="flex justify-between gap-4"><span>Disponible en ARS</span><strong>{currencyAmount(wallet.balances.disponible.ARS,"ARS")}</strong></p><p className="flex justify-between gap-4"><span>Disponible en USD</span><strong>{currencyAmount(wallet.balances.disponible.USD,"USD")}</strong></p></div><form onSubmit={requestTransfer} className="mt-5 space-y-4"><label htmlFor="bank-account" className="block text-sm font-medium">CBU o alias</label><input id="bank-account" required autoFocus value={bankAccount} onChange={e=>setBankAccount(e.target.value)} maxLength={100} className="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm outline-none focus:border-primaryDark focus:ring-2 focus:ring-primaryDark/15" placeholder="Ingresá el CBU o alias"/><div className="grid grid-cols-2 gap-3"><button type="button" disabled={submitting} onClick={()=>setIsOpen(false)} className={`${button} border border-gray-200 text-gray-700`}>Cerrar</button><button disabled={submitting} className={`${button} bg-primaryDark text-white hover:bg-green-700`}>{submitting?"Enviando…":"Enviar solicitud"}</button></div></form></section></div>}
+  </AccountSectionLayout>;
 }

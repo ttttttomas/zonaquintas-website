@@ -10,6 +10,8 @@ import { createPaymentLinkRebill } from "@/lib/rebill";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import AccountSectionLayout from "@/app/components/AccountSectionLayout";
+import { CalendarDays, CircleCheck, Clock3, Hourglass } from "lucide-react";
 
 function balancePaymentDate(checkOut: string): string {
   const [year, month, day] = checkOut.slice(0, 10).split("-").map(Number);
@@ -154,7 +156,7 @@ function ReservationCard({ booking, onUpdated }: { booking: Booking; onUpdated: 
   };
 
   return (
-    <div className="bg-white flex flex-col min-w-sm h-min max-w-sm shadow-md shadow-black/50 p-4 rounded-xl border border-gray-100">
+    <div className="bg-white flex flex-col min-w-0 h-min w-full max-w-sm shadow-sm p-4 rounded-2xl border border-gray-200">
       <div className="flex gap-3 mb-4">
         <img
           src={booking.quinta_main_image}
@@ -271,6 +273,7 @@ export default function ReservationsPage() {
   const [allBookings, setAllBookings] = useState<Booking[]>([]);
   const [revision, setRevision] = useState(0);
   const [loadError, setLoadError] = useState(false);
+  const [section, setSection] = useState<"calendar" | "pending" | "process" | "finished">("calendar");
 
   useEffect(() => {
     if (!user) return;
@@ -317,79 +320,20 @@ export default function ReservationsPage() {
     getOwnerReservations();
   }, [user, revision]);
 
-  if (loading) {
-    return (
-      <main className="flex items-center justify-center min-h-[60vh]">
-        <div className="animate-spin rounded-full border-4 border-primaryDark border-t-transparent">
-          <img src="logo.png" width={80} height={80} alt="" />
-        </div>
-      </main>
-    );
-  }
+  if (loading) return <AccountSectionLayout><div aria-busy="true" aria-label="Cargando tus reservas" className="animate-pulse space-y-5"><div className="h-12 w-64 rounded-xl bg-gray-200"/><div className="h-14 rounded-xl bg-gray-200"/><div className="h-72 rounded-2xl bg-gray-200"/><div className="grid gap-4 md:grid-cols-2"><div className="h-60 rounded-2xl bg-gray-200"/><div className="h-60 rounded-2xl bg-gray-200"/></div></div></AccountSectionLayout>;
 
-  return (
-    <main className="mx-auto px-4 md:px-10 py-10">
-      {loadError ? <p role="alert" className="text-red-600 mb-6">No se pudieron cargar las reservas. Recargá la página para intentar de nuevo.</p> :
-        <OwnerAvailabilityCalendar properties={properties} bookings={allBookings} />}
-      <div className="flex flex-col md:flex-row justify-between items-start gap-8">
-        <div className="flex-1 space-y-12 w-full">
-
-          <section>
-            <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-              <span className="w-2 h-8 bg-primaryDark rounded-full" />
-              Reservas pendientes
-            </h2>
-            <div className="flex flex-wrap gap-6">
-              {reservationsPending.length > 0 ? (
-                reservationsPending.map((res) => <ReservationCard key={res.id} booking={res} onUpdated={() => setRevision((value) => value + 1)} />)
-              ) : (
-                <p className="text-gray-400 italic">No tienes reservas pendientes en este momento.</p>
-              )}
-            </div>
-          </section>
-
-          <section>
-            <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-              <span className="w-2 h-8 bg-orange-400 rounded-full" />
-              En proceso de pago
-            </h2>
-            <div className="flex flex-wrap gap-6">
-              {[...reservationsAccepted, ...reservationsPaid].length > 0 ? (
-                [...reservationsAccepted, ...reservationsPaid].map((res) => (
-                  <ReservationCard key={res.id} booking={res} onUpdated={() => setRevision((value) => value + 1)} />
-                ))
-              ) : (
-                <p className="text-gray-400 italic">No hay reservas activas esperando pago.</p>
-              )}
-            </div>
-          </section>
-
-          <section>
-            <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-              <span className="w-2 h-8 bg-gray-400 rounded-full" />
-              Reservas finalizadas
-            </h2>
-            <div className="flex flex-wrap gap-6">
-              {reservationsDone.length > 0 ? (
-                reservationsDone.map((res) => <ReservationCard key={res.id} booking={res} onUpdated={() => setRevision((value) => value + 1)} />)
-              ) : (
-                <p className="text-gray-400 italic">Tu historial de reservas finalizadas aparecerá aquí.</p>
-              )}
-            </div>
-          </section>
-
-        </div>
-
-        <div className="w-full md:w-64 shrink-0">
-          <Link
-            href="/my-account"
-            className="block bg-white border-2 border-primaryDark text-primaryDark hover:bg-primaryDark hover:text-white transition-all rounded-2xl p-8 text-center shadow-lg shadow-green-100 group"
-          >
-            <p className="text-xs uppercase tracking-widest font-black mb-2 opacity-60">Configuración</p>
-            <p className="font-bold text-2xl group-hover:scale-110 transition-transform">Mis datos</p>
-          </Link>
-        </div>
-      </div>
-    </main>
-  );
+  const visibleBookings = section === "pending" ? reservationsPending : section === "process" ? [...reservationsAccepted, ...reservationsPaid] : reservationsDone;
+  const sectionTitle = section === "pending" ? "Reservas pendientes" : section === "process" ? "En proceso de pago" : "Reservas finalizadas";
+  return <AccountSectionLayout>
+    <header className="mb-5"><h1 className="text-2xl font-semibold text-gray-900 md:text-3xl">Mis reservas</h1><p className="mt-1 text-sm text-gray-500">Gestioná tus reservas, pagos y disponibilidad en un solo lugar.</p></header>
+    {loadError && <div role="alert" className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-red-100 bg-red-50 p-4 text-sm text-red-700">No se pudieron cargar las reservas. Recargá para intentar de nuevo.<button className="font-semibold underline" onClick={() => setRevision(v => v + 1)}>Reintentar</button></div>}
+    <nav aria-label="Secciones de reservas" className="mb-5 flex gap-2 overflow-x-auto border-b border-gray-200">{[
+      {key:"calendar",label:"Calendario",count:null,icon:CalendarDays},
+      {key:"pending",label:"Pendientes",count:reservationsPending.length,icon:Clock3},
+      {key:"process",label:"En proceso de pago",count:reservationsAccepted.length+reservationsPaid.length,icon:Hourglass},
+      {key:"finished",label:"Finalizadas",count:reservationsDone.length,icon:CircleCheck},
+    ].map(({key,label,count,icon:Icon})=><button key={key} type="button" aria-pressed={section===key} onClick={()=>setSection(key as typeof section)} className={`flex shrink-0 items-center gap-2 border-b-2 px-3 py-3 text-xs font-semibold transition md:text-sm ${section===key?"border-primaryDark text-primaryDark":"border-transparent text-gray-500 hover:text-gray-900"}`}><Icon size={17}/>{label}{count !== null && <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[10px]">{count}</span>}</button>)}</nav>
+    {section === "calendar" && !loadError && <section className="mb-5 overflow-hidden rounded-2xl border border-gray-200 bg-white p-3 md:p-5"><h2 className="mb-4 flex items-center gap-2 font-semibold"><CalendarDays size={18} className="text-primaryDark"/>Calendario de disponibilidad</h2><OwnerAvailabilityCalendar properties={properties} bookings={allBookings} /></section>}
+    {section !== "calendar" && <section aria-live="polite"><div className="mb-4 flex items-center gap-2"><span className={`size-2.5 rounded-full ${section === "pending" ? "bg-amber-400" : section === "process" ? "bg-orange-400" : "bg-green-500"}`} /><h2 className="text-lg font-semibold">{sectionTitle}</h2></div><div className="grid items-start gap-4 md:grid-cols-2 xl:grid-cols-3">{visibleBookings.map(res=><ReservationCard key={res.id} booking={res} onUpdated={()=>setRevision(v=>v+1)}/>)}{visibleBookings.length === 0 && <div className="col-span-full rounded-2xl border border-dashed border-gray-300 bg-white px-6 py-12 text-center"><CircleCheck size={28} className="mx-auto mb-3 text-gray-400"/><p className="font-medium text-gray-700">{section === "pending" ? "No tenés reservas pendientes." : section === "process" ? "No hay reservas esperando el pago del huésped." : "Tu historial de reservas finalizadas aparecerá acá."}</p></div>}</div></section>}
+  </AccountSectionLayout>;
 }
