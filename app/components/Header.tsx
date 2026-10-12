@@ -43,7 +43,7 @@ export default function Header() {
     "/": "Encontrá, reservá y disfrutá.",
     "/favorites": "Mis favoritos",
     "/support": "Soporte",
-    "/quintas": "Resultados de busqueda de Quintas",
+    "/quintas": "Resultados de busqueda",
     "/terms": "Términos y condiciones",
     "/politics": "Políticas de privacidad",
     "/dashboard": "Panel administrador",
@@ -52,6 +52,12 @@ export default function Header() {
     "/publications": "Mis publicaciones",
     "/wallet": "Wallet",
     "/membresia": "Membresía para Propietarios",
+    "/estadias": "Tus estadias",
+    "/publicar-quinta": "Publica tu Quinta",
+    "/publicar-quinta/paso-1": "Paso 1 - Datos",
+    "/publicar-quinta/paso-2": "Paso 2 - Fotos",
+    "/publicar-quinta/paso-3": "Paso 3 - Precios",
+    "/publicar-quinta/paso-4": "Paso 4 - Finalizar",
   };
 
   const title = useMemo(() => titlesMap[path] || null, [path]);
@@ -95,12 +101,17 @@ export default function Header() {
     // }
 
     if (user) {
-      links.push({ label: "Cerrar sesión", onClick: logout });
-      if (user.role === "admin") {
-        links.push({ label: "Panel Administrador", href: "/dashboard" });
-      }
+      links.push({ label: "Mis datos", href: "/my-account" });
+      links.push({ label: "Mis reservas", href: "/reservations" });
+      links.push({ label: "Mis publicaciones", href: "/publications" });
       links.push({ label: "Wallet", href: "/wallet" });
+      
+      // if (user.role === "admin") {
+      //   links.push({ label: "Panel Administrador", href: "/dashboard" });
+      // }
     }
+    links.push({ label: "Cerrar sesión", onClick: logout });
+
     return links;
   }, [user]);
 
@@ -125,68 +136,42 @@ export default function Header() {
   );
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 flex h-16 flex-row items-center justify-between bg-white/95 px-4 shadow-sm backdrop-blur-sm md:h-auto md:bg-transparent md:px-10 md:py-2 md:shadow-none">
-      <ul className="hidden gap-5 items-center md:flex">
-        {showAccountNavigation && (
-          <li className="text-gray-900 cursor-pointer">
-            <DropdownMenu modal={false}>
-              <DropdownMenuTrigger
-                disabled={!user && !isMobile}
-                className={`outline-none flex items-center gap-1 hover:opacity-80 transition-opacity font-medium text-md ${
-                  !user && !isMobile
-                    ? "text-gray-300 cursor-default"
-                    : "text-gray-900 cursor-pointer"
-                }`}
-              >
-                Mi Cuenta <span className="text-[10px] ">▼</span>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                align="start"
-                sideOffset={8}
-                className="w-46 bg-white shadow-lg border border-gray-100"
-              >
-                {navLinks.map((link, index) => {
-                  if (link.type === "separator") {
-                    return <DropdownMenuSeparator key={index} />;
-                  }
-                  if (link.onClick) {
-                    return (
-                      <DropdownMenuItem
-                        key={index}
-                        onClick={link.onClick}
-                        className="cursor-pointer text-red-600 focus:text-red-600"
-                      >
-                        {link.label}
-                      </DropdownMenuItem>
-                    );
-                  }
-                  return (
-                    <DropdownMenuItem key={index} asChild>
-                      <Link href={link.href} className="w-full cursor-pointer">
-                        {link.label}
-                      </Link>
-                    </DropdownMenuItem>
-                  );
-                })}
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </li>
+    <header className="fixed inset-x-0 top-0 z-50 flex h-16 flex-row items-center justify-between bg-white/95 px-4 md:m-4 md:rounded-xl shadow-lg backdrop-blur-sm md:h-auto md:px-10 md:py-4">
+      <div className="flex items-center gap-10">
+        <Link href="/" className="flex items-center gap-3">
+          <Logo className="w-10 md:w-[70px]" />
+          <div className="leading-tight text-nowrap">
+            <p className="font-extrabold text-nowrap flex text-sm md:text-xl">
+              Zona<p className="text-primaryDark text-nowrap">Quintas</p>
+            </p>
+            <span className="hidden md:block text-center">{title}</span>
+          </div>
+        </Link>
+        <nav className="flex font-medium text-sm md:text-[16px] items-center gap-5 md:gap-10">
+          <Link href=''>Quienes somos</Link>
+          <Link className="hidden md:block" href='/publicar-quinta'>Publica tu Quinta</Link>
+          <Link className="hidden md:block" href='/support'>Contacto</Link>
+        </nav>
+      </div>
+      <div className="flex items-center gap-5 md:hidden">
+        <Link href="/support">
+          <HelpCircle size={23} aria-hidden="true" />
+        </Link>
+        
+        {user && (
+          <Link href="/login" onClick={logout}>
+            <LogOut size={23} aria-hidden="true" />
+          </Link>
         )}
-        <li className="text-gray-900 cursor-pointer hover:opacity-80 transition-opacity font-medium text-md">
-          <Link href="/publicar-quinta">Publica tu Quinta</Link>
-        </li>
-        <li className="text-gray-900 cursor-pointer hover:opacity-80 transition-opacity font-medium text-md">
-          <Link href="/support">Soporte</Link>
-        </li>
-      </ul>
-      <Link href="/" className="flex items-center gap-3">
-        <Logo className="w-10 md:w-[70px]" />
-        <div className="leading-tight">
-          <p className="font-semibold text-sm md:text-lg">ZonaQuintas</p>
-          <span className="hidden md:block">{title}</span>
-        </div>
-      </Link>
-
+        {!user && (
+          <Link
+            className="flex items-center text-md text-white bg-primaryDark rounded-full px-4 py-2 shadow-md"
+            href="/login"
+          >
+            Iniciar sesion
+          </Link>
+        )}
+      </div>
       {loading ? (
         <div className="hidden md:block">
           <UserSectionSkeleton />
@@ -194,10 +179,64 @@ export default function Header() {
       ) : (
         <div className="hidden items-center gap-3 justify-between relative md:flex">
           {user ? (
-            <div className="hidden md:flex bg-primaryDark items-center px-3 py-1 rounded-4xl gap-2 text-white justify-center">
-              {user && <p className="truncate">Bienvenido/a, {user.name}!</p>}
-              <UserAvatar size="w-8" />
-            </div>
+            <ul className="hidden gap-5 items-center md:flex">
+              {showAccountNavigation && (
+                <li className="text-gray-900 cursor-pointer">
+                  <DropdownMenu modal={false}>
+                    <DropdownMenuTrigger
+                      disabled={!user}
+                      className={`outline-none flex items-center gap-1 transition-opacity font-medium text-md ${
+                        !user
+                          ? "text-gray-300 cursor-default"
+                          : "text-gray-900 cursor-pointer"
+                      }`}
+                    >
+                      <div className="hidden md:flex b items-center px-3 py-1 rounded-4xl gap-4 text-black justify-center">
+                        <UserAvatar size="w-11" />
+                        {user && (
+                          <p className="truncate md:block hidden">
+                            {user.name}
+                          </p>
+                        )}
+                      </div>{" "}
+                      <span className="text-[10px] ">▼</span>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent
+                      align="start"
+                      sideOffset={8}
+                      className="w-46 bg-white shadow-lg border border-gray-100"
+                    >
+                      {navLinks.map((link, index) => {
+                        if (link.type === "separator") {
+                          return <DropdownMenuSeparator key={index} />;
+                        }
+                        if (link.onClick) {
+                          return (
+                            <DropdownMenuItem
+                              key={index}
+                              onClick={link.onClick}
+                              className="cursor-pointer text-red-600 focus:text-red-600"
+                            >
+                              {link.label}
+                            </DropdownMenuItem>
+                          );
+                        }
+                        return (
+                          <DropdownMenuItem key={index} asChild>
+                            <Link
+                              href={link.href}
+                              className="w-full cursor-pointer"
+                            >
+                              {link.label}
+                            </Link>
+                          </DropdownMenuItem>
+                        );
+                      })}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </li>
+              )}
+            </ul>
           ) : (
             <div className="md:flex items-center hidden gap-2 text-black divide-x divide-gray-400 justify-center">
               <Link href="/login">
@@ -214,26 +253,7 @@ export default function Header() {
           )}
         </div>
       )}
-      <div className="flex items-center gap-5 md:hidden">
-        <Link href="/support">
-          <HelpCircle size={23} aria-hidden="true" />
-        </Link>
-        {user && (
-          <Link href="/wallet">
-            <Wallet size={23} aria-hidden="true" />
-          </Link>
-        )}
-        {user && (
-          <Link href="/login" onClick={logout}>
-            <LogOut size={23} aria-hidden="true" />
-          </Link>
-        )}
-        {!user && (
-          <Link className="flex items-center text-md text-white bg-primaryDark rounded-full px-4 py-2 shadow-md" href="/login">
-            Iniciar sesion
-          </Link>
-        )}
-      </div>
+
       {isMobileMenuOpen && (
         <nav
           id="mobile-header-menu"

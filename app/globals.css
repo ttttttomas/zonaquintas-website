@@ -9,6 +9,21 @@
     --color-tertiary: #84b6f4;
 }
 
+#form-home {
+  position: relative;
+  z-index: 20;
+  isolation: isolate;
+}
+
+#form-home::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: url("/fondo.png") center / cover no-repeat;
+  opacity: 0.9;
+}
+
 
 /* Ocultar scrollbars */
 .scrollbar-hide::-webkit-scrollbar {

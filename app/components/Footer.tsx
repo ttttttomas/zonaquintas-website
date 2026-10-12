@@ -67,7 +67,7 @@ export default function Footer() {
       </section>
       <section className="flex flex-col gap-2 w-full justify-between items-center font-bold py-4 px-5 md:flex-row md:gap-0 md:py-0 md:px-5 bg-white">
         <p className="text-xs md:text-md text-center md:text-left">
-          ©2025 - Todos los derechos reservados
+          ©2026 - Todos los derechos reservados
         </p>
         <div className="flex md:justify-between md:w-auto w-full md:pl-0 items-center justify-center md:justify-end md:gap-5">
           <p className="text-xs md:text-md">Desarrollado por </p>

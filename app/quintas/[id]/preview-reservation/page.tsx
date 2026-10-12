@@ -185,7 +185,7 @@ export default function PreviewReservationPage() {
       }, 2000);
     } catch (failure: unknown) {
       const status = (failure as { response?: { status?: number } })?.response?.status;
-      toast.error(status === 409 ? "Las fechas ya fueron reservadas. Elegí otras fechas." : "No se pudo confirmar la reserva. Revisá las fechas e intentá de nuevo.");
+      toast.error(status === 409 ? "Las fechas ya fueron reservadas. Elegí otras fechas." : status === 401 ? "Por favor, inicia sesión para realizar una reserva." : "No se pudo confirmar la reserva. Revisá las fechas e intentá de nuevo.");
       setSubmitting(false);
     }
   };
