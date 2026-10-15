@@ -283,6 +283,8 @@ export default function ReservationsPage() {
   const [reviewBooking, setReviewBooking] = useState<string | null>(null);
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
+    const requestedSection = params.get("section");
+    if (requestedSection === "calendar" || requestedSection === "pending" || requestedSection === "process" || requestedSection === "finished" || requestedSection === "reviews") setSection(requestedSection);
     if (params.get("action") === "review" && params.get("booking")) { setSection("reviews"); setReviewBooking(params.get("booking")); }
   }, []);
 

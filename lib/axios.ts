@@ -30,6 +30,7 @@ apiClient.interceptors.response.use(
         // Solo redirigir a login si estamos en una ruta protegida
         if (typeof window !== "undefined") {
           const protectedRoutes = [
+            "/propietario",
             "/my-account",
             "/reservations",
             "/estadias",

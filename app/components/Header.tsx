@@ -1,4 +1,6 @@
 "use client";
+import ExperienceSwitcher from "./ExperienceSwitcher";
+import { guestNavigation, ownerNavigation } from "@/app/lib/experience";
 import User from "./icons/User";
 import Logo from "./icons/Logo";
 import Link from "next/link";
@@ -17,7 +19,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 export default function Header() {
-  const { user, loading } = useUser();
+  const { user, loading, viewMode } = useUser();
   const path = usePathname();
   const showAccountNavigation = ![
     "/my-account",
@@ -82,38 +84,22 @@ export default function Header() {
     }
   };
 
-  // Centralized Navigation Links
-  const navLinks = useMemo(() => {
-    const links: any[] = [];
-    if (!user) {
-      links.push({ label: "Iniciar sesión", href: "/login" });
-      links.push({ label: "Registrate", href: "/register" });
-    }
-
-    // if (user) {
-    //   if (user.membership_status === "active") {
-    //     links.push({ label: "Mis Datos", href: "/my-account" });
-    //     links.push({ label: "Mi Membresía", href: "/my-membership" });
-    //   } else {
-    //     links.push({ label: "Mis Datos", href: "/my-account" });
-    //     links.push({ label: "Membresía Premium", href: "/membresia" });
-    //   }
-    // }
-
-    if (user) {
-      links.push({ label: "Mis datos", href: "/my-account" });
-      links.push({ label: "Mis reservas", href: "/reservations" });
-      links.push({ label: "Mis publicaciones", href: "/publications" });
-      links.push({ label: "Wallet", href: "/wallet" });
-      
-      // if (user.role === "admin") {
-      //   links.push({ label: "Panel Administrador", href: "/dashboard" });
-      // }
-    }
-    links.push({ label: "Cerrar sesión", onClick: logout });
-
-    return links;
-  }, [user]);
+  const navLinks: {
+    label: string;
+    href?: string;
+    onClick?: () => void;
+    type?: string;
+  }[] = user
+    ? [
+        ...(viewMode === "owner" ? ownerNavigation : guestNavigation),
+        { label: "Mis datos", href: "/my-account" },
+        { label: "Soporte", href: "/support" },
+        { label: "Cerrar sesión", onClick: logout },
+      ]
+    : [
+        { label: "Iniciar sesión", href: "/login" },
+        { label: "Registrate", href: "/register" },
+      ];
 
   const UserAvatar = ({ size = "w-8" }: { size?: string }) => {
     if (!user) return <User />;
@@ -136,28 +122,41 @@ export default function Header() {
   );
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 flex h-16 flex-row items-center justify-between bg-white/95 px-4 md:m-4 md:rounded-xl shadow-lg backdrop-blur-sm md:h-auto md:px-10 md:py-4">
-      <div className="flex items-center gap-10">
-        <Link href="/" className="flex items-center gap-3">
-          <Logo className="w-10 md:w-[70px]" />
+    <header className="fixed inset-x-0 top-0 z-50 flex h-16 flex-row items-center justify-between bg-white/95 px-4 md:m-4 md:rounded-xl shadow-lg backdrop-blur-sm md:h-auto md:px-10 md:py-2">
+      <div className="flex items-center gap-5 md:gap-10">
+        <Link
+          href={user && viewMode === "owner" ? "/propietario" : "/"}
+          className="flex items-center gap-3"
+        >
+          <Logo className="w-10 md:w-[65px]" />
           <div className="leading-tight text-nowrap">
             <p className="font-extrabold text-nowrap flex text-sm md:text-xl">
-              Zona<p className="text-primaryDark text-nowrap">Quintas</p>
+              Zona<span className="text-primaryDark text-nowrap">Quintas</span>
             </p>
-            <span className="hidden md:block text-center">{title}</span>
+            <span className="hidden xl:block text-center">{title}</span>
           </div>
         </Link>
-        <nav className="flex font-medium text-sm md:text-[16px] items-center gap-5 md:gap-10">
-          <Link href=''>Quienes somos</Link>
-          <Link className="hidden md:block" href='/publicar-quinta'>Publica tu Quinta</Link>
-          <Link className="hidden md:block" href='/support'>Contacto</Link>
+        <nav className="hidden lg:flex font-medium text-sm md:text-[16px] items-center gap-5 md:gap-10">
+          <Link className="hidden lg:block" href="">
+            Quienes somos
+          </Link>
+          <Link className="hidden md:block" href="/publicar-quinta">
+            Publica tu Quinta
+          </Link>
+          <Link className="hidden md:block" href="/support">
+            Contacto
+          </Link>
         </nav>
       </div>
-      <div className="flex items-center gap-5 md:hidden">
+      <div className="hidden md:block">
+        <ExperienceSwitcher />
+      </div>
+      <div className="flex items-center gap-2 md:gap-3 md:hidden">
+        
         <Link href="/support">
           <HelpCircle size={23} aria-hidden="true" />
         </Link>
-        
+
         {user && (
           <Link href="/login" onClick={logout}>
             <LogOut size={23} aria-hidden="true" />
@@ -165,12 +164,26 @@ export default function Header() {
         )}
         {!user && (
           <Link
-            className="flex items-center text-md text-white bg-primaryDark rounded-full px-4 py-2 shadow-md"
+            className="flex items-center text-sm md:text-md text-white bg-primaryDark rounded-full px-4 py-2 shadow-md"
             href="/login"
           >
             Iniciar sesion
           </Link>
         )}
+        <button
+          type="button"
+          aria-label={isMobileMenuOpen ? "Cerrar menú" : "Abrir menú"}
+          aria-expanded={isMobileMenuOpen}
+          aria-controls="mobile-header-menu"
+          onClick={() => setIsMobileMenuOpen((open) => !open)}
+          className="flex size-11 items-center justify-center rounded-full focus-visible:outline-2 focus-visible:outline-primaryDark"
+        >
+          {isMobileMenuOpen ? (
+            <X size={23} aria-hidden="true" />
+          ) : (
+            <MenuIcon size={23} aria-hidden="true" />
+          )}
+        </button>
       </div>
       {loading ? (
         <div className="hidden md:block">
@@ -179,63 +192,63 @@ export default function Header() {
       ) : (
         <div className="hidden items-center gap-3 justify-between relative md:flex">
           {user ? (
-            <ul className="hidden gap-5 items-center md:flex">
-              {showAccountNavigation && (
-                <li className="text-gray-900 cursor-pointer">
-                  <DropdownMenu modal={false}>
-                    <DropdownMenuTrigger
-                      disabled={!user}
-                      className={`outline-none flex items-center gap-1 transition-opacity font-medium text-md ${
-                        !user
-                          ? "text-gray-300 cursor-default"
-                          : "text-gray-900 cursor-pointer"
-                      }`}
-                    >
-                      <div className="hidden md:flex b items-center px-3 py-1 rounded-4xl gap-4 text-black justify-center">
-                        <UserAvatar size="w-11" />
-                        {user && (
-                          <p className="truncate md:block hidden">
-                            {user.name}
-                          </p>
-                        )}
-                      </div>{" "}
-                      <span className="text-[10px] ">▼</span>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent
-                      align="start"
-                      sideOffset={8}
-                      className="w-46 bg-white shadow-lg border border-gray-100"
-                    >
-                      {navLinks.map((link, index) => {
-                        if (link.type === "separator") {
-                          return <DropdownMenuSeparator key={index} />;
-                        }
-                        if (link.onClick) {
-                          return (
-                            <DropdownMenuItem
-                              key={index}
-                              onClick={link.onClick}
-                              className="cursor-pointer text-red-600 focus:text-red-600"
-                            >
-                              {link.label}
-                            </DropdownMenuItem>
-                          );
-                        }
+            <ul
+              className={`hidden gap-5 items-center md:flex ${showAccountNavigation ? "" : "lg:hidden"}`}
+            >
+              <li className="text-gray-900 cursor-pointer">
+                <DropdownMenu modal={false}>
+                  <DropdownMenuTrigger
+                    disabled={!user}
+                    className={`focus-visible:outline-2 focus-visible:outline-primaryDark flex items-center gap-1 transition-opacity font-medium text-md ${
+                      !user
+                        ? "text-gray-300 cursor-default"
+                        : "text-gray-900 cursor-pointer"
+                    }`}
+                  >
+                    <div className="hidden md:flex b items-center px-3 py-1 rounded-4xl gap-4 text-black justify-center">
+                      <UserAvatar size="w-11" />
+                      {user && (
+                        <p className="hidden max-w-40 truncate xl:block">
+                          {user.name}
+                        </p>
+                      )}
+                    </div>{" "}
+                    <span className="text-[10px] ">▼</span>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent
+                    align="start"
+                    sideOffset={8}
+                    className="w-46 bg-white shadow-lg border border-gray-100"
+                  >
+                    {navLinks.map((link, index) => {
+                      if (link.type === "separator") {
+                        return <DropdownMenuSeparator key={index} />;
+                      }
+                      if (link.onClick) {
                         return (
-                          <DropdownMenuItem key={index} asChild>
-                            <Link
-                              href={link.href}
-                              className="w-full cursor-pointer"
-                            >
-                              {link.label}
-                            </Link>
+                          <DropdownMenuItem
+                            key={index}
+                            onClick={link.onClick}
+                            className="cursor-pointer text-red-600 focus:text-red-600"
+                          >
+                            {link.label}
                           </DropdownMenuItem>
                         );
-                      })}
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </li>
-              )}
+                      }
+                      return (
+                        <DropdownMenuItem key={index} asChild>
+                          <Link
+                            href={link.href!}
+                            className="w-full cursor-pointer"
+                          >
+                            {link.label}
+                          </Link>
+                        </DropdownMenuItem>
+                      );
+                    })}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </li>
             </ul>
           ) : (
             <div className="md:flex items-center hidden gap-2 text-black divide-x divide-gray-400 justify-center">
@@ -258,9 +271,18 @@ export default function Header() {
         <nav
           id="mobile-header-menu"
           aria-label="Menú principal"
-          className="absolute inset-x-0 top-full max-h-[calc(100dvh-4rem)] overflow-y-auto border-t border-gray-100 bg-white px-4 py-3 shadow-lg md:hidden"
+          className="absolute inset-x-0 left-10 top-full max-h-[calc(100dvh-4rem)] overflow-y-auto border-t border-gray-100 bg-white px-4 py-3 shadow-lg md:hidden"
         >
           <div className="flex flex-col">
+            {user && (
+              <div className="mb-3 border-b border-gray-100 pb-3">
+                <p className="mb-2 text-xs text-gray-500">
+                  Estás en modo{" "}
+                  {viewMode === "owner" ? "propietario" : "huésped"}
+                </p>
+                <ExperienceSwitcher onSwitch={closeMenus} />
+              </div>
+            )}
             {navLinks.map((link, index) => {
               if (link.type === "separator") {
                 return (
@@ -285,7 +307,7 @@ export default function Header() {
               return (
                 <Link
                   key={link.href}
-                  href={link.href}
+                  href={link.href!}
                   onClick={closeMenus}
                   className="flex min-h-11 items-center text-sm font-medium text-gray-800"
                 >
@@ -293,15 +315,6 @@ export default function Header() {
                 </Link>
               );
             })}
-            {user && (
-              <Link
-                href="/estadias"
-                onClick={closeMenus}
-                className="flex min-h-11 items-center text-sm font-medium text-gray-800"
-              >
-                Mis estadías
-              </Link>
-            )}
             <hr className="my-2 border-gray-100" />
             <Link
               href="/support"

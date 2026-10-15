@@ -24,8 +24,16 @@ export default function LoginPage() {
           toast.success(response.data.message, { duration: 2000 });
           setTimeout(resolve, 2000);
         });
-        await refetchUser();
-        window.location.href = "/";
+        const user = await refetchUser();
+        let destination = "/";
+        try {
+          if (user && localStorage.getItem(`zonaquintas:view-mode:${user.id}`) === "owner") {
+            destination = "/propietario";
+          }
+        } catch {
+          // El acceso sigue funcionando si el navegador bloquea localStorage.
+        }
+        window.location.href = destination;
       }
     } catch (error: any) {
       const message =

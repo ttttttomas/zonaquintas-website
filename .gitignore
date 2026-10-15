@@ -24,6 +24,7 @@
 *.md
 /docs/planes/*.md
 !/plan-implementacion-resenas.md
+!/docs/flujo-huesped-propietario.md
 
 
 # misc
