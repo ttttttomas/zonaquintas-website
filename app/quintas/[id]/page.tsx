@@ -16,9 +16,12 @@ import StaticMap from "@/app/components/StaticMap";
 import ImageGallery from "@/app/components/quintas/ImageGallery";
 import QuintaReviews from "@/app/components/QuintaReviews";
 import { ReviewsServices, type ReviewSummary } from "@/app/services/ReviewsServices";
+import { GuestServices } from "@/app/services/GuestServices";
 import { useUser } from "@/app/context/UserContext";
 import { Quintas, Users } from "@/types";
 import { use, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 interface quintaIdPageProps {
   params: Promise<{
     id: string;
@@ -27,12 +30,15 @@ interface quintaIdPageProps {
 
 export default function QuintaIdPage({ params }: quintaIdPageProps) {
   const { id } = use(params);
-  const { user } = useUser();
+  const { user, loading: userLoading } = useUser();
+  const router = useRouter();
 
   const [quinta, setQuinta] = useState<Quintas | null>(null);
   const [owner, setOwner] = useState<Users | null>(null);
   const [hostSummary, setHostSummary] = useState<ReviewSummary | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [favoriteLoading, setFavoriteLoading] = useState(false);
 
   useEffect(() => {
     const getQuintaAndOwner = async () => {
@@ -60,6 +66,24 @@ export default function QuintaIdPage({ params }: quintaIdPageProps) {
     getQuintaAndOwner();
   }, [id]);
 
+  useEffect(() => {
+    if (userLoading || !user?.id) {
+      setIsFavorite(false);
+      return;
+    }
+    const controller = new AbortController();
+    GuestServices.favorites(user.id, controller.signal)
+      .then((favorites) => {
+        if (!controller.signal.aborted) {
+          setIsFavorite(favorites.some((favorite) => favorite.id === id || favorite.quinta_id === id));
+        }
+      })
+      .catch(() => {
+        if (!controller.signal.aborted) setIsFavorite(false);
+      });
+    return () => controller.abort();
+  }, [id, user?.id, userLoading]);
+
   const currency = quinta?.currency_price ?? "ARS";
   const priceNum = quinta?.price ?? 0;
   const languagesMayus = owner?.languages.map((lang) => lang.charAt(0).toUpperCase() + lang.slice(1));
@@ -75,8 +99,55 @@ export default function QuintaIdPage({ params }: quintaIdPageProps) {
 
   const formatedPrice = formatCurrency(priceNum);
 
-  const handleShare = () => {
-    navigator.clipboard.writeText(window.location.href);
+  const handleShare = async () => {
+    const shareData = { title: quinta?.title ?? "ZonaQuintas", url: window.location.href };
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+        return;
+      }
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(shareData.url);
+      } else {
+        const input = document.createElement("textarea");
+        input.value = shareData.url;
+        input.style.position = "fixed";
+        input.style.opacity = "0";
+        document.body.appendChild(input);
+        input.select();
+        const copied = document.execCommand("copy");
+        input.remove();
+        if (!copied) throw new Error("No se pudo copiar el enlace");
+      }
+      toast.success("Enlace copiado");
+    } catch (error) {
+      if (error instanceof Error && error.name === "AbortError") return;
+      toast.error("No pudimos compartir el enlace. Copialo desde la barra del navegador.");
+    }
+  };
+
+  const handleFavorite = async () => {
+    if (!user?.id) {
+      router.push(`/login?next=${encodeURIComponent(`/quintas/${id}`)}`);
+      return;
+    }
+    if (favoriteLoading) return;
+    setFavoriteLoading(true);
+    try {
+      if (isFavorite) {
+        await GuestServices.removeFavorite(user.id, id);
+        setIsFavorite(false);
+        toast.success("Quitaste la quinta de tus favoritos");
+      } else {
+        await GuestServices.favorite(user.id, id);
+        setIsFavorite(true);
+        toast.success("Quinta guardada en favoritos");
+      }
+    } catch {
+      toast.error("No pudimos actualizar tus favoritos. Intentá de nuevo.");
+    } finally {
+      setFavoriteLoading(false);
+    }
   };
 
 
@@ -103,10 +174,12 @@ export default function QuintaIdPage({ params }: quintaIdPageProps) {
       <section className="px-4 md:px-10 lg:mx-20 mb-10" id="hero">
         <div className="flex flex-col md:flex-row justify-between gap-2">
           <h1 className="font-semibold text-xl md:text-2xl">{quinta?.title}</h1>
-          {/* <ul className="flex gap-5 items-center">
+          <ul className="flex gap-5 items-center">
             <button
+              type="button"
               onClick={handleShare}
-              className="flex items-center cursor-pointer gap-3 font-medium text-sm md:text-base">
+              aria-label="Compartir esta quinta"
+              className="flex items-center cursor-pointer gap-3 font-medium text-sm md:text-base focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primaryDark">
               <p>Compartir</p>
               <svg
                 width="24"
@@ -120,11 +193,13 @@ export default function QuintaIdPage({ params }: quintaIdPageProps) {
                 />
               </svg>
             </button>
-            <li className="flex items-center gap-3 font-medium text-sm md:text-base">
-              <p>Agregar a favoritos</p>
-              <Heart className={"w-5 cursor-pointer"} />
+            <li>
+              <button type="button" onClick={handleFavorite} disabled={favoriteLoading || userLoading} aria-pressed={isFavorite} aria-label={isFavorite ? "Quitar de favoritos" : "Agregar a favoritos"} className="flex items-center gap-3 font-medium text-sm md:text-base disabled:opacity-60 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primaryDark">
+                <span>{favoriteLoading ? "Guardando…" : isFavorite ? "En favoritos" : "Agregar a favoritos"}</span>
+                <Heart className={`w-5 ${isFavorite ? "[&_path]:fill-[#33FF33]" : ""}`} />
+              </button>
             </li>
-          </ul> */}
+          </ul>
         </div>
         {quinta && (
           <ImageGallery

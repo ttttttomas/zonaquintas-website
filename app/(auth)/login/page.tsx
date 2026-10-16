@@ -27,7 +27,10 @@ export default function LoginPage() {
         const user = await refetchUser();
         let destination = "/";
         try {
-          if (user && localStorage.getItem(`zonaquintas:view-mode:${user.id}`) === "owner") {
+          const next = new URLSearchParams(window.location.search).get("next");
+          if (next?.startsWith("/") && !next.startsWith("//")) {
+            destination = next;
+          } else if (user && localStorage.getItem(`zonaquintas:view-mode:${user.id}`) === "owner") {
             destination = "/propietario";
           }
         } catch {

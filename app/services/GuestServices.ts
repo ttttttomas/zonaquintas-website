@@ -7,6 +7,7 @@ export type GuestFavorite = { id: string; title: string; city: string; price: nu
 export type GuestOverview = { bookings: GuestBooking[]; favorites: GuestFavorite[]; reviews: BookingReview[]; received_reviews: BookingReview[] };
 export const GuestServices = {
   async overview(signal?: AbortSignal) { return (await apiClient.get<GuestOverview>("/guest/overview", { signal })).data; },
+  async favorites(userId: string, signal?: AbortSignal) { return (await apiClient.get<Array<{ id: string; quinta_id?: string }>>(`/favorites/${encodeURIComponent(userId)}`, { signal })).data; },
   async review(booking_id: string, stars: number, review_text: string) { await apiClient.post("/reviews", { booking_id, stars, review_text }); },
   async favorite(user_id: string, quinta_id: string) { await apiClient.post("/favorites", { user_id, quinta_id }); },
   async removeFavorite(userId: string, quintaId: string) { await apiClient.delete(`/favorites/${encodeURIComponent(userId)}/${encodeURIComponent(quintaId)}`); },
