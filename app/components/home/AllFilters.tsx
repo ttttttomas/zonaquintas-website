@@ -1,8 +1,16 @@
 "use client";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
 import { defaultFilters, useFilters } from "@/app/context/ContextFilters";
+import { Search, X } from "lucide-react";
+
+const PRICE_PRESETS = [
+  { label: "Hasta $100.000", range: [0, 100_000] },
+  { label: "$100.000 – $250.000", range: [100_000, 250_000] },
+  { label: "$250.000 – $500.000", range: [250_000, 500_000] },
+  { label: "Más de $500.000", range: [500_000, 5_000_000] },
+] as const;
 
 // ---------- Simple SVG icons (sin dependencias) ----------
 const IconWifi = (p: any) => (
@@ -269,61 +277,41 @@ function Chip({
   return (
     <button
       onClick={onClick}
-      className={[
-        "flex items-center w-min text-nowrap cursor-pointer hover:scale-105 transition-duration-200 transition-all gap-3 rounded-full border px-5 py-3",
-        "transition-colors",
-        active
-          ? "border-primaryDark bg-emerald-500/20 text-white"
-          : "border-neutral-600 text-neutral-200 hover:bg-white/5",
-      ].join(" ")}>
-      <span className="h-5 w-5">{icon}</span>
+      type="button"
+      aria-pressed={active}
+      className={`flex min-h-12 w-full items-center gap-3 rounded-xl border px-4 py-3 text-left transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primaryDark ${active ? "border-primaryDark bg-green-50 text-primaryDark" : "border-gray-200 bg-white text-gray-700 hover:border-gray-400 hover:bg-gray-50"}`}>
+      <span className="flex h-5 w-5 shrink-0 items-center justify-center">{icon}</span>
       <span className="text-sm">{label}</span>
     </button>
   );
 }
 
-function Stepper({
-  value,
-  setValue,
-}: {
+function Stepper({ value, setValue, label }: {
   value: number;
   setValue: (v: number) => void;
+  label: string;
 }) {
   return (
-    <div className="inline-flex items-center overflow-hidden rounded-full border border-neutral-600">
+    <div className="inline-flex items-center overflow-hidden rounded-full border border-gray-300 bg-white">
       <button
-        className="px-4 py-2 text-lg text-neutral-200 hover:bg-white/5"
+        type="button"
+        disabled={value <= 0}
+        className="h-11 w-11 text-lg text-gray-700 hover:bg-gray-100 disabled:opacity-40"
         onClick={() => setValue(Math.max(0, value - 1))}
-        aria-label="Restar">
+        aria-label={`Restar ${label}`}>
         –
       </button>
-      <div className="w-10 select-none text-center text-sm text-neutral-200">
+      <div className="w-10 select-none text-center text-sm font-medium text-gray-900" aria-live="polite">
         {value}
       </div>
       <button
-        className="px-4 py-2 text-lg text-neutral-200 hover:bg-white/5"
+        type="button"
+        disabled={value >= 30}
+        className="h-11 w-11 text-lg text-gray-700 hover:bg-gray-100 disabled:opacity-40"
         onClick={() => setValue(value + 1)}
-        aria-label="Sumar">
+        aria-label={`Sumar ${label}`}>
         +
       </button>
-    </div>
-  );
-}
-
-// ---------- Histograma decorativo ----------
-function Bars() {
-  const heights = [
-    18, 22, 24, 26, 28, 26, 24, 22, 10, 7, 11, 30, 14, 22, 21, 20, 8, 6, 4,
-  ];
-  return (
-    <div className="flex h-24 items-end gap-1">
-      {heights.map((h, i) => (
-        <div
-          key={i}
-          className="w-3 rounded-t bg-[#28A728]"
-          style={{ height: `${h * 2}px` }}
-        />
-      ))}
     </div>
   );
 }
@@ -332,7 +320,7 @@ function Bars() {
 export default function FiltrosInmuebles({
   handleClick,
 }: {
-  handleClick: any;
+  handleClick: () => void;
 }) {
   const { filters, setFilters } = useFilters();
   const [draftFilters, setDraftFilters] = useState<any>(() => ({
@@ -340,6 +328,26 @@ export default function FiltrosInmuebles({
     priceRange: [...filters.priceRange],
   }));
   const [priceRange, setPriceRange] = useState<[number, number]>(draftFilters.priceRange);
+  const [featureSearch, setFeatureSearch] = useState("");
+  const closeRef = useRef(handleClick);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const dialogRef = useRef<HTMLElement>(null);
+  closeRef.current = handleClick;
+
+  useEffect(() => {
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const focusFrame = requestAnimationFrame(() => closeButtonRef.current?.focus());
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") closeRef.current();
+    };
+    window.addEventListener("keydown", closeOnEscape);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", closeOnEscape);
+      cancelAnimationFrame(focusFrame);
+    };
+  }, []);
 
   const fmt = (n: number) =>
     n.toLocaleString("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 0 });
@@ -398,107 +406,117 @@ export default function FiltrosInmuebles({
     }));
   };
 
+  const visibleFeatures = featureList.filter((feature) =>
+    feature.label.toLocaleLowerCase("es").includes(featureSearch.trim().toLocaleLowerCase("es"))
+  );
+  const selectedFeatureCount = featureList.filter((feature) => draftFilters[feature.key] === true).length;
+
   return (
-    <section className="fixed top-0 rounded-2xl z-10 scrollbar-hide inset-0 left-0 overflow-y-scroll md:m-30 m-5 bg-[#2B2B2B] py-10 text-white">
-      <div className="fxed -z-20 top-0 inset-0 bg-black/70"></div>
-      <h2 className="text-2xl text-center font-bold">Todos los Filtros</h2>
-
-      {/* Rango de precio */}
-      <div className="mt-10 mx-auto md:px-20 px-5 w-full">
-        <div className="mb-3 flex justify-between text-xs text-neutral-300">
-          <span>Mínimo {fmt(priceRange[0])}</span>
-          <span>Máximo {fmt(priceRange[1])}</span>
-        </div>
-        <Slider
-          range
-          min={0}
-          max={5000000}
-          step={10000}
-          value={priceRange}
-          onChange={(v) => setPriceRange(v as [number, number])}
-          allowCross={false}
-          pushable={0}
-          trackStyle={[{ backgroundColor: "#10B981", height: 6 }]}
-          railStyle={{ backgroundColor: "#fff", height: 6 }}
-          handleStyle={[
-            { borderColor: "#28a728", backgroundColor: "#28a728", width: 18, height: 18 },
-            { borderColor: "#28a728", backgroundColor: "#28a728", width: 18, height: 18 },
-          ]}
-        />
-      </div>
-
-      {/* Características básicas */}
-      <section className="mt-14 flex flex-col justify-center items-center px-10 md:px-0 md:pl-30 w-full">
-        <h3 className="text-center text-lg mb-20 font-semibold md:col-span-2">
-          Características básicas
-        </h3>
-        <div className="flex w-full md:gap-20 gap-5 md:justify-center items-center">
-          <div className="flex w-full flex-col gap-14">
-            <div className="flex items-center gap-3 text-neutral-200">
-              <IconBed className="h-6 w-6" />
-              <span className="text-base">Habitaciones</span>
-            </div>
-            <div className="flex items-center gap-3 text-neutral-200">
-              <IconSofa className="h-6 w-6" />
-              <span className="text-base">Ambientes</span>
-            </div>
-            <div className="flex items-center gap-3 text-neutral-200">
-              <IconToilet className="h-6 w-6" />
-              <span className="text-base">Baños</span>
-            </div>
+    <div
+      className="fixed inset-0 z-[100] flex items-end justify-center bg-black/50 p-0 backdrop-blur-[2px] sm:items-center sm:p-4"
+      onMouseDown={(event) => { if (event.target === event.currentTarget) handleClick(); }}
+    >
+      <section
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="all-filters-title"
+        ref={dialogRef}
+        className="relative flex h-[min(92dvh,900px)] w-full max-w-5xl flex-col overflow-hidden rounded-t-3xl bg-white text-gray-900 shadow-2xl sm:h-[min(88dvh,900px)] sm:rounded-2xl"
+        onMouseDown={(event) => event.stopPropagation()}
+        onKeyDown={(event) => {
+          if (event.key !== "Tab") return;
+          const focusable = dialogRef.current?.querySelectorAll<HTMLElement>('button:not([disabled]), input:not([disabled]), [href], [tabindex]:not([tabindex="-1"])');
+          if (!focusable?.length) return;
+          const first = focusable[0];
+          const last = focusable[focusable.length - 1];
+          if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+          else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+        }}
+      >
+        <header className="flex shrink-0 items-center justify-between border-b border-gray-200 px-5 py-4 sm:px-8">
+          <div>
+            <h2 id="all-filters-title" className="text-xl font-semibold sm:text-2xl">Todos los filtros</h2>
+            <p className="mt-1 text-sm text-gray-500">Elegí qué necesitás para tu estadía.</p>
           </div>
-          <div className="flex w-full flex-col items-center gap-7">
-            <Stepper
-              value={draftFilters.bedrooms}
-              setValue={(v: number) => setDraftFilters((prev: any) => ({ ...prev, bedrooms: v }))}
-            />
-            <Stepper
-              value={draftFilters.amb}
-              setValue={(v: number) => setDraftFilters((prev: any) => ({ ...prev, amb: v }))}
-            />
-            <Stepper
-              value={draftFilters.bathrooms}
-              setValue={(v: number) => setDraftFilters((prev: any) => ({ ...prev, bathrooms: v }))}
-            />
-          </div>
-        </div>
-      </section>
-
-      {/* Otras características */}
-      <section className="mt-16 w-full">
-        <h3 className="mb-6 text-center text-lg font-semibold">Otras características</h3>
-        <div className="mx-auto grid w-full place-items-center grid-cols-1 place-content-center gap-4 sm:grid-cols-2 lg:grid-cols-3 px-5">
-          {featureList.map((f) => (
-            <Chip
-              key={f.key}
-              active={draftFilters[f.key] === true}
-              onClick={() => toggleFeature(f.key)}
-              icon={f.icon}
-              label={f.label}
-            />
-          ))}
-        </div>
-
-        <div className="mt-10 flex justify-center gap-4">
-          <button
-            onClick={() => {
-              setDraftFilters({ ...defaultFilters, priceRange: [...defaultFilters.priceRange] });
-              setPriceRange([0, 5000000]);
-            }}
-            className="px-6 py-2 rounded-full border border-neutral-600 text-neutral-200 hover:bg-white/5 transition-colors">
-            Limpiar filtros
+          <button ref={closeButtonRef} type="button" onClick={handleClick} aria-label="Cerrar filtros" className="flex h-11 w-11 items-center justify-center rounded-full border border-gray-200 text-gray-700 hover:bg-gray-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primaryDark">
+            <X size={20} aria-hidden="true" />
           </button>
-          <button
-            onClick={() => {
-              setFilters((prev: any) => ({ ...prev, ...draftFilters, priceRange }));
-              handleClick();
-            }}
-            className="px-6 py-2 rounded-full bg-emerald-600 text-white hover:bg-emerald-700 transition-colors">
-            Ver resultados
-          </button>
+        </header>
+
+        <div className="flex-1 space-y-8 overflow-y-auto px-5 py-6 sm:px-8">
+          <section aria-labelledby="price-filter-title" className="rounded-2xl border border-gray-200 p-5 sm:p-6">
+            <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
+              <div><h3 id="price-filter-title" className="font-semibold">Precio por noche</h3><p className="mt-1 text-sm text-gray-500">Definí un rango para tu búsqueda.</p></div>
+              <p className="text-sm font-medium text-gray-700">{fmt(priceRange[0])} — {fmt(priceRange[1])}</p>
+            </div>
+            <div className="mb-6 grid grid-cols-2 gap-2 sm:grid-cols-4" aria-label="Rangos de precio sugeridos">
+              {PRICE_PRESETS.map(({ label, range }) => {
+                const selected = priceRange[0] === range[0] && priceRange[1] === range[1];
+                return (
+                  <button
+                    key={label}
+                    type="button"
+                    aria-pressed={selected}
+                    onClick={() => setPriceRange([...range])}
+                    className={`min-h-11 rounded-xl border px-3 py-2 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primaryDark ${selected ? "border-primaryDark bg-primaryDark/5 text-primaryDark" : "border-gray-300 text-gray-700 hover:border-gray-500 hover:bg-gray-50"}`}
+                  >
+                    {label}
+                  </button>
+                );
+              })}
+            </div>
+            <div className="px-2 pb-2">
+              <Slider
+                range min={0} max={5000000} step={10000} value={priceRange}
+                onChange={(value) => setPriceRange(value as [number, number])}
+                allowCross={false} pushable={0}
+                trackStyle={[{ backgroundColor: "var(--color-primaryDark)", height: 6 }]}
+                railStyle={{ backgroundColor: "var(--color-gray-200)", height: 6 }}
+                handleStyle={[
+                  { borderColor: "var(--color-primaryDark)", backgroundColor: "white", width: 22, height: 22, opacity: 1 },
+                  { borderColor: "var(--color-primaryDark)", backgroundColor: "white", width: 22, height: 22, opacity: 1 },
+                ]}
+              />
+            </div>
+          </section>
+
+          <section aria-labelledby="basic-filter-title">
+            <div className="mb-4"><h3 id="basic-filter-title" className="font-semibold">Ambientes y espacios</h3><p className="mt-1 text-sm text-gray-500">Indicá la cantidad mínima que necesitás.</p></div>
+            <div className="grid gap-3 sm:grid-cols-3">
+              {[
+                { key: "bedrooms", label: "Habitaciones", icon: <IconBed className="h-5 w-5 text-gray-500" /> },
+                { key: "amb", label: "Ambientes", icon: <IconSofa className="h-5 w-5 text-gray-500" /> },
+                { key: "bathrooms", label: "Baños", icon: <IconToilet className="h-5 w-5 text-gray-500" /> },
+              ].map(item => (
+                <div key={item.key} className="flex items-center justify-between gap-3 rounded-2xl border border-gray-200 p-4">
+                  <div className="flex min-w-0 items-center gap-3">{item.icon}<span className="text-sm font-medium">{item.label}</span></div>
+                  <Stepper label={item.label.toLocaleLowerCase("es")} value={draftFilters[item.key]} setValue={(value: number) => setDraftFilters((previous: any) => ({ ...previous, [item.key]: value }))} />
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <section aria-labelledby="amenities-title">
+            <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
+              <div><h3 id="amenities-title" className="font-semibold">Servicios y comodidades</h3><p className="mt-1 text-sm text-gray-500">Podés elegir más de una opción.</p></div>
+              <span className="text-sm text-gray-500">{selectedFeatureCount} seleccionados</span>
+            </div>
+            <label className="mb-4 flex min-h-11 items-center gap-2 rounded-xl border border-gray-300 px-3 focus-within:border-primaryDark focus-within:ring-2 focus-within:ring-primaryDark/20">
+              <Search size={18} className="shrink-0 text-gray-400" aria-hidden="true" />
+              <span className="sr-only">Buscar servicios</span>
+              <input value={featureSearch} onChange={event => setFeatureSearch(event.target.value)} placeholder="Buscar un servicio" className="w-full bg-transparent text-sm outline-none focus-visible:outline-2 focus-visible:outline-primaryDark placeholder:text-gray-400" />
+            </label>
+            {visibleFeatures.length ? <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">{visibleFeatures.map(feature => (
+              <Chip key={feature.key} active={draftFilters[feature.key] === true} onClick={() => toggleFeature(feature.key)} icon={feature.icon} label={feature.label} />
+            ))}</div> : <p className="rounded-xl bg-gray-50 py-8 text-center text-sm text-gray-500">No encontramos servicios con ese nombre.</p>}
+          </section>
         </div>
+
+        <footer className="flex shrink-0 flex-col-reverse gap-3 border-t border-gray-200 bg-white px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-8">
+          <button type="button" onClick={() => { setDraftFilters({ ...defaultFilters, priceRange: [...defaultFilters.priceRange] }); setPriceRange([0, 5000000]); setFeatureSearch(""); }} className="min-h-11 rounded-xl px-4 text-sm font-medium text-gray-700 underline underline-offset-4 hover:bg-gray-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primaryDark">Limpiar filtros</button>
+          <button type="button" onClick={() => { setFilters((previous: any) => ({ ...previous, ...draftFilters, priceRange })); handleClick(); }} className="min-h-11 rounded-xl bg-primaryDark px-6 text-sm font-semibold text-white hover:bg-green-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primaryDark">Ver resultados</button>
+        </footer>
       </section>
-    </section>
+    </div>
   );
 }
-

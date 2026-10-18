@@ -134,13 +134,13 @@ export default function Form() {
     <Suspense fallback={<FormSkeleton />}>
       <form
         onSubmit={handleSubmit}
-        className="flex xl:pl-20 md:flex-row flex-col justify-center items-center gap-5 md:gap-8 mb-5 md:mb-10 w-full max-w-md md:max-w-none px-4 mx-auto"
+        className="flex xl:pl-20 lg:flex-row flex-col justify-center items-center gap-5 lg:gap-8 mb-5 md:mb-10 w-full max-w-md lg:max-w-none px-4 mx-auto"
       >
         <section
-          className="flex flex-col md:flex-row w-full max-w-md md:w-auto md:max-w-none rounded-3xl md:rounded-full divide-y md:divide-y-0 md:divide-x divide-gray-200 border border-black/20 cursor-pointer bg-white shadow-md hover:shadow-lg transition-shadow"
+          className="flex flex-col lg:flex-row w-full max-w-md lg:w-auto lg:max-w-none rounded-3xl lg:rounded-full divide-y lg:divide-y-0 lg:divide-x divide-gray-200 border border-black/20 cursor-pointer bg-white shadow-md hover:shadow-lg transition-shadow"
         >
           {/* ── CIUDAD ─────────────────────────────────────────── */}
-          <div ref={cityRef} className="relative w-full md:w-auto">
+          <div ref={cityRef} className="relative w-full lg:w-auto">
             <div
               onClick={() => {
                 setCityDropdownOpen((prev) => !prev);
@@ -148,7 +148,7 @@ export default function Form() {
                   setCitySearch(selectedCity || "");
                 }
               }}
-              className={`hover:bg-black/5 w-full md:w-[220px] rounded-t-3xl md:rounded-r-none md:rounded-l-full flex flex-col items-center md:items-start px-6 py-4 transition-all ${
+              className={`hover:bg-black/5 w-full lg:w-[220px] rounded-t-3xl lg:rounded-r-none lg:rounded-l-full flex flex-col items-center lg:items-start px-6 py-4 transition-all ${
                 cityDropdownOpen ? "bg-black/5" : ""
               }`}
             >
@@ -194,7 +194,7 @@ export default function Form() {
                         setSelectedCity(null);
                       }}
                       placeholder="Buscar ciudad..."
-                      className="bg-transparent text-sm text-gray-800 placeholder-gray-400 focus:outline-none w-full"
+                      className="bg-transparent text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus-visible:outline-2 focus-visible:outline-primaryDark w-full"
                     />
                     {citySearch && (
                       <button
@@ -262,7 +262,7 @@ export default function Form() {
           </div>
 
           {/* ── FECHA IDA ───────────────────────────────────────── */}
-          <div className="w-full md:w-auto">
+          <div className="w-full lg:w-auto">
             <DatePicker
               autoComplete="off"
               placeholderText="Check-in"
@@ -285,7 +285,7 @@ export default function Form() {
           </div>
 
           {/* ── FECHA VUELTA ────────────────────────────────────── */}
-          <div className="w-full md:w-auto">
+          <div className="w-full lg:w-auto">
             <DatePicker
               autoComplete="off"
               placeholderText="Check-out"
@@ -308,10 +308,10 @@ export default function Form() {
           </div>
 
           {/* ── HUÉSPEDES ───────────────────────────────────────── */}
-          <div ref={guestsRef} className="relative w-full md:w-auto">
+          <div ref={guestsRef} className="relative w-full lg:w-auto">
             <div
               onClick={() => setViewGuests((prev) => !prev)}
-              className={`hover:bg-black/5 items-center py-4 w-full md:w-[170px] rounded-b-3xl md:rounded-l-none md:rounded-r-full flex flex-col md:items-start px-6 transition-all ${
+              className={`hover:bg-black/5 items-center py-4 w-full lg:w-[170px] rounded-b-3xl lg:rounded-l-none lg:rounded-r-full flex flex-col lg:items-start px-6 transition-all ${
                 viewGuests ? "bg-black/5" : ""
               }`}
             >

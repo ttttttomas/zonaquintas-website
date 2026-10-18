@@ -18,6 +18,7 @@ export default function Filters() {
   const habsRef = useRef<HTMLDivElement>(null);
   const ambsRef = useRef<HTMLDivElement>(null);
   const bathsRef = useRef<HTMLDivElement>(null);
+  const allFiltersButtonRef = useRef<HTMLButtonElement>(null);
 
   // Cerrar dropdowns al hacer click fuera
   useEffect(() => {
@@ -40,6 +41,10 @@ export default function Filters() {
   const handleOpen2 = () => setOpen2(!open2);
   const handleOpen3 = () => setOpen3(!open3);
   const handleOpen4 = () => setOpen4(!open4);
+  const handleCloseAllFilters = () => {
+    setOpen4(false);
+    requestAnimationFrame(() => allFiltersButtonRef.current?.focus());
+  };
 
   return (
     <section className="relative flex flex-wrap justify-center items-center gap-6 md:gap-12 lg:gap-16 lg:gap-y-10 text-sm md:text-base mb-7 mt-3 w-full max-w-4xl mx-auto px-4">
@@ -158,16 +163,20 @@ export default function Filters() {
       </div>
 
       {/* Todos los filtros */}
-      <div
+      <button
+        ref={allFiltersButtonRef}
+        type="button"
+        aria-haspopup="dialog"
+        aria-expanded={open4}
         onClick={handleOpen4}
-        className="flex cursor-pointer hover:bg-black/10 py-1.5 px-3 transition-all rounded-lg items-center gap-2"
+        className="flex cursor-pointer hover:bg-black/10 py-1.5 px-3 transition-colors rounded-lg items-center gap-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primaryDark"
       >
         <FiltersIcon />
         <p className="font-medium">Todos los filtros</p>
-      </div>
+      </button>
 
       {open4 && (
-        <AllFilters handleClick={() => setOpen4(false)} />
+        <AllFilters handleClick={handleCloseAllFilters} />
       )}
     </section>
   );

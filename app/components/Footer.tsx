@@ -6,7 +6,7 @@ export default function Footer() {
   return (
     <footer className="flex flex-col">
       <SecondSeparator />
-      <section className="flex flex-col px-5 md:px-10 md:flex-row gap-8 md:gap-5 justify-between mt-3 border-gray-300 md:mb-2">
+      <section className="flex flex-col px-5 md:px-10 lg:flex-row gap-8 md:gap-5 justify-between mt-3 border-gray-300 md:mb-2">
         <div className="flex flex-col gap-5">
           <div className="flex flex-col items-center md:items-start md:flex-row gap-3 md:gap-5 mx-auto md:mx-0">
             <Logo className="w-[76px] md:w-[120px]" />
@@ -20,7 +20,7 @@ export default function Footer() {
             </div>
           </div>
           <div className="flex flex-col gap-5">
-            <div className="flex flex-col md:flex-row text-sm md:text-md underline md:text-nowrap items-start gap-3 md:gap-5 md:justify-between w-full">
+            <div className="flex flex-col lg:flex-row text-sm md:text-md underline lg:text-nowrap items-start gap-3 lg:gap-5 lg:justify-between w-full">
               <Link href="/terms">Términos y condiciones</Link>
               <Link href="/politics">Políticas de privacidad</Link>
               <Link href="/cancelation">Política de cancelación y reembolso del huésped</Link>

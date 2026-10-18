@@ -16,6 +16,7 @@ interface CardArc5Props {
   hovered?: boolean;
   images?: string[];
   children?: React.ReactNode;
+  cardHeight?: number;
 }
 
 export const CardArc5 = React.memo(function CardArc5({
@@ -50,7 +51,7 @@ export const CardArc5 = React.memo(function CardArc5({
     <div
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className={`relative w-[15rem] h-[15rem] cursor-pointer flex items-center justify-center ${className}`}
+      className={`relative w-[15rem] h-[20rem] cursor-pointer flex items-center justify-center ${className}`}
     >
       {cards.map((i) => {
         const dist = i - center;
@@ -85,9 +86,10 @@ export const CardArc5 = React.memo(function CardArc5({
               originY: 1,
               backgroundImage: images ? `url(${images[i % images.length]})` : undefined,
               backgroundSize: 'cover',
-              backgroundPosition: 'center'
+              backgroundPosition: 'center',
+              backgroundRepeat: 'no-repeat',
             }}
-            className={`absolute inset-0 rounded-2xl shadow-[0_4px_10px_-2px_rgba(0,0,0,0.15),0_2px_6px_-2px_rgba(0,0,0,0.1)] border border-neutral-200/20 ${cardClassName}`}
+            className={`absolute inset-0 rounded-2xl border-2 border-white shadow-[0_4px_10px_-2px_rgba(0,0,0,0.15),0_2px_6px_-2px_rgba(0,0,0,0.1)] ${cardClassName}`}
           />
         );
       })}
