@@ -13,15 +13,16 @@ export const AuthServices = {
     return response;
   },
   register: async (data: any) => {
-    const response = await apiClient.post(
-      "/register",
-      data,
-      {
-        headers: { "Content-Type": "application/json" },
-      },
-    );
-
-    return response;
+    const response = await fetch("/api/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
+    const payload = await response.json();
+    if (!response.ok) {
+      throw { response: { status: response.status, data: payload } };
+    }
+    return { status: response.status, data: payload };
   },
   me: async () => {
     const response = await apiClient.get("/me");
