@@ -3,8 +3,17 @@ import { useForm } from "react-hook-form";
 import { AuthServices } from "@/app/services/AuthServices";
 import toast, { Toaster } from "react-hot-toast";
 
+type RegisterFormData = {
+  name: string;
+  email: string;
+  date_of_birth: string;
+  password: string;
+  confirm_password: string;
+  phone: string;
+};
+
 export default function RegisterPage() {
-  const { register, handleSubmit } = useForm();
+  const { register, handleSubmit } = useForm<RegisterFormData>();
 
   const onSubmit = handleSubmit(async (data) => {
     try {
@@ -12,17 +21,23 @@ export default function RegisterPage() {
         toast.error("Las contraseñas no coinciden");
         return;
       }
-      const response = await AuthServices.register(data);
-      if (response?.status === 200) {
-        console.log(response);
-        toast.success(`${response.data.message}`);
-        setTimeout(() => {
-          window.location.href = "/my-account";
-        }, 2000);
+      const phone = data.phone?.replace(/\D/g, "");
+      const response = await AuthServices.register({
+        name: data.name?.trim() || null,
+        email: data.email.trim(),
+        date_of_birth: data.date_of_birth || null,
+        password: data.password,
+        phone: phone ? Number(phone) : null,
+      });
+      if (response?.status >= 200 && response?.status < 300) {
+        window.location.href = "/login?registered=1";
       }
     } catch (error: any) {
-      const message =
-        error?.response?.data?.message ||
+      const detail = error?.response?.data?.detail;
+      const validationMessage = Array.isArray(detail)
+        ? detail.map((item: { msg?: string }) => item.msg).filter(Boolean).join(". ")
+        : typeof detail === "string" ? detail : undefined;
+      const message = validationMessage || error?.response?.data?.message ||
         "Error al registrarse. Revise su conexión y/o credenciales.";
       toast.error(message);
     }
@@ -32,10 +47,7 @@ export default function RegisterPage() {
       <Toaster position="bottom-center" />
       <div className="absolute publicar h-[86vh] -z-10 w-full" />
       <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          onSubmit();
-        }}
+        onSubmit={onSubmit}
         className="w-full max-w-4xl px-5 md:px-20 gap-5 py-10 shadow-black/20 flex flex-col text-black">
         <img
           src="/logo.png"

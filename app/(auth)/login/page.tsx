@@ -5,11 +5,20 @@ import toast, { Toaster } from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { useUser } from "../../context/UserContext";
 import Link from "next/link";
+import { useEffect } from "react";
 
 export default function LoginPage() {
   const router = useRouter();
   const { refetchUser } = useUser();
   const { register, handleSubmit } = useForm();
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("registered") !== "1") return;
+    toast.success("Tu cuenta fue creada. Iniciá sesión para continuar.");
+    window.history.replaceState(null, "", window.location.pathname);
+  }, []);
+
   const onSubmit = handleSubmit(async (data) => {
     try {
       const response = await AuthServices.login(data.email, data.password);
