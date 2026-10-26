@@ -299,15 +299,15 @@ export default function Paso4Page() {
           setPopUp(true);
         }}
         disabled={!acceptedTerms}
-        className="bg-primaryDark w-8/10 z-20 py-2 text-white mx-30 text-xl font-bold rounded-lg cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
+        className="bg-primaryDark w-full max-w-xl mx-auto z-20 py-2 px-4 text-white text-xl font-bold rounded-lg cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
         Confirmar publicación
       </button>
 
       {/* ── Pop-up de confirmación ── */}
       {popUp && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <div className="bg-tertiary text-white rounded-2xl gap-8 flex flex-col w-[550px] p-6 shadow-xl">
-            <p className="text-black font-bold text-xl text-nowrap text-center">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 p-4">
+          <div className="bg-tertiary text-white rounded-2xl gap-5 sm:gap-8 flex flex-col w-full max-w-[550px] max-h-[calc(100dvh-2rem)] overflow-y-auto p-4 sm:p-6 shadow-xl">
+            <p className="text-black font-bold text-lg sm:text-xl text-center break-words">
               ¿Estás seguro de que deseas enviar tu publicación?
             </p>
             <small className="text-black text-center text-lg">
@@ -317,17 +317,17 @@ export default function Paso4Page() {
             <small className="text-black text-center text-lg">
               Verificá que todos los datos sean correctos.
             </small>
-            <div className="flex justify-between gap-5 w-full px-10">
+            <div className="flex flex-col sm:flex-row justify-between gap-3 sm:gap-5 w-full sm:px-6">
               <button
                 disabled={submitting}
                 onClick={() => setPopUp(false)}
-                className="border-black cursor-pointer border py-1 rounded-xl bg-white text-primary w-1/2">
+                className="border-black cursor-pointer border py-1 rounded-xl bg-white text-primaryDark w-full sm:w-1/2 px-3 py-2">
                 Volver
               </button>
               <button
                 disabled={submitting}
                 onClick={handleSubmit}
-                className="border border-primaryDark cursor-pointer py-1 bg-primaryDark text-white rounded-xl w-1/2 disabled:opacity-50">
+                className="border border-primaryDark cursor-pointer py-1 bg-primaryDark text-white rounded-xl w-full sm:w-1/2 px-3 py-2 disabled:opacity-50">
                 {submitting ? "Enviando..." : "Confirmar publicación"}
               </button>
               {/* <button
