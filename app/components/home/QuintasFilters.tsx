@@ -37,7 +37,7 @@ export default function QuintasFilters() {
   }
 
   return (
-    <section className="flex flex-wrap justify-center mt-12 gap-20 max-w-[100rem] mx-auto">
+    <section className="flex flex-wrap justify-center mt-12 gap-x-12 gap-y-10 md:gap-x-20 md:gap-y-20 max-w-[100rem] mx-auto px-4 sm:px-6">
       {dataFiltered?.map((product: Quintas) => (
         <QuintaCard key={product.id} product={product} />
       ))}
