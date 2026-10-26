@@ -22,13 +22,13 @@ function Chip({ label, active, onClick }) {
       type="button"
       onClick={onClick}
       className={[
-        "inline-flex items-center justify-between gap-2 pl-3 pr-1.5 py-1 rounded-lg text-sm font-medium cursor-pointer select-none transition-all duration-150 border",
+        "inline-flex max-w-full min-w-0 items-center justify-between gap-2 pl-3 pr-1.5 py-1 rounded-lg text-sm font-medium cursor-pointer select-none transition-all duration-150 border",
         active
           ? "bg-white border-emerald-400 text-black ring-1 ring-emerald-400"
           : "bg-white border-neutral-200 text-black hover:border-neutral-400",
       ].join(" ")}
     >
-      <span>{label}</span>
+      <span className="min-w-0 break-words text-left">{label}</span>
       {active ? <IconMinus /> : <IconAdd />}
     </button>
   );
@@ -58,7 +58,7 @@ function SubSection({ title, items, selected, toggle }) {
 // ── Column ────────────────────────────────────────────────────────────────────
 function Column({ title, sections, selected, toggle }) {
   return (
-    <div className="flex flex-col px-4">
+    <div className="flex min-w-0 flex-col px-4">
       <p className="text-primary text-base font-bold text-center mb-5">
         {title}
       </p>
@@ -197,7 +197,7 @@ export default function AddCharacteristics({
 
       {/* ── Modal ────────────────────────────────────────────────────────── */}
       {showPopup && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-4">
           {/* Backdrop */}
           <div
             className="absolute inset-0 bg-black/60 backdrop-blur-sm"
@@ -205,12 +205,12 @@ export default function AddCharacteristics({
           />
 
           {/* Panel */}
-          <div className="relative bg-[#2B2B2B] text-white rounded-2xl shadow-2xl w-full max-w-5xl max-h-[88vh] flex flex-col overflow-hidden border border-white/10">
+          <div className="relative bg-[#2B2B2B] text-white rounded-2xl shadow-2xl w-full max-w-5xl max-h-[calc(100dvh-1.5rem)] sm:max-h-[88vh] flex flex-col overflow-hidden border border-white/10">
 
             {/* Cabecera */}
-            <div className="flex items-center justify-between px-8 py-5 border-b border-white/10 flex-shrink-0">
-              <div>
-                <h3 className="text-lg font-bold">Seleccioná las características de tu quinta</h3>
+            <div className="flex items-center justify-between gap-3 px-4 py-4 sm:px-8 sm:py-5 border-b border-white/10 flex-shrink-0">
+              <div className="min-w-0">
+                <h3 className="text-base sm:text-lg font-bold break-words">Seleccioná las características de tu quinta</h3>
                 {selected.length > 0 && (
                   <p className="text-xs text-emerald-400 mt-0.5">
                     {selected.length} seleccionada{selected.length !== 1 ? "s" : ""}
@@ -220,7 +220,7 @@ export default function AddCharacteristics({
               <button
                 type="button"
                 onClick={() => setShowPopup(false)}
-                className="w-8 h-8 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 transition-colors cursor-pointer"
+                className="w-8 h-8 shrink-0 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 transition-colors cursor-pointer"
               >
                 <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
                   <path d="M1 1L12 12M12 1L1 12" stroke="white" strokeWidth="2" strokeLinecap="round" />
@@ -229,8 +229,8 @@ export default function AddCharacteristics({
             </div>
 
             {/* Cuerpo con scroll */}
-            <div className="overflow-y-auto flex-1 py-6">
-              <div className="grid grid-cols-3 divide-x divide-white/10">
+            <div className="min-h-0 overflow-y-auto overscroll-contain flex-1 py-4 sm:py-6">
+              <div className="grid grid-cols-1 gap-5 md:grid-cols-3 md:gap-0 md:divide-x md:divide-white/10">
                 {COLUMNS.map((col) => (
                   <Column
                     key={col.title}
@@ -244,7 +244,7 @@ export default function AddCharacteristics({
             </div>
 
             {/* Footer */}
-            <div className="flex items-center justify-between px-8 py-4 border-t border-white/10 flex-shrink-0">
+            <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-8 sm:py-4 border-t border-white/10 flex-shrink-0">
               <button
                 type="button"
                 onClick={handleClear}
