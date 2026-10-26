@@ -33,6 +33,14 @@ export const CardArc5 = React.memo(function CardArc5({
 }: CardArc5Props) {
   const [isHovered, setIsHovered] = useState(false);
   const active = hovered !== undefined ? hovered : isHovered;
+  const [isMobile, setIsMobile] = React.useState(false);
+  React.useEffect(() => {
+    const media = window.matchMedia('(max-width: 639px)');
+    const update = () => setIsMobile(media.matches);
+    update();
+    media.addEventListener('change', update);
+    return () => media.removeEventListener('change', update);
+  }, []);
   const cards = [0, 1, 2, 3, 4];
   const center = 2;
 
@@ -51,12 +59,12 @@ export const CardArc5 = React.memo(function CardArc5({
     <div
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className={`relative w-[15rem] h-[20rem] cursor-pointer flex items-center justify-center ${className}`}
+      className={`relative w-full h-[20rem] cursor-pointer flex items-center justify-center ${className}`}
     >
       {cards.map((i) => {
         const dist = i - center;
-        const targetRotate = active ? dist * (angle / center) * hoverIntensity : 0;
-        const targetX = active ? dist * (gap / center) * hoverIntensity : 0;
+        const targetRotate = active ? dist * (angle / center) * hoverIntensity * (isMobile ? 0.55 : 1) : 0;
+        const targetX = active ? dist * (gap / center) * hoverIntensity * (isMobile ? 0.4 : 1) : 0;
 
         // Match the parabola translateY: card0/4 = 10px, card1/3 = -2px, card2 = -10px
         let targetY = 0;
