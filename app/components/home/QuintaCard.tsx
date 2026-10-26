@@ -102,7 +102,7 @@ export default function QuintaCard({ product }: { product: Quintas }) {
 
   return (
     <div
-      className={`relative block w-[15rem] h-[420px] mb-10 ${
+      className={`relative block w-[min(15rem,calc(100vw-3rem))] h-[420px] mb-10 ${
         hovered || focused ? "z-50" : "z-0"
       }`}
       onMouseEnter={() => setHovered(true)}
