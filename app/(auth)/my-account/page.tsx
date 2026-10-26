@@ -10,7 +10,7 @@ import AccountSectionLayout from "@/app/components/AccountSectionLayout";
 import AddLanguage from "@/app/components/AddLanguage";
 
 type ProfileForm = { name: string; email: string; phone: string; date_of_birth: string; address: string; description: string; review_reminders_enabled: boolean };
-const inputClass = "w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm outline-none transition placeholder:text-gray-400 focus:border-primaryDark focus:ring-2 focus:ring-primaryDark/15";
+const inputClass = "block w-full min-w-0 max-w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm outline-none transition placeholder:text-gray-400 focus:border-primaryDark focus:ring-2 focus:ring-primaryDark/15";
 function SectionHeading({ icon: Icon, title, description }: { icon: typeof UserRound; title: string; description?: string }) {
   return <div className="mb-4 flex items-start gap-3"><Icon size={20} className="mt-0.5 shrink-0 text-primaryDark" /><div><h2 className="text-sm font-semibold text-gray-900">{title}</h2>{description && <p className="mt-1 text-xs text-gray-500">{description}</p>}</div></div>;
 }
@@ -61,7 +61,7 @@ export default function MyAccountPage() {
     finally { setSaving(false); }
   }
 
-  const field = (name: Exclude<keyof ProfileForm, "review_reminders_enabled">, label: string, icon: typeof UserRound, type = "text") => <label className="block space-y-1.5 text-xs font-medium text-gray-700">{label}<span className="relative block"><IconForField icon={icon} /><input required={name === "name" || name === "email"} type={type} name={name} value={form[name]} onChange={e => setForm(previous => ({ ...previous, [name]: e.target.value }))} className={`${inputClass} pl-10`} /></span></label>;
+  const field = (name: Exclude<keyof ProfileForm, "review_reminders_enabled">, label: string, icon: typeof UserRound, type = "text") => <label className="block min-w-0 space-y-1.5 text-xs font-medium text-gray-700">{label}<span className="relative block min-w-0"><IconForField icon={icon} /><input required={name === "name" || name === "email"} type={type} name={name} value={form[name]} onChange={e => setForm(previous => ({ ...previous, [name]: e.target.value }))} className={`${inputClass} pl-10`} /></span></label>;
 
   if (loading) return <AccountSectionLayout><div aria-busy="true" aria-label="Cargando tu perfil" className="animate-pulse space-y-5"><div className="h-12 w-56 rounded-xl bg-gray-200" /><div className="h-[560px] rounded-2xl bg-gray-200" /></div></AccountSectionLayout>;
   if (error || !user) return <AccountSectionLayout><p role="alert" className="rounded-xl border border-red-100 bg-white p-6 text-red-700">{error || "Iniciá sesión para ver tu perfil."}</p></AccountSectionLayout>;
@@ -77,9 +77,9 @@ export default function MyAccountPage() {
           {user.pictures?.[0] && <button type="button" onClick={deletePhoto} disabled={saving} className="mt-2 text-xs text-gray-500 underline hover:text-red-600">Eliminar foto</button>}
           <p className="mt-2 text-center text-[10px] text-gray-400">JPG o PNG. Máx. 5 MB.</p>
         </div>
-        <section className="rounded-2xl border border-gray-200 bg-white p-5 md:p-6">
+        <section className="min-w-0 rounded-2xl border border-gray-200 bg-white p-5 md:p-6">
           <SectionHeading icon={UserRound} title="Mis datos personales" />
-          <div className="grid gap-4 md:grid-cols-2">
+          <div className="grid min-w-0 grid-cols-1 gap-4 md:grid-cols-2">
             {field("name", "Nombre completo", UserRound)}
             {field("phone", "Teléfono", Phone, "tel")}
             {field("date_of_birth", "Fecha de nacimiento", CalendarDays, "date")}
