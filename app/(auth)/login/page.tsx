@@ -60,7 +60,7 @@ export default function LoginPage() {
       <div className="absolute publicar h-[66vh] -z-10 w-full" />
       <form
         onSubmit={onSubmit}
-        className="w-full max-w-4xl px-5 md:px-20 gap-5 py-10 shadow-black/20 flex flex-col text-black">
+        className="w-full max-w-4xl px-5 md:px-20 gap-2 py-10 shadow-black/20 flex flex-col text-black">
         <img
           src="/logo.png"
           className="size-30 mx-auto object-cover mb-5"
@@ -69,12 +69,14 @@ export default function LoginPage() {
         <h1 className="text-xl md:text-3xl font-bold text-center">
           Iniciar sesión
         </h1>
+        <p>Correo electronico</p>
         <input
           {...register("email")}
           className="border border-black/30 rounded-lg p-2"
-          placeholder="Correo electronico"
+          placeholder="correo@gmail.com"
           type="text"
         />
+        <p>Contraseña</p>
         <input
           {...register("password")}
           className="border border-black/30 rounded-lg p-2"

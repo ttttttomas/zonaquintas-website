@@ -48,7 +48,7 @@ export default function RegisterPage() {
       <div className="absolute inset-0 publicar -z-10 w-full" />
       <form
         onSubmit={onSubmit}
-        className="w-full max-w-4xl px-3 sm:px-5 md:px-20 gap-4 sm:gap-5 py-8 sm:py-10 shadow-black/20 flex flex-col text-black">
+        className="w-full max-w-4xl px-3 sm:px-5 md:px-20 gap-2 sm:gap-5 py-8 sm:py-10 shadow-black/20 flex flex-col text-black">
         <img
           src="/logo.png"
           className="size-24 sm:size-30 mx-auto object-contain mb-2 sm:mb-5"
@@ -57,40 +57,45 @@ export default function RegisterPage() {
         <h1 className="text-xl md:text-3xl font-bold text-center">
           Registrarse
         </h1>
+        <p>Nombre completo</p>
         <input
           {...register("name")}
           className="border border-black/30 rounded-lg p-2"
-          placeholder="Nombre completo"
+          placeholder="Juan Perez"
           type="text"
         />
+        <p>Correo electronico</p>
         <input
           {...register("email")}
           className="border border-black/30 rounded-lg p-2"
-          placeholder="Correo electronico"
+          placeholder="correo@gmail.com"
           type="email"
         />
+        <p>Fecha de nacimiento</p>
         <input
           {...register("date_of_birth")}
           className="border border-black/30 rounded-lg p-2"
-          placeholder="Fecha de nacimiento"
           type="date"
         />
+        <p>Contraseña</p>
         <input
           {...register("password")}
           className="border border-black/30 rounded-lg p-2"
           placeholder="Contraseña"
           type="password"
         />
+        <p>Confirmar contraseña</p>
         <input
           {...register("confirm_password")}
           className="border border-black/30 rounded-lg p-2"
           placeholder="Confirmar contraseña"
           type="password"
         />
+        <p>Telefono</p>
         <input
           {...register("phone")}
           className="border border-black/30 rounded-lg p-2"
-          placeholder="Telefono"
+          placeholder="1234567890"
           type="text"
         />
         <button
